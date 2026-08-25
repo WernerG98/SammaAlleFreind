@@ -1,0 +1,35 @@
+{
+  "name": "vereins-events",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "postinstall": "prisma generate",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "seed:admin": "node scripts/hash-admin-password.js",
+    "dev:db:generate": "prisma generate --schema=dev-db/schema.prisma",
+    "dev:db:migrate": "prisma migrate dev --schema=dev-db/schema.prisma --name init"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.9.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.1",
+    "resend": "^4.0.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^3.4.17",
+    "vite": "^5.4.10"
+  }
+}

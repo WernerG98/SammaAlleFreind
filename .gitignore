@@ -1,0 +1,10 @@
+node_modules
+dist
+.vercel
+.env
+.env.local
+*.log
+
+# Temporäre lokale SQLite-Test-DB (nur zum Ausprobieren ohne Neon-Account)
+dev-db/*.db
+dev-db/migrations

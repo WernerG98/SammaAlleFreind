@@ -1,0 +1,63 @@
+// TEMPORÄRES Schema nur zum lokalen Testen ohne Neon-Account (SQLite statt Postgres).
+// Die eigentliche, produktiv genutzte Schema-Datei ist prisma/schema.prisma (Postgres/Neon).
+// Vor dem Deployment: `npm run prisma:generate` ausführen, um wieder auf den Postgres-Client zu wechseln.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DEV_DATABASE_URL")
+}
+
+model Event {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  description    String?
+  eventDate      DateTime
+  pricePerPerson Float?
+  paypalLink     String
+  paymentNote    String?
+  isOpen         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  buses         Bus[]
+  registrations Registration[]
+}
+
+model Bus {
+  id       String @id @default(cuid())
+  eventId  String
+  name     String
+  capacity Int
+
+  event         Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registrations Registration[]
+}
+
+model Registration {
+  id              String    @id @default(cuid())
+  eventId         String
+  busId           String
+  firstName       String
+  lastName        String
+  email           String
+  newsletterOptIn Boolean   @default(false)
+  paid            Boolean   @default(false)
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  bus   Bus   @relation(fields: [busId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, email])
+}
+
+model NewsletterSubscriber {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  unsubscribeToken String   @unique
+  createdAt        DateTime @default(now())
+}

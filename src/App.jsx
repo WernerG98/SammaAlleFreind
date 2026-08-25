@@ -1,0 +1,31 @@
+import { Route, Routes } from "react-router-dom";
+import HomePage from "./pages/HomePage.jsx";
+import EventPage from "./pages/EventPage.jsx";
+import PaymentPage from "./pages/PaymentPage.jsx";
+import UnsubscribePage from "./pages/UnsubscribePage.jsx";
+import AdminLayout from "./components/AdminLayout.jsx";
+import LoginPage from "./pages/admin/LoginPage.jsx";
+import DashboardPage from "./pages/admin/DashboardPage.jsx";
+import EventFormPage from "./pages/admin/EventFormPage.jsx";
+import RegistrationsPage from "./pages/admin/RegistrationsPage.jsx";
+import NewsletterPage from "./pages/admin/NewsletterPage.jsx";
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/veranstaltung/:slug" element={<EventPage />} />
+      <Route path="/anmeldung/:id/zahlung" element={<PaymentPage />} />
+      <Route path="/newsletter/abmelden" element={<UnsubscribePage />} />
+
+      <Route path="/admin/login" element={<LoginPage />} />
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<DashboardPage />} />
+        <Route path="veranstaltungen/neu" element={<EventFormPage />} />
+        <Route path="veranstaltungen/:id" element={<EventFormPage />} />
+        <Route path="veranstaltungen/:id/anmeldungen" element={<RegistrationsPage />} />
+        <Route path="newsletter" element={<NewsletterPage />} />
+      </Route>
+    </Routes>
+  );
+}
