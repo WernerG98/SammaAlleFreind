@@ -14,11 +14,17 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "eventId ist erforderlich." });
   }
 
-  const registrations = await prisma.registration.findMany({
-    where: { eventId },
-    include: { bus: true },
-    orderBy: { createdAt: "asc" },
-  });
+  const [registrations, interests] = await Promise.all([
+    prisma.registration.findMany({
+      where: { eventId },
+      include: { bus: true },
+      orderBy: { createdAt: "asc" },
+    }),
+    prisma.eventInterest.findMany({
+      where: { eventId },
+      orderBy: { createdAt: "asc" },
+    }),
+  ]);
 
-  return res.status(200).json(registrations);
+  return res.status(200).json({ registrations, interests });
 }

@@ -1,4 +1,5 @@
 import { prisma, isRegistrationOpen } from "./_lib/db.js";
+import { sendEmail, buildInterestConfirmationHtml } from "./_lib/email.js";
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -11,13 +12,39 @@ export default async function handler(req, res) {
 
   const { eventId, busId, firstName, lastName, email, newsletterOptIn } = req.body || {};
 
-  if (!eventId || !busId || !firstName?.trim() || !lastName?.trim() || !isValidEmail(email || "")) {
+  if (!eventId || !firstName?.trim() || !lastName?.trim() || !isValidEmail(email || "")) {
     return res.status(400).json({ error: "Bitte alle Felder gültig ausfüllen." });
   }
 
   const event = await prisma.event.findUnique({ where: { id: eventId } });
-  if (!event || !isRegistrationOpen(event)) {
-    return res.status(404).json({ error: "Veranstaltung nicht gefunden oder Anmeldung nicht mehr möglich." });
+  if (!event || !event.isOpen) {
+    return res.status(404).json({ error: "Veranstaltung nicht gefunden." });
+  }
+
+  if (event.comingSoon) {
+    const normalizedEmail = email.toLowerCase().trim();
+    const existingInterest = await prisma.eventInterest.findUnique({
+      where: { eventId_email: { eventId, email: normalizedEmail } },
+    });
+    if (existingInterest) {
+      return res.status(409).json({ error: "Du stehst bereits auf der Interessentenliste für diese Veranstaltung." });
+    }
+
+    const interest = await prisma.eventInterest.create({
+      data: { eventId, firstName: firstName.trim(), lastName: lastName.trim(), email: normalizedEmail },
+    });
+
+    await sendEmail({
+      to: normalizedEmail,
+      subject: `Interesse an ${event.title} bestätigt`,
+      html: buildInterestConfirmationHtml({ firstName: firstName.trim(), event }),
+    });
+
+    return res.status(201).json({ interest: true, id: interest.id });
+  }
+
+  if (!busId || !isRegistrationOpen(event)) {
+    return res.status(404).json({ error: "Anmeldung für diese Veranstaltung nicht mehr möglich." });
   }
 
   const bus = await prisma.bus.findUnique({

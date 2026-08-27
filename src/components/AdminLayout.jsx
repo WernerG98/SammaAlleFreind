@@ -39,6 +39,9 @@ export default function AdminLayout() {
             <Link to="/admin/newsletter" className="text-gray-700 hover:text-gray-900">
               Newsletter
             </Link>
+            <Link to="/admin/newsletter/abonnenten" className="text-gray-700 hover:text-gray-900">
+              Abonnenten
+            </Link>
           </nav>
           <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-gray-800">
             Abmelden

@@ -31,13 +31,14 @@ export default function HomePage() {
         {events?.map((event) => {
           if (event.comingSoon) {
             return (
-              <div
+              <Link
                 key={event.id}
-                className="bg-white/90 border border-dashed rounded-lg p-5"
+                to={`/veranstaltung/${event.slug}`}
+                className="block bg-white/90 border border-dashed rounded-lg p-5 hover:shadow-md transition-shadow"
               >
                 <h2 className="text-lg font-semibold">{event.title}</h2>
-                <p className="text-sm text-gray-500 mt-2 font-medium">Coming Soon</p>
-              </div>
+                <p className="text-sm text-gray-500 mt-2 font-medium">Coming Soon — jetzt schon Interesse bekunden</p>
+              </Link>
             );
           }
 

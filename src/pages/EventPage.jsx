@@ -8,6 +8,7 @@ export default function EventPage() {
   const [event, setEvent] = useState(null);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [interestDone, setInterestDone] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -28,8 +29,12 @@ export default function EventPage() {
     setError("");
     setSubmitting(true);
     try {
-      const { id } = await api.post("/register", { eventId: event.id, ...form });
-      navigate(`/anmeldung/${id}/zahlung`);
+      const result = await api.post("/register", { eventId: event.id, ...form });
+      if (result.interest) {
+        setInterestDone(true);
+      } else {
+        navigate(`/anmeldung/${result.id}/zahlung`);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -47,7 +52,63 @@ export default function EventPage() {
     return (
       <div className="max-w-lg mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold">{event.title}</h1>
-        <p className="mt-4 text-gray-600 font-medium">Coming Soon — Details folgen in Kürze.</p>
+        <p className="mt-2 text-gray-600 font-medium">Coming Soon — Details folgen in Kürze.</p>
+        {event.description && <p className="mt-4 text-gray-700 whitespace-pre-line">{event.description}</p>}
+
+        {interestDone ? (
+          <div className="mt-8 bg-green-50 border border-green-200 rounded-lg p-5 text-green-800">
+            Danke! Du stehst jetzt auf der Interessentenliste — wir melden uns, sobald es Details gibt.
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-white border rounded-lg p-6">
+            <h2 className="font-semibold">Interesse bekunden</h2>
+            <p className="text-sm text-gray-600">
+              Trag dich schon jetzt unverbindlich auf die Liste ein, wir informieren dich, sobald es losgeht.
+            </p>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Vorname</label>
+                <input
+                  required
+                  className="w-full border rounded px-3 py-2"
+                  value={form.firstName}
+                  onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Name</label>
+                <input
+                  required
+                  className="w-full border rounded px-3 py-2"
+                  value={form.lastName}
+                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">E-Mail-Adresse</label>
+              <input
+                required
+                type="email"
+                className="w-full border rounded px-3 py-2"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </div>
+
+            {error && <p className="text-sm text-red-600">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full bg-gray-900 text-white rounded py-2 font-medium disabled:opacity-50"
+            >
+              {submitting ? "Wird gesendet…" : "Interesse bekunden"}
+            </button>
+          </form>
+        )}
       </div>
     );
   }

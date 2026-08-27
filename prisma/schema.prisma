@@ -23,6 +23,7 @@ model Event {
 
   buses         Bus[]
   registrations Registration[]
+  interests     EventInterest[]
 }
 
 model Bus {
@@ -49,6 +50,19 @@ model Registration {
 
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   bus   Bus   @relation(fields: [busId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, email])
+}
+
+model EventInterest {
+  id        String   @id @default(cuid())
+  eventId   String
+  firstName String
+  lastName  String
+  email     String
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, email])
 }

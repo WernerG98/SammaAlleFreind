@@ -53,6 +53,47 @@ export function buildNewsletterOptInHtml({ unsubscribeUrl }) {
   `;
 }
 
+export function buildInterestConfirmationHtml({ firstName, event }) {
+  return `
+    <h2>Danke für dein Interesse!</h2>
+    <p>Hallo ${firstName},</p>
+    <p>
+      du stehst jetzt auf der Interessentenliste für <strong>${event.title}</strong>. Sobald es Details und
+      Termine gibt, melden wir uns bei dir.
+    </p>
+  `;
+}
+
+export function buildRegistrationRemovedHtml({ firstName, event }) {
+  return `
+    <h2>Deine Anmeldung wurde entfernt</h2>
+    <p>Hallo ${firstName},</p>
+    <p>
+      deine Anmeldung für <strong>${event.title}</strong> wurde von uns aus der Liste entfernt. Falls das aus
+      deiner Sicht ein Irrtum ist, melde dich gerne bei uns.
+    </p>
+  `;
+}
+
+export function buildInterestRemovedHtml({ firstName, event }) {
+  return `
+    <h2>Von der Interessentenliste entfernt</h2>
+    <p>Hallo ${firstName},</p>
+    <p>
+      du wurdest von der Interessentenliste für <strong>${event.title}</strong> entfernt. Falls das aus deiner
+      Sicht ein Irrtum ist, melde dich gerne bei uns.
+    </p>
+  `;
+}
+
+export function buildNewsletterRemovedHtml() {
+  return `
+    <h2>Aus dem Newsletter entfernt</h2>
+    <p>Du wurdest von uns aus dem Newsletter-Verteiler entfernt und erhältst keine weiteren E-Mails mehr von uns.</p>
+    <p>Falls das aus deiner Sicht ein Irrtum ist, melde dich gerne bei uns.</p>
+  `;
+}
+
 export function buildNewsletterHtml({ bodyHtml, unsubscribeUrl }) {
   return `
     ${bodyHtml}
