@@ -30,6 +30,9 @@ export default function AdminLayout() {
       <header className="bg-white border-b">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <nav className="flex gap-4 text-sm font-medium">
+            <Link to="/" className="text-gray-500 hover:text-gray-900">
+              ← Zur Startseite
+            </Link>
             <Link to="/admin" className="text-gray-700 hover:text-gray-900">
               Veranstaltungen
             </Link>

@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage.jsx";
 import EventPage from "./pages/EventPage.jsx";
 import PaymentPage from "./pages/PaymentPage.jsx";
 import UnsubscribePage from "./pages/UnsubscribePage.jsx";
+import PublicLayout from "./components/PublicLayout.jsx";
 import AdminLayout from "./components/AdminLayout.jsx";
 import LoginPage from "./pages/admin/LoginPage.jsx";
 import DashboardPage from "./pages/admin/DashboardPage.jsx";
@@ -13,10 +14,12 @@ import NewsletterPage from "./pages/admin/NewsletterPage.jsx";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/veranstaltung/:slug" element={<EventPage />} />
-      <Route path="/anmeldung/:id/zahlung" element={<PaymentPage />} />
-      <Route path="/newsletter/abmelden" element={<UnsubscribePage />} />
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/veranstaltung/:slug" element={<EventPage />} />
+        <Route path="/anmeldung/:id/zahlung" element={<PaymentPage />} />
+        <Route path="/newsletter/abmelden" element={<UnsubscribePage />} />
+      </Route>
 
       <Route path="/admin/login" element={<LoginPage />} />
       <Route path="/admin" element={<AdminLayout />}>
