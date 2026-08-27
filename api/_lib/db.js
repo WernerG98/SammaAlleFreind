@@ -15,6 +15,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export function isRegistrationOpen(event) {
+  if (event.comingSoon) return false;
   if (!event.isOpen) return false;
   if (event.registrationDeadline && new Date() > new Date(event.registrationDeadline)) return false;
   return true;

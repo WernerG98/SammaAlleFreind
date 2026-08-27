@@ -23,11 +23,25 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const { title, description, eventDate, registrationDeadline, pricePerPerson, paypalLink, paymentNote, buses } =
-      req.body || {};
+    const {
+      title,
+      description,
+      eventDate,
+      comingSoon,
+      registrationDeadline,
+      pricePerPerson,
+      paypalLink,
+      paymentNote,
+      buses,
+    } = req.body || {};
 
-    if (!title?.trim() || !eventDate || !Array.isArray(buses) || buses.length === 0) {
-      return res.status(400).json({ error: "Titel, Datum und mindestens ein Bus sind erforderlich." });
+    const isComingSoon = Boolean(comingSoon);
+
+    if (!title?.trim()) {
+      return res.status(400).json({ error: "Titel ist erforderlich." });
+    }
+    if (!isComingSoon && (!eventDate || !Array.isArray(buses) || buses.length === 0)) {
+      return res.status(400).json({ error: "Datum und mindestens ein Bus sind erforderlich." });
     }
 
     const baseSlug = slugify(title);
@@ -42,13 +56,14 @@ export default async function handler(req, res) {
         slug,
         title: title.trim(),
         description: description?.trim() || null,
-        eventDate: new Date(eventDate),
+        eventDate: eventDate ? new Date(eventDate) : null,
+        comingSoon: isComingSoon,
         registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
         pricePerPerson: pricePerPerson ? Number(pricePerPerson) : null,
         paypalLink: paypalLink?.trim() || null,
         paymentNote: paymentNote?.trim() || null,
         buses: {
-          create: buses.map((bus) => ({
+          create: (buses || []).map((bus) => ({
             name: bus.name.trim(),
             capacity: Number(bus.capacity),
           })),

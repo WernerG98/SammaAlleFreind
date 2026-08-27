@@ -29,11 +29,14 @@ export default function DashboardPage() {
           <div key={event.id} className="bg-white border rounded-lg p-4 flex items-center justify-between">
             <div>
               <p className="font-semibold">
-                {event.title} {!event.isOpen && <span className="text-xs text-gray-400">(geschlossen)</span>}
+                {event.title} {event.comingSoon && <span className="text-xs text-gray-400">(Coming Soon)</span>}
+                {!event.comingSoon && !event.isOpen && (
+                  <span className="text-xs text-gray-400">(geschlossen)</span>
+                )}
               </p>
               <p className="text-sm text-gray-500">
-                {new Date(event.eventDate).toLocaleDateString("de-DE")} · {event._count.registrations} Anmeldungen ·{" "}
-                {event.buses.length} Bus(se)
+                {event.eventDate ? new Date(event.eventDate).toLocaleDateString("de-DE") : "Datum offen"} ·{" "}
+                {event._count.registrations} Anmeldungen · {event.buses.length} Bus(se)
               </p>
             </div>
             <div className="flex gap-3 text-sm">

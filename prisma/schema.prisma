@@ -12,7 +12,8 @@ model Event {
   slug           String   @unique
   title          String
   description    String?
-  eventDate      DateTime
+  eventDate      DateTime?
+  comingSoon     Boolean  @default(false)
   registrationDeadline DateTime?
   pricePerPerson Decimal? @db.Decimal(10, 2)
   paypalLink     String?

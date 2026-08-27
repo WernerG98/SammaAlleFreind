@@ -43,6 +43,14 @@ export default function EventPage() {
   if (!event) {
     return <p className="max-w-lg mx-auto px-4 py-12 text-gray-500">Lade...</p>;
   }
+  if (event.comingSoon) {
+    return (
+      <div className="max-w-lg mx-auto px-4 py-12">
+        <h1 className="text-2xl font-bold">{event.title}</h1>
+        <p className="mt-4 text-gray-600 font-medium">Coming Soon — Details folgen in Kürze.</p>
+      </div>
+    );
+  }
 
   const availableBuses = event.buses.filter((b) => b.remaining > 0);
   const deadlinePassed = !event.registrationOpen;

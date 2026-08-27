@@ -21,6 +21,7 @@ export default async function handler(req, res) {
       title,
       description,
       eventDate,
+      comingSoon,
       registrationDeadline,
       pricePerPerson,
       paypalLink,
@@ -29,15 +30,21 @@ export default async function handler(req, res) {
       buses,
     } = req.body || {};
 
-    if (!title?.trim() || !eventDate || !Array.isArray(buses) || buses.length === 0) {
-      return res.status(400).json({ error: "Titel, Datum und mindestens ein Bus sind erforderlich." });
+    const isComingSoon = Boolean(comingSoon);
+    const busList = Array.isArray(buses) ? buses : [];
+
+    if (!title?.trim()) {
+      return res.status(400).json({ error: "Titel ist erforderlich." });
+    }
+    if (!isComingSoon && (!eventDate || busList.length === 0)) {
+      return res.status(400).json({ error: "Datum und mindestens ein Bus sind erforderlich." });
     }
 
     const existingBuses = await prisma.bus.findMany({
       where: { eventId: id },
       include: { _count: { select: { registrations: true } } },
     });
-    const keptIds = buses.filter((b) => b.id).map((b) => b.id);
+    const keptIds = busList.filter((b) => b.id).map((b) => b.id);
     const toDelete = existingBuses.filter((b) => !keptIds.includes(b.id));
 
     const blocked = toDelete.find((b) => b._count.registrations > 0);
@@ -49,7 +56,7 @@ export default async function handler(req, res) {
 
     await prisma.$transaction([
       ...toDelete.map((b) => prisma.bus.delete({ where: { id: b.id } })),
-      ...buses
+      ...busList
         .filter((b) => b.id)
         .map((b) =>
           prisma.bus.update({
@@ -57,7 +64,7 @@ export default async function handler(req, res) {
             data: { name: b.name.trim(), capacity: Number(b.capacity) },
           })
         ),
-      ...buses
+      ...busList
         .filter((b) => !b.id)
         .map((b) =>
           prisma.bus.create({
@@ -69,7 +76,8 @@ export default async function handler(req, res) {
         data: {
           title: title.trim(),
           description: description?.trim() || null,
-          eventDate: new Date(eventDate),
+          eventDate: eventDate ? new Date(eventDate) : null,
+          comingSoon: isComingSoon,
           registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
           pricePerPerson: pricePerPerson ? Number(pricePerPerson) : null,
           paypalLink: paypalLink?.trim() || null,

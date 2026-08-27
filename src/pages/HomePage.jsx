@@ -23,6 +23,18 @@ export default function HomePage() {
 
       <div className="space-y-4">
         {events?.map((event) => {
+          if (event.comingSoon) {
+            return (
+              <div
+                key={event.id}
+                className="bg-white/90 border border-dashed rounded-lg p-5"
+              >
+                <h2 className="text-lg font-semibold">{event.title}</h2>
+                <p className="text-sm text-gray-500 mt-2 font-medium">Coming Soon</p>
+              </div>
+            );
+          }
+
           const totalRemaining = event.buses.reduce((sum, b) => sum + b.remaining, 0);
           return (
             <Link
