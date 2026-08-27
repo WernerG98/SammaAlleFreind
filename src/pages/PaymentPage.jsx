@@ -50,17 +50,24 @@ export default function PaymentPage() {
               {event.paymentNote ? event.paymentNote.replace("{name}", reference) : reference}
             </strong>
           </p>
-          <a
-            href={event.paypalLink}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-block bg-[#0070ba] text-white rounded px-4 py-2 font-medium"
-          >
-            Jetzt per PayPal bezahlen
-          </a>
+          {event.paypalLink ? (
+            <a
+              href={event.paypalLink}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-block bg-[#0070ba] text-white rounded px-4 py-2 font-medium"
+            >
+              Jetzt per PayPal bezahlen
+            </a>
+          ) : (
+            <p className="inline-block bg-amber-50 border border-amber-200 text-amber-800 rounded px-4 py-2 font-medium">
+              Link folgt bald
+            </p>
+          )}
           <p className="text-sm text-gray-500">
-            Sobald deine Zahlung bei uns erfasst wurde, bekommst du automatisch eine Bestätigungsmail und
-            dein Platz ist reserviert.
+            {event.paypalLink
+              ? "Sobald deine Zahlung bei uns erfasst wurde, bekommst du automatisch eine Bestätigungsmail und dein Platz ist reserviert."
+              : "Der Zahlungslink wird in Kürze ergänzt. Du bist schon vorgemerkt — wir informieren dich, sobald du bezahlen kannst."}
           </p>
         </div>
       )}

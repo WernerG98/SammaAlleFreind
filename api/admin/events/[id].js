@@ -29,8 +29,8 @@ export default async function handler(req, res) {
       buses,
     } = req.body || {};
 
-    if (!title?.trim() || !eventDate || !paypalLink?.trim() || !Array.isArray(buses) || buses.length === 0) {
-      return res.status(400).json({ error: "Titel, Datum, PayPal-Link und mindestens ein Bus sind erforderlich." });
+    if (!title?.trim() || !eventDate || !Array.isArray(buses) || buses.length === 0) {
+      return res.status(400).json({ error: "Titel, Datum und mindestens ein Bus sind erforderlich." });
     }
 
     const existingBuses = await prisma.bus.findMany({
@@ -72,7 +72,7 @@ export default async function handler(req, res) {
           eventDate: new Date(eventDate),
           registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
           pricePerPerson: pricePerPerson ? Number(pricePerPerson) : null,
-          paypalLink: paypalLink.trim(),
+          paypalLink: paypalLink?.trim() || null,
           paymentNote: paymentNote?.trim() || null,
           isOpen: isOpen !== undefined ? Boolean(isOpen) : undefined,
         },

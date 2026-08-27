@@ -39,7 +39,7 @@ export default function EventFormPage() {
           eventDate: toDateInputValue(event.eventDate),
           registrationDeadline: event.registrationDeadline ? toDateInputValue(event.registrationDeadline) : "",
           pricePerPerson: event.pricePerPerson || "",
-          paypalLink: event.paypalLink,
+          paypalLink: event.paypalLink || "",
           paymentNote: event.paymentNote || "",
           isOpen: event.isOpen,
         });
@@ -136,14 +136,18 @@ export default function EventFormPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">PayPal.me-Link der Privatperson</label>
+          <label className="block text-sm font-medium mb-1">
+            PayPal.me-Link der Privatperson (optional, kann später ergänzt werden)
+          </label>
           <input
-            required
             placeholder="https://paypal.me/deinname"
             className="w-full border rounded px-3 py-2"
             value={form.paypalLink}
             onChange={(e) => setForm({ ...form, paypalLink: e.target.value })}
           />
+          <p className="text-xs text-gray-500 mt-1">
+            Solange kein Link hinterlegt ist, steht auf der Zahlungsseite "Link folgt bald".
+          </p>
         </div>
 
         <div>
