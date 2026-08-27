@@ -13,7 +13,7 @@ export default function LoginPage() {
     setError("");
     setSubmitting(true);
     try {
-      await api.post("/admin/login", form);
+      await api.post("/admin/session", form);
       navigate("/admin");
     } catch (err) {
       setError(err.message);

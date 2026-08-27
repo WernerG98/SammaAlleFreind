@@ -8,7 +8,7 @@ export default function AdminLayout() {
 
   useEffect(() => {
     api
-      .get("/admin/me")
+      .get("/admin/session")
       .then(() => setStatus("ok"))
       .catch(() => {
         setStatus("denied");
@@ -17,7 +17,7 @@ export default function AdminLayout() {
   }, [navigate]);
 
   async function handleLogout() {
-    await api.post("/admin/logout");
+    await api.delete("/admin/session");
     navigate("/admin/login");
   }
 
