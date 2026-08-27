@@ -5,7 +5,7 @@ const resend = apiKey ? new Resend(apiKey) : null;
 const fromEmail = process.env.FROM_EMAIL || "Vereins-Events <onboarding@resend.dev>";
 const replyToEmail = process.env.REPLY_TO_EMAIL || undefined;
 
-export async function sendEmail({ to, subject, html }) {
+export async function sendEmail({ to, subject, html, replyTo }) {
   if (!resend) {
     console.log("=== [DEV] E-Mail nicht verschickt (kein RESEND_API_KEY gesetzt) ===");
     console.log("An:", to);
@@ -15,7 +15,7 @@ export async function sendEmail({ to, subject, html }) {
     return { devFallback: true };
   }
 
-  return resend.emails.send({ from: fromEmail, to, subject, html, replyTo: replyToEmail });
+  return resend.emails.send({ from: fromEmail, to, subject, html, replyTo: replyTo || replyToEmail });
 }
 
 export function buildConfirmationEmailHtml({ firstName, event, busName }) {
@@ -30,6 +30,15 @@ export function buildConfirmationEmailHtml({ firstName, event, busName }) {
     <hr />
     <p><strong>Veranstaltung:</strong> ${event.title}<br/>
     <strong>Datum:</strong> ${new Date(event.eventDate).toLocaleDateString("de-DE")}</p>
+  `;
+}
+
+export function buildContactEmailHtml({ firstName, lastName, email, message }) {
+  return `
+    <h2>Neue Kontaktanfrage</h2>
+    <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+    <p><strong>E-Mail:</strong> ${email}</p>
+    <p><strong>Nachricht:</strong><br/>${message.replace(/\n/g, "<br/>")}</p>
   `;
 }
 

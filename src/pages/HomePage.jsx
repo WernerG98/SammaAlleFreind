@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api.js";
+import ContactForm from "../components/ContactForm.jsx";
 
 export default function HomePage() {
   const [events, setEvents] = useState(null);
@@ -15,7 +16,11 @@ export default function HomePage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-8">Kommende Veranstaltungen</h1>
+      <h1 className="text-2xl font-bold mb-2">Kommende Veranstaltungen</h1>
+      <p className="text-sm text-gray-600 mb-8">
+        Die Bezahlung erfolgt per PayPal. Für andere Zahlungsmethoden melde dich bitte über das Kontaktformular
+        weiter unten.
+      </p>
 
       {error && <p className="text-red-600">{error}</p>}
       {!events && !error && <p className="text-gray-500">Lade...</p>}
@@ -62,6 +67,8 @@ export default function HomePage() {
           );
         })}
       </div>
+
+      <ContactForm />
     </div>
   );
 }

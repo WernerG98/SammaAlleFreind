@@ -150,6 +150,17 @@ export default function EventPage() {
           Ich möchte den Newsletter zu zukünftigen Veranstaltungen erhalten.
         </label>
 
+        <div className="bg-amber-50 border border-amber-200 rounded p-3 text-xs text-amber-800 space-y-1">
+          <p>
+            Das Geld wird nur bis 14 Tage vor der Veranstaltung zurückerstattet. Danach ist eine Rückerstattung
+            nicht mehr möglich.
+          </p>
+          <p>
+            Dein Platz ist erst reserviert, sobald deine Zahlung bei uns eingegangen und bestätigt ist — bis
+            dahin ist noch kein Platz für dich fest eingeplant.
+          </p>
+        </div>
+
         {error && <p className="text-sm text-red-600">{error}</p>}
 
         <button
@@ -157,7 +168,7 @@ export default function EventPage() {
           disabled={submitting || availableBuses.length === 0}
           className="w-full bg-gray-900 text-white rounded py-2 font-medium disabled:opacity-50"
         >
-          {submitting ? "Wird gesendet…" : "Verbindlich anmelden"}
+          {submitting ? "Wird gesendet…" : "Anmelden"}
         </button>
       </form>
       )}
