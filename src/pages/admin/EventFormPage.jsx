@@ -17,6 +17,7 @@ export default function EventFormPage() {
     title: "",
     description: "",
     eventDate: "",
+    registrationDeadline: "",
     pricePerPerson: "",
     paypalLink: "",
     paymentNote: "",
@@ -36,6 +37,7 @@ export default function EventFormPage() {
           title: event.title,
           description: event.description || "",
           eventDate: toDateInputValue(event.eventDate),
+          registrationDeadline: event.registrationDeadline ? toDateInputValue(event.registrationDeadline) : "",
           pricePerPerson: event.pricePerPerson || "",
           paypalLink: event.paypalLink,
           paymentNote: event.paymentNote || "",
@@ -120,6 +122,17 @@ export default function EventFormPage() {
               onChange={(e) => setForm({ ...form, pricePerPerson: e.target.value })}
             />
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Anmeldeschluss (optional)</label>
+          <input
+            type="date"
+            className="w-full border rounded px-3 py-2"
+            value={form.registrationDeadline}
+            onChange={(e) => setForm({ ...form, registrationDeadline: e.target.value })}
+          />
+          <p className="text-xs text-gray-500 mt-1">Nach diesem Datum ist keine Anmeldung mehr möglich.</p>
         </div>
 
         <div>

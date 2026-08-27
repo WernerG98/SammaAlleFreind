@@ -1,4 +1,4 @@
-import { prisma } from "./_lib/db.js";
+import { prisma, isRegistrationOpen } from "./_lib/db.js";
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -16,8 +16,8 @@ export default async function handler(req, res) {
   }
 
   const event = await prisma.event.findUnique({ where: { id: eventId } });
-  if (!event || !event.isOpen) {
-    return res.status(404).json({ error: "Veranstaltung nicht gefunden." });
+  if (!event || !isRegistrationOpen(event)) {
+    return res.status(404).json({ error: "Veranstaltung nicht gefunden oder Anmeldung nicht mehr möglich." });
   }
 
   const bus = await prisma.bus.findUnique({

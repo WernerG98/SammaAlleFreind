@@ -45,6 +45,7 @@ export default function EventPage() {
   }
 
   const availableBuses = event.buses.filter((b) => b.remaining > 0);
+  const deadlinePassed = !event.registrationOpen;
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
@@ -57,8 +58,23 @@ export default function EventPage() {
           year: "numeric",
         })}
       </p>
+      {event.registrationDeadline && !deadlinePassed && (
+        <p className="text-sm text-gray-500">
+          Anmeldeschluss:{" "}
+          {new Date(event.registrationDeadline).toLocaleDateString("de-DE", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })}
+        </p>
+      )}
       {event.description && <p className="mt-4 text-gray-700 whitespace-pre-line">{event.description}</p>}
 
+      {deadlinePassed ? (
+        <div className="mt-8 bg-white border rounded-lg p-6">
+          <p className="text-red-600 font-medium">Die Anmeldefrist für diese Veranstaltung ist abgelaufen.</p>
+        </div>
+      ) : (
       <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-white border rounded-lg p-6">
         <h2 className="font-semibold">Anmeldung</h2>
 
@@ -136,6 +152,7 @@ export default function EventPage() {
           {submitting ? "Wird gesendet…" : "Verbindlich anmelden"}
         </button>
       </form>
+      )}
     </div>
   );
 }

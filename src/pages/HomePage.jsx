@@ -40,7 +40,11 @@ export default function HomePage() {
                 })}
               </p>
               <p className="text-sm text-gray-600 mt-2">
-                {totalRemaining > 0 ? `Noch ${totalRemaining} Plätze frei` : "Ausgebucht"}
+                {!event.registrationOpen
+                  ? "Anmeldefrist abgelaufen"
+                  : totalRemaining > 0
+                    ? `Noch ${totalRemaining} Plätze frei`
+                    : "Ausgebucht"}
               </p>
             </Link>
           );

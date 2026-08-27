@@ -14,9 +14,16 @@ if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
 
+export function isRegistrationOpen(event) {
+  if (!event.isOpen) return false;
+  if (event.registrationDeadline && new Date() > new Date(event.registrationDeadline)) return false;
+  return true;
+}
+
 export function withRemainingSeats(event) {
   return {
     ...event,
+    registrationOpen: isRegistrationOpen(event),
     buses: event.buses.map((bus) => {
       const paidCount = bus.registrations.filter((r) => r.paid).length;
       return {

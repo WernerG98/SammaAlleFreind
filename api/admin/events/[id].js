@@ -17,8 +17,17 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "PUT") {
-    const { title, description, eventDate, pricePerPerson, paypalLink, paymentNote, isOpen, buses } =
-      req.body || {};
+    const {
+      title,
+      description,
+      eventDate,
+      registrationDeadline,
+      pricePerPerson,
+      paypalLink,
+      paymentNote,
+      isOpen,
+      buses,
+    } = req.body || {};
 
     if (!title?.trim() || !eventDate || !paypalLink?.trim() || !Array.isArray(buses) || buses.length === 0) {
       return res.status(400).json({ error: "Titel, Datum, PayPal-Link und mindestens ein Bus sind erforderlich." });
@@ -61,6 +70,7 @@ export default async function handler(req, res) {
           title: title.trim(),
           description: description?.trim() || null,
           eventDate: new Date(eventDate),
+          registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
           pricePerPerson: pricePerPerson ? Number(pricePerPerson) : null,
           paypalLink: paypalLink.trim(),
           paymentNote: paymentNote?.trim() || null,
