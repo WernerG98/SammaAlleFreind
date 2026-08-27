@@ -3,6 +3,7 @@ import { Resend } from "resend";
 const apiKey = process.env.RESEND_API_KEY;
 const resend = apiKey ? new Resend(apiKey) : null;
 const fromEmail = process.env.FROM_EMAIL || "Vereins-Events <onboarding@resend.dev>";
+const replyToEmail = process.env.REPLY_TO_EMAIL || undefined;
 
 export async function sendEmail({ to, subject, html }) {
   if (!resend) {
@@ -14,7 +15,7 @@ export async function sendEmail({ to, subject, html }) {
     return { devFallback: true };
   }
 
-  return resend.emails.send({ from: fromEmail, to, subject, html });
+  return resend.emails.send({ from: fromEmail, to, subject, html, replyTo: replyToEmail });
 }
 
 export function buildConfirmationEmailHtml({ firstName, event, busName }) {
