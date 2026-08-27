@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api.js";
 import ContactForm from "../components/ContactForm.jsx";
+import NewsletterSignup from "../components/NewsletterSignup.jsx";
 
 export default function HomePage() {
   const [events, setEvents] = useState(null);
@@ -68,6 +69,7 @@ export default function HomePage() {
         })}
       </div>
 
+      <NewsletterSignup />
       <ContactForm />
     </div>
   );

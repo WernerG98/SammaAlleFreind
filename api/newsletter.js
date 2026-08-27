@@ -1,0 +1,66 @@
+import crypto from "node:crypto";
+import { prisma } from "./_lib/db.js";
+import { sendEmail, buildNewsletterOptInHtml } from "./_lib/email.js";
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+export default async function handler(req, res) {
+  if (req.method === "GET") {
+    const { token } = req.query;
+    if (!token) {
+      return res.status(400).json({ error: "Kein Token angegeben." });
+    }
+
+    const subscriber = await prisma.newsletterSubscriber.findUnique({
+      where: { unsubscribeToken: token },
+    });
+
+    if (!subscriber) {
+      return res.status(404).json({ error: "Ungültiger oder bereits verwendeter Link." });
+    }
+
+    await prisma.newsletterSubscriber.delete({ where: { id: subscriber.id } });
+    return res.status(200).json({ success: true });
+  }
+
+  if (req.method === "POST") {
+    const { action, email } = req.body || {};
+
+    if (!isValidEmail(email || "")) {
+      return res.status(400).json({ error: "Bitte eine gültige E-Mail-Adresse angeben." });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    if (action === "unsubscribe") {
+      const subscriber = await prisma.newsletterSubscriber.findUnique({ where: { email: normalizedEmail } });
+      if (!subscriber) {
+        return res.status(404).json({ error: "Diese E-Mail-Adresse ist nicht im Verteiler eingetragen." });
+      }
+      await prisma.newsletterSubscriber.delete({ where: { id: subscriber.id } });
+      return res.status(200).json({ success: true });
+    }
+
+    const existing = await prisma.newsletterSubscriber.findUnique({ where: { email: normalizedEmail } });
+    const subscriber =
+      existing ||
+      (await prisma.newsletterSubscriber.create({
+        data: { email: normalizedEmail, unsubscribeToken: crypto.randomBytes(24).toString("hex") },
+      }));
+
+    const baseUrl = process.env.PUBLIC_BASE_URL || "http://localhost:3000";
+    await sendEmail({
+      to: normalizedEmail,
+      subject: "Newsletter-Anmeldung bestätigt",
+      html: buildNewsletterOptInHtml({
+        unsubscribeUrl: `${baseUrl}/newsletter/abmelden?token=${subscriber.unsubscribeToken}`,
+      }),
+    });
+
+    return res.status(201).json({ success: true });
+  }
+
+  return res.status(405).json({ error: "Methode nicht erlaubt." });
+}

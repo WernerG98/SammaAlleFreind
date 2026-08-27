@@ -13,7 +13,7 @@ export default function UnsubscribePage() {
       return;
     }
     api
-      .get(`/newsletter/unsubscribe?token=${encodeURIComponent(token)}`)
+      .get(`/newsletter?token=${encodeURIComponent(token)}`)
       .then(() => setStatus("done"))
       .catch(() => setStatus("error"));
   }, [token]);

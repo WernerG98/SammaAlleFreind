@@ -42,6 +42,17 @@ export function buildContactEmailHtml({ firstName, lastName, email, message }) {
   `;
 }
 
+export function buildNewsletterOptInHtml({ unsubscribeUrl }) {
+  return `
+    <h2>Newsletter-Anmeldung bestätigt</h2>
+    <p>Du erhältst ab jetzt Neuigkeiten zu kommenden Veranstaltungen per E-Mail.</p>
+    <p style="font-size: 12px; color: #666;">
+      Falls du dich nicht selbst angemeldet hast oder keine Mails mehr erhalten möchtest, kannst du dich
+      <a href="${unsubscribeUrl}">hier jederzeit wieder abmelden</a>.
+    </p>
+  `;
+}
+
 export function buildNewsletterHtml({ bodyHtml, unsubscribeUrl }) {
   return `
     ${bodyHtml}
