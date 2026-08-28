@@ -165,7 +165,7 @@ export default function DashboardPage() {
               <Link to={`/admin/veranstaltungen/${event.id}/anmeldungen`} className="text-teal-400 hover:underline">
                 Anmeldungen
               </Link>
-              <Link to={`/admin/veranstaltungen/${event.id}`} className="text-teal-400 hover:underline">
+              <Link to={`/admin/veranstaltungen/${event.id}`} className="text-sky-400 hover:underline">
                 Bearbeiten
               </Link>
               <button
