@@ -28,6 +28,7 @@ export default function EventFormPage() {
     earlyAccessPassword: "",
     isExternal: false,
     externalOrganizer: "",
+    externalContactEmail: "",
     isOpen: true,
   });
   const [buses, setBuses] = useState([emptyBus()]);
@@ -80,6 +81,7 @@ export default function EventFormPage() {
           earlyAccessPassword: event.earlyAccessPassword || "",
           isExternal: event.isExternal || false,
           externalOrganizer: event.externalOrganizer || "",
+          externalContactEmail: event.externalContactEmail || "",
           isOpen: event.isOpen,
         });
         setBuses(event.buses.length ? event.buses : [emptyBus()]);
@@ -178,9 +180,25 @@ export default function EventFormPage() {
         </label>
 
         {role === "external" ? (
-          <p className="text-xs text-gray-500 bg-gray-50 border rounded-lg p-3">
-            Diese Veranstaltung wird automatisch als "Externe Veranstaltung" markiert.
-          </p>
+          <div className="border rounded-lg p-3 space-y-2 bg-gray-50">
+            <p className="text-xs text-gray-500">
+              Diese Veranstaltung wird automatisch als "Externe Veranstaltung" markiert.
+            </p>
+            <div>
+              <label className="block text-sm font-medium mb-1">Kontakt-E-Mail</label>
+              <input
+                required
+                type="email"
+                placeholder="kontakt@euer-verein.de"
+                className="w-full border rounded px-3 py-2 text-sm"
+                value={form.externalContactEmail}
+                onChange={(e) => setForm({ ...form, externalContactEmail: e.target.value })}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Wird bei der Veranstaltung angezeigt, damit Interessierte euch direkt kontaktieren können.
+              </p>
+            </div>
+          </div>
         ) : (
           <div className="border rounded-lg p-3 space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium">
@@ -192,12 +210,27 @@ export default function EventFormPage() {
               🤝 Externe Veranstaltung (anderer Verein/Person)
             </label>
             {form.isExternal && (
-              <input
-                placeholder="Veranstalter (z.B. Name des Vereins)"
-                className="w-full border rounded px-3 py-2 text-sm"
-                value={form.externalOrganizer}
-                onChange={(e) => setForm({ ...form, externalOrganizer: e.target.value })}
-              />
+              <>
+                <input
+                  placeholder="Veranstalter (z.B. Name des Vereins)"
+                  className="w-full border rounded px-3 py-2 text-sm"
+                  value={form.externalOrganizer}
+                  onChange={(e) => setForm({ ...form, externalOrganizer: e.target.value })}
+                />
+                <div>
+                  <input
+                    required
+                    type="email"
+                    placeholder="Kontakt-E-Mail (kontakt@verein.de)"
+                    className="w-full border rounded px-3 py-2 text-sm"
+                    value={form.externalContactEmail}
+                    onChange={(e) => setForm({ ...form, externalContactEmail: e.target.value })}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Wird bei der Veranstaltung angezeigt, damit Interessierte direkt Kontakt aufnehmen können.
+                  </p>
+                </div>
+              </>
             )}
           </div>
         )}

@@ -39,6 +39,7 @@ export function withRemainingSeats(event, { password } = {}) {
       locked: true,
       isExternal: event.isExternal,
       externalOrganizer: event.externalOrganizer,
+      externalContactEmail: event.externalContactEmail,
     };
   }
 
@@ -58,6 +59,7 @@ export function withRemainingSeats(event, { password } = {}) {
     earlyAccessEnabled: event.earlyAccessEnabled,
     isExternal: event.isExternal,
     externalOrganizer: event.externalOrganizer,
+    externalContactEmail: event.externalContactEmail,
     locked: false,
     registrationOpen: isRegistrationOpen(event),
     buses: event.buses.map((bus) => {

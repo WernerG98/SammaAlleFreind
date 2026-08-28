@@ -38,6 +38,7 @@ export default async function handler(req, res) {
       earlyAccessPassword,
       isExternal,
       externalOrganizer,
+      externalContactEmail,
       isOpen,
       buses,
     } = req.body || {};
@@ -45,6 +46,7 @@ export default async function handler(req, res) {
     const isComingSoon = Boolean(comingSoon);
     const isEarlyAccess = Boolean(earlyAccessEnabled);
     const busList = Array.isArray(buses) ? buses : [];
+    const isExternalEvent = session.role === "external" ? true : Boolean(isExternal);
 
     if (!title?.trim()) {
       return res.status(400).json({ error: "Titel ist erforderlich." });
@@ -54,6 +56,9 @@ export default async function handler(req, res) {
     }
     if (isEarlyAccess && !earlyAccessPassword?.trim()) {
       return res.status(400).json({ error: "Bitte ein Passwort für den Vorabzugang vergeben." });
+    }
+    if (isExternalEvent && !externalContactEmail?.trim()) {
+      return res.status(400).json({ error: "Bitte eine Kontakt-E-Mail für die externe Veranstaltung angeben." });
     }
 
     const existingBuses = await prisma.bus.findMany({
@@ -110,9 +115,9 @@ export default async function handler(req, res) {
           paymentNote: paymentNote?.trim() || null,
           earlyAccessEnabled: isEarlyAccess,
           earlyAccessPassword: isEarlyAccess ? earlyAccessPassword.trim() : null,
-          isExternal: session.role === "external" ? true : Boolean(isExternal),
-          externalOrganizer:
-            session.role === "external" || isExternal ? externalOrganizer?.trim() || null : null,
+          isExternal: isExternalEvent,
+          externalOrganizer: isExternalEvent ? externalOrganizer?.trim() || null : null,
+          externalContactEmail: isExternalEvent ? externalContactEmail.trim() : null,
           isOpen: isOpen !== undefined ? Boolean(isOpen) : undefined,
         },
       }),

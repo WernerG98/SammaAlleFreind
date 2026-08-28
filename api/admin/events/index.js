@@ -73,11 +73,13 @@ export default async function handler(req, res) {
       earlyAccessPassword,
       isExternal,
       externalOrganizer,
+      externalContactEmail,
       buses,
     } = req.body || {};
 
     const isComingSoon = Boolean(comingSoon);
     const isEarlyAccess = Boolean(earlyAccessEnabled);
+    const isExternalEvent = isExternalRole ? true : Boolean(isExternal);
 
     if (isEarlyAccess && !earlyAccessPassword?.trim()) {
       return res.status(400).json({ error: "Bitte ein Passwort für den Vorabzugang vergeben." });
@@ -85,6 +87,9 @@ export default async function handler(req, res) {
 
     if (!title?.trim()) {
       return res.status(400).json({ error: "Titel ist erforderlich." });
+    }
+    if (isExternalEvent && !externalContactEmail?.trim()) {
+      return res.status(400).json({ error: "Bitte eine Kontakt-E-Mail für die externe Veranstaltung angeben." });
     }
     if (!isComingSoon && (!eventDate || !Array.isArray(buses) || buses.length === 0)) {
       return res.status(400).json({ error: "Datum und mindestens ein Bus sind erforderlich." });
@@ -111,9 +116,9 @@ export default async function handler(req, res) {
         paymentNote: paymentNote?.trim() || null,
         earlyAccessEnabled: isEarlyAccess,
         earlyAccessPassword: isEarlyAccess ? earlyAccessPassword.trim() : null,
-        isExternal: isExternalRole ? true : Boolean(isExternal),
-        externalOrganizer:
-          isExternalRole || isExternal ? externalOrganizer?.trim() || null : null,
+        isExternal: isExternalEvent,
+        externalOrganizer: isExternalEvent ? externalOrganizer?.trim() || null : null,
+        externalContactEmail: isExternalEvent ? externalContactEmail.trim() : null,
         buses: {
           create: (buses || []).map((bus) => ({
             name: bus.name.trim(),

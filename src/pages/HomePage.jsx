@@ -36,7 +36,7 @@ export default function HomePage() {
             tab === "ours" ? "border-teal-600 text-teal-800" : "border-transparent text-gray-500 hover:text-gray-700"
           }`}
         >
-          Unsere Veranstaltungen
+          🚌 Unsere Veranstaltungen
         </button>
         <button
           type="button"
@@ -153,8 +153,12 @@ export default function HomePage() {
         })}
       </div>
 
-      <NewsletterSignup />
-      <ContactForm />
+      {tab === "ours" && (
+        <>
+          <NewsletterSignup />
+          <ContactForm />
+        </>
+      )}
     </div>
   );
 }

@@ -121,6 +121,20 @@ export default function EventPage() {
     return (
       <div className="max-w-lg mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold">{event.title}</h1>
+        {event.isExternal && (
+          <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 inline-block">
+            🤝 Veranstaltet von {event.externalOrganizer || "einem externen Verein"}
+            {event.externalContactEmail && (
+              <>
+                {" "}
+                — Kontakt:{" "}
+                <a href={`mailto:${event.externalContactEmail}`} className="underline">
+                  {event.externalContactEmail}
+                </a>
+              </>
+            )}
+          </p>
+        )}
         <p className="mt-2 text-teal-600 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
         {event.description && (
           <div className="mt-4 text-gray-700" dangerouslySetInnerHTML={{ __html: event.description }} />
@@ -199,6 +213,20 @@ export default function EventPage() {
       )}
 
       <h1 className="text-2xl font-bold">{event.title}</h1>
+      {event.isExternal && (
+        <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 inline-block">
+          🤝 Veranstaltet von {event.externalOrganizer || "einem externen Verein"}
+          {event.externalContactEmail && (
+            <>
+              {" "}
+              — Kontakt:{" "}
+              <a href={`mailto:${event.externalContactEmail}`} className="underline">
+                {event.externalContactEmail}
+              </a>
+            </>
+          )}
+        </p>
+      )}
       <p className="text-sm text-gray-500 mt-1">
         {new Date(event.eventDate).toLocaleDateString("de-DE", {
           weekday: "long",
