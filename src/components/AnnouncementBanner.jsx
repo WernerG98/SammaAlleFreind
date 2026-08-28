@@ -3,7 +3,7 @@ import { useState } from "react";
 const STORAGE_KEY = "announcement-banner-dismissed-v2";
 
 const MESSAGES = [
-  "🐞 Die neue Seite für unsere Veranstaltungen! Bugs bitte direkt melden, das würde uns sehr helfen. :)",
+  "🐞 Die neue Seite für unsere Veranstaltungen! Schwierigkeiten und Bugs bitte direkt melden, das würde uns sehr helfen. :)",
   "🤝 Wir stellen die Seite gerne auch lokalen Arnstorfer Vereinen und Personen zur Eventplanung zur Verfügung — einfach Kontakt aufnehmen!",
 ];
 
