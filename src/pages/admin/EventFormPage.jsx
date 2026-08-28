@@ -229,7 +229,8 @@ export default function EventFormPage() {
             {form.isExternal && (
               <>
                 <input
-                  placeholder="Veranstalter (z.B. Name des Vereins)"
+                  required
+                  placeholder="Verein/Ansprechperson (z.B. Name des Vereins)"
                   className="w-full border rounded px-3 py-2 text-sm"
                   value={form.externalOrganizer}
                   onChange={(e) => setForm({ ...form, externalOrganizer: e.target.value })}

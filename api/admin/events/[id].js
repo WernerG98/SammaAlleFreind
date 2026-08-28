@@ -60,7 +60,7 @@ export default async function handler(req, res) {
     if (isExternalEvent && !externalContactEmail?.trim()) {
       return res.status(400).json({ error: "Bitte eine Kontakt-E-Mail für die externe Veranstaltung angeben." });
     }
-    if (session.role === "external" && !externalOrganizer?.trim()) {
+    if (isExternalEvent && !externalOrganizer?.trim()) {
       return res.status(400).json({ error: "Bitte Verein/Ansprechperson angeben." });
     }
 
