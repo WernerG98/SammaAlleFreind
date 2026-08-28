@@ -15,6 +15,8 @@ export default function EventPage() {
   const [accessPassword, setAccessPassword] = useState("");
   const [unlockError, setUnlockError] = useState("");
   const [unlocking, setUnlocking] = useState(false);
+  const [gasModalOpen, setGasModalOpen] = useState(false);
+  const [showVollgasImage, setShowVollgasImage] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -49,8 +51,7 @@ export default function EventPage() {
     }
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function submitRegistration() {
     setError("");
     setSubmitting(true);
     try {
@@ -65,6 +66,24 @@ export default function EventPage() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (event?.slug === "ausflug-haslinger-hof-2026") {
+      setGasModalOpen(true);
+      return;
+    }
+    await submitRegistration();
+  }
+
+  function handleVollgas() {
+    setGasModalOpen(false);
+    setShowVollgasImage(true);
+    setTimeout(() => {
+      setShowVollgasImage(false);
+      submitRegistration();
+    }, 5000);
   }
 
   async function handleWaitlistSubmit(e) {
@@ -440,6 +459,42 @@ export default function EventPage() {
             </form>
           )}
         </>
+      )}
+
+      {gasModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center">
+            <h3 className="font-semibold text-lg mb-4">🚌💨 Wie viel Gas willst du geben?</h3>
+            <div className="flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={handleVollgas}
+                className="w-full bg-red-600 hover:bg-red-700 text-white rounded-lg py-3 font-bold text-lg transition-colors"
+              >
+                Vollgas
+              </button>
+              <button
+                type="button"
+                disabled
+                title="Nicht auswählbar."
+                className="w-full bg-gray-100 text-gray-400 rounded-lg py-3 font-medium cursor-not-allowed"
+              >
+                Kein Gas
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showVollgasImage && (
+        <div className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-50 px-4">
+          <p className="text-white text-2xl font-extrabold mb-4">Gute Wahl! :D</p>
+          <img
+            src="/Vollgas.jpg"
+            alt="Vollgas"
+            className="max-w-full max-h-[70vh] rounded-xl shadow-2xl"
+          />
+        </div>
       )}
     </div>
   );
