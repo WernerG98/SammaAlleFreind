@@ -1,5 +1,6 @@
 import { prisma } from "../../_lib/db.js";
 import { requireAdmin } from "../../_lib/auth.js";
+import { sendEmail } from "../../_lib/email.js";
 
 function slugify(title) {
   return title
@@ -23,9 +24,35 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
+    if (req.body?.action === "send-email") {
+      const { eventId, target, subject, bodyHtml } = req.body;
+      if (!eventId || !["paid", "unpaid"].includes(target) || !subject?.trim() || !bodyHtml?.trim()) {
+        return res.status(400).json({ error: "eventId, target (paid/unpaid), Betreff und Inhalt sind erforderlich." });
+      }
+
+      const recipients = await prisma.registration.findMany({
+        where: { eventId, paid: target === "paid" },
+        select: { email: true },
+      });
+
+      let sent = 0;
+      const failed = [];
+      for (const r of recipients) {
+        try {
+          await sendEmail({ to: r.email, subject: subject.trim(), html: bodyHtml });
+          sent += 1;
+        } catch {
+          failed.push(r.email);
+        }
+      }
+
+      return res.status(200).json({ sent, total: recipients.length, failed });
+    }
+
     const {
       title,
       description,
+      imageUrl,
       eventDate,
       comingSoon,
       registrationDeadline,
@@ -56,6 +83,7 @@ export default async function handler(req, res) {
         slug,
         title: title.trim(),
         description: description?.trim() || null,
+        imageUrl: imageUrl?.trim() || null,
         eventDate: eventDate ? new Date(eventDate) : null,
         comingSoon: isComingSoon,
         registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,

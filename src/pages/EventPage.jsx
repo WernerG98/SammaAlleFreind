@@ -52,15 +52,15 @@ export default function EventPage() {
     return (
       <div className="max-w-lg mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold">{event.title}</h1>
-        <p className="mt-2 text-gray-600 font-medium">Coming Soon — Details folgen in Kürze.</p>
+        <p className="mt-2 text-violet-600 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
         {event.description && <p className="mt-4 text-gray-700 whitespace-pre-line">{event.description}</p>}
 
         {interestDone ? (
-          <div className="mt-8 bg-green-50 border border-green-200 rounded-lg p-5 text-green-800">
+          <div className="mt-8 bg-emerald-50 border border-emerald-200 rounded-lg p-5 text-emerald-800">
             Danke! Du stehst jetzt auf der Interessentenliste — wir melden uns, sobald es Details gibt.
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-white border rounded-lg p-6">
+          <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
             <h2 className="font-semibold">Interesse bekunden</h2>
             <p className="text-sm text-gray-600">
               Trag dich schon jetzt unverbindlich auf die Liste ein, wir informieren dich, sobald es losgeht.
@@ -71,7 +71,7 @@ export default function EventPage() {
                 <label className="block text-sm font-medium mb-1">Vorname</label>
                 <input
                   required
-                  className="w-full border rounded px-3 py-2"
+                  className="w-full border rounded-lg px-3 py-2"
                   value={form.firstName}
                   onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                 />
@@ -80,7 +80,7 @@ export default function EventPage() {
                 <label className="block text-sm font-medium mb-1">Name</label>
                 <input
                   required
-                  className="w-full border rounded px-3 py-2"
+                  className="w-full border rounded-lg px-3 py-2"
                   value={form.lastName}
                   onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                 />
@@ -92,7 +92,7 @@ export default function EventPage() {
               <input
                 required
                 type="email"
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-lg px-3 py-2"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
@@ -103,7 +103,7 @@ export default function EventPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-gray-900 text-white rounded py-2 font-medium disabled:opacity-50"
+              className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
             >
               {submitting ? "Wird gesendet…" : "Interesse bekunden"}
             </button>
@@ -118,6 +118,14 @@ export default function EventPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
+      {event.imageUrl && (
+        <img
+          src={event.imageUrl}
+          alt={`Flyer: ${event.title}`}
+          className="w-full rounded-xl shadow-md mb-6 object-cover"
+        />
+      )}
+
       <h1 className="text-2xl font-bold">{event.title}</h1>
       <p className="text-sm text-gray-500 mt-1">
         {new Date(event.eventDate).toLocaleDateString("de-DE", {
@@ -140,98 +148,112 @@ export default function EventPage() {
       {event.description && <p className="mt-4 text-gray-700 whitespace-pre-line">{event.description}</p>}
 
       {deadlinePassed ? (
-        <div className="mt-8 bg-white border rounded-lg p-6">
+        <div className="mt-8 bg-white border rounded-xl p-6 shadow-sm">
           <p className="text-red-600 font-medium">Die Anmeldefrist für diese Veranstaltung ist abgelaufen.</p>
         </div>
       ) : (
-      <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-white border rounded-lg p-6">
-        <h2 className="font-semibold">Anmeldung</h2>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
+          <h2 className="font-semibold">Anmeldung</h2>
 
-        <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Vorname</label>
+              <input
+                required
+                className="w-full border rounded-lg px-3 py-2"
+                value={form.firstName}
+                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Name</label>
+              <input
+                required
+                className="w-full border rounded-lg px-3 py-2"
+                value={form.lastName}
+                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+              />
+            </div>
+          </div>
+
           <div>
-            <label className="block text-sm font-medium mb-1">Vorname</label>
+            <label className="block text-sm font-medium mb-1">E-Mail-Adresse</label>
             <input
               required
-              className="w-full border rounded px-3 py-2"
-              value={form.firstName}
-              onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+              type="email"
+              className="w-full border rounded-lg px-3 py-2"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </div>
+
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <input
-              required
-              className="w-full border rounded px-3 py-2"
-              value={form.lastName}
-              onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-            />
+            <label className="block text-sm font-medium mb-2">Bus</label>
+            {availableBuses.length === 0 ? (
+              <p className="text-sm text-red-600">Alle Busse sind ausgebucht.</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                {event.buses.map((bus) => {
+                  const full = bus.remaining === 0;
+                  const selected = form.busId === bus.id;
+                  return (
+                    <button
+                      type="button"
+                      key={bus.id}
+                      disabled={full}
+                      onClick={() => setForm({ ...form, busId: bus.id })}
+                      className={`rounded-lg border-2 px-3 py-2 text-left text-sm transition-colors ${
+                        full
+                          ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                          : selected
+                            ? "border-violet-600 bg-violet-50 text-violet-800"
+                            : "border-gray-200 hover:border-violet-300"
+                      }`}
+                    >
+                      <span className="font-medium flex items-center gap-1">
+                        {full && <span aria-hidden="true">🔒</span>}
+                        {bus.name}
+                      </span>
+                      <span className="block text-xs mt-0.5">
+                        {full ? "ausgebucht" : `noch ${bus.remaining} Plätze frei`}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">E-Mail-Adresse</label>
-          <input
-            required
-            type="email"
-            className="w-full border rounded px-3 py-2"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-        </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={form.newsletterOptIn}
+              onChange={(e) => setForm({ ...form, newsletterOptIn: e.target.checked })}
+            />
+            Ich möchte den Newsletter zu zukünftigen Veranstaltungen erhalten.
+          </label>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Bus</label>
-          {availableBuses.length === 0 ? (
-            <p className="text-sm text-red-600">Alle Busse sind ausgebucht.</p>
-          ) : (
-            <select
-              required
-              className="w-full border rounded px-3 py-2"
-              value={form.busId}
-              onChange={(e) => setForm({ ...form, busId: e.target.value })}
-            >
-              <option value="" disabled>
-                Bitte wählen…
-              </option>
-              {event.buses.map((bus) => (
-                <option key={bus.id} value={bus.id} disabled={bus.remaining === 0}>
-                  {bus.name} — {bus.remaining > 0 ? `noch ${bus.remaining} Plätze frei` : "ausgebucht"}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 space-y-1">
+            <p>
+              Das Geld wird nur bis 14 Tage vor der Veranstaltung zurückerstattet. Danach ist eine Rückerstattung
+              nicht mehr möglich.
+            </p>
+            <p>
+              Dein Platz ist erst reserviert, sobald deine Zahlung bei uns eingegangen und bestätigt ist — bis
+              dahin ist noch kein Platz für dich fest eingeplant.
+            </p>
+          </div>
 
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={form.newsletterOptIn}
-            onChange={(e) => setForm({ ...form, newsletterOptIn: e.target.checked })}
-          />
-          Ich möchte den Newsletter zu zukünftigen Veranstaltungen erhalten.
-        </label>
+          {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <div className="bg-amber-50 border border-amber-200 rounded p-3 text-xs text-amber-800 space-y-1">
-          <p>
-            Das Geld wird nur bis 14 Tage vor der Veranstaltung zurückerstattet. Danach ist eine Rückerstattung
-            nicht mehr möglich.
-          </p>
-          <p>
-            Dein Platz ist erst reserviert, sobald deine Zahlung bei uns eingegangen und bestätigt ist — bis
-            dahin ist noch kein Platz für dich fest eingeplant.
-          </p>
-        </div>
-
-        {error && <p className="text-sm text-red-600">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={submitting || availableBuses.length === 0}
-          className="w-full bg-gray-900 text-white rounded py-2 font-medium disabled:opacity-50"
-        >
-          {submitting ? "Wird gesendet…" : "Anmelden"}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={submitting || availableBuses.length === 0 || !form.busId}
+            className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+          >
+            {submitting ? "Wird gesendet…" : "Anmelden"}
+          </button>
+        </form>
       )}
     </div>
   );

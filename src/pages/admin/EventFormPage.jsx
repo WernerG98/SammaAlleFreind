@@ -16,6 +16,7 @@ export default function EventFormPage() {
   const [form, setForm] = useState({
     title: "",
     description: "",
+    imageUrl: "",
     comingSoon: false,
     eventDate: "",
     registrationDeadline: "",
@@ -37,6 +38,7 @@ export default function EventFormPage() {
         setForm({
           title: event.title,
           description: event.description || "",
+          imageUrl: event.imageUrl || "",
           comingSoon: event.comingSoon,
           eventDate: event.eventDate ? toDateInputValue(event.eventDate) : "",
           registrationDeadline: event.registrationDeadline ? toDateInputValue(event.registrationDeadline) : "",
@@ -100,6 +102,17 @@ export default function EventFormPage() {
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Flyer-Bild-URL (optional)</label>
+          <input
+            placeholder="/background.png"
+            className="w-full border rounded px-3 py-2"
+            value={form.imageUrl}
+            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+          />
+          <p className="text-xs text-gray-500 mt-1">Wird oben auf der Veranstaltungsseite als Flyer angezeigt.</p>
         </div>
 
         <label className="flex items-center gap-2 text-sm">

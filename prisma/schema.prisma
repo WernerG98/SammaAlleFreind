@@ -12,6 +12,7 @@ model Event {
   slug           String   @unique
   title          String
   description    String?
+  imageUrl       String?
   eventDate      DateTime?
   comingSoon     Boolean  @default(false)
   registrationDeadline DateTime?

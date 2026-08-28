@@ -26,8 +26,8 @@ export default function NewsletterSignup() {
   }
 
   return (
-    <div className="mt-10 bg-white border rounded-lg p-5">
-      <h2 className="font-semibold mb-1">Newsletter</h2>
+    <div className="mt-10 bg-white border rounded-xl p-5 shadow-sm">
+      <h2 className="font-semibold mb-1">📬 Newsletter</h2>
       <p className="text-sm text-gray-600 mb-4">
         Melde dich an, um nichts zu verpassen — oder trag dich hier wieder aus.
       </p>
@@ -36,7 +36,7 @@ export default function NewsletterSignup() {
         <input
           type="email"
           placeholder="Deine E-Mail-Adresse"
-          className="flex-1 border rounded px-3 py-2 text-sm"
+          className="flex-1 border rounded-lg px-3 py-2 text-sm"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -44,7 +44,7 @@ export default function NewsletterSignup() {
           type="button"
           onClick={() => handle("subscribe")}
           disabled={status === "submitting" || !email.trim()}
-          className="bg-gray-900 text-white rounded px-4 py-2 text-sm font-medium disabled:opacity-50 whitespace-nowrap"
+          className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 whitespace-nowrap transition-colors"
         >
           Anmelden
         </button>
@@ -52,14 +52,14 @@ export default function NewsletterSignup() {
           type="button"
           onClick={() => handle("unsubscribe")}
           disabled={status === "submitting" || !email.trim()}
-          className="border border-gray-300 text-gray-700 rounded px-4 py-2 text-sm font-medium disabled:opacity-50 whitespace-nowrap"
+          className="border border-gray-300 text-gray-700 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 whitespace-nowrap hover:bg-gray-50"
         >
           Abmelden
         </button>
       </div>
 
       {message && (
-        <p className={`text-sm mt-3 ${status === "error" ? "text-red-600" : "text-green-700"}`}>{message}</p>
+        <p className={`text-sm mt-3 ${status === "error" ? "text-red-600" : "text-emerald-700"}`}>{message}</p>
       )}
     </div>
   );

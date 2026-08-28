@@ -21,14 +21,15 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="mt-10 bg-white border rounded-lg p-5">
-      <h2 className="font-semibold mb-1">Andere Zahlungsmethode oder Fragen?</h2>
+    <div className="mt-10 bg-white border rounded-xl p-5 shadow-sm">
+      <h2 className="font-semibold mb-1">Kontakt</h2>
       <p className="text-sm text-gray-600 mb-4">
-        Schreib uns kurz, wir melden uns bei dir.
+        Andere Zahlungsmethode, Anregungen für weitere Ausflüge oder einfach Feedback? Schreib uns kurz, wir
+        melden uns bei dir.
       </p>
 
       {status === "done" ? (
-        <p className="text-sm text-green-700">Danke für deine Nachricht, wir melden uns bald bei dir!</p>
+        <p className="text-sm text-emerald-700">Danke für deine Nachricht, wir melden uns bald bei dir!</p>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
@@ -69,7 +70,7 @@ export default function ContactForm() {
           <button
             type="submit"
             disabled={status === "submitting"}
-            className="bg-gray-900 text-white rounded px-4 py-2 text-sm font-medium disabled:opacity-50"
+            className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
           >
             {status === "submitting" ? "Wird gesendet…" : "Nachricht senden"}
           </button>

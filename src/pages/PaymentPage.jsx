@@ -26,18 +26,18 @@ export default function PaymentPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold">Fast geschafft!</h1>
+      <h1 className="text-2xl font-bold">🎉 Fast geschafft!</h1>
       <p className="mt-2 text-gray-700">
         Deine Anmeldung für <strong>{event.title}</strong> (Bus: {bus.name}) ist eingegangen.
       </p>
 
       {paid ? (
-        <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-5 text-green-800">
+        <div className="mt-6 bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-emerald-800">
           Deine Zahlung wurde bereits bestätigt. Du bist fest dabei — wir haben dir eine Bestätigungsmail
           geschickt.
         </div>
       ) : (
-        <div className="mt-6 bg-white border rounded-lg p-6 space-y-4">
+        <div className="mt-6 bg-white border rounded-xl p-6 space-y-4 shadow-sm">
           <h2 className="font-semibold">Bezahlung per PayPal</h2>
           {event.pricePerPerson && (
             <p>

@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   const { id } = req.query;
 
   if (req.method === "POST") {
-    const { paid } = req.body || {};
+    const { paid, busId } = req.body || {};
 
     const registration = await prisma.registration.findUnique({
       where: { id },
@@ -26,19 +26,40 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "Anmeldung nicht gefunden." });
     }
 
-    const nextPaid = Boolean(paid);
+    const nextPaid = paid !== undefined ? Boolean(paid) : registration.paid;
     const wasUnpaid = !registration.paid;
+    const changingBus = Boolean(busId) && busId !== registration.busId;
+    let targetBusId = registration.busId;
+    let targetBus = registration.bus;
+
+    if (changingBus) {
+      targetBus = await prisma.bus.findUnique({
+        where: { id: busId },
+        include: { registrations: { select: { paid: true } } },
+      });
+      if (!targetBus || targetBus.eventId !== registration.eventId) {
+        return res.status(404).json({ error: "Zielbus nicht gefunden." });
+      }
+      if (registration.paid) {
+        const targetPaidCount = targetBus.registrations.filter((r) => r.paid).length;
+        if (targetPaidCount >= targetBus.capacity) {
+          return res.status(409).json({ error: "Der Zielbus hat keine freien Plätze mehr." });
+        }
+      }
+      targetBusId = busId;
+    }
 
     if (nextPaid && wasUnpaid) {
-      const paidCount = registration.bus.registrations.filter((r) => r.paid).length;
-      if (paidCount >= registration.bus.capacity) {
+      const relevantRegistrations = changingBus ? targetBus.registrations : registration.bus.registrations;
+      const paidCount = relevantRegistrations.filter((r) => r.paid).length;
+      if (paidCount >= targetBus.capacity) {
         return res.status(409).json({ error: "Für diesen Bus sind bereits alle Plätze als bezahlt vergeben." });
       }
     }
 
     const updated = await prisma.registration.update({
       where: { id },
-      data: { paid: nextPaid, paidAt: nextPaid ? new Date() : null },
+      data: { paid: nextPaid, paidAt: nextPaid ? new Date() : null, busId: targetBusId },
     });
 
     if (nextPaid && wasUnpaid) {
@@ -56,7 +77,7 @@ export default async function handler(req, res) {
         html: buildConfirmationEmailHtml({
           firstName: registration.firstName,
           event: registration.event,
-          busName: registration.bus.name,
+          busName: targetBus.name,
         }),
       });
     }

@@ -17,7 +17,7 @@ export default function HomePage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-2">Kommende Veranstaltungen</h1>
+      <h1 className="text-2xl font-bold mb-2 text-violet-900">🎉 Kommende Veranstaltungen</h1>
       <p className="text-sm text-gray-600 mb-8">
         Die Bezahlung erfolgt per PayPal. Für andere Zahlungsmethoden melde dich bitte über das Kontaktformular
         weiter unten.
@@ -34,10 +34,12 @@ export default function HomePage() {
               <Link
                 key={event.id}
                 to={`/veranstaltung/${event.slug}`}
-                className="block bg-white/90 border border-dashed rounded-lg p-5 hover:shadow-md transition-shadow"
+                className="block bg-white border-2 border-dashed border-violet-200 rounded-xl p-5 hover:border-violet-400 hover:shadow-md transition-all"
               >
                 <h2 className="text-lg font-semibold">{event.title}</h2>
-                <p className="text-sm text-gray-500 mt-2 font-medium">Coming Soon — jetzt schon Interesse bekunden</p>
+                <p className="text-sm text-violet-600 mt-2 font-semibold">
+                  ✨ Coming Soon — jetzt schon Interesse bekunden
+                </p>
               </Link>
             );
           }
@@ -47,7 +49,7 @@ export default function HomePage() {
             <Link
               key={event.id}
               to={`/veranstaltung/${event.slug}`}
-              className="block bg-white border rounded-lg p-5 hover:shadow-md transition-shadow"
+              className="block bg-white border rounded-xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all"
             >
               <h2 className="text-lg font-semibold">{event.title}</h2>
               <p className="text-sm text-gray-500 mt-1">
@@ -58,7 +60,15 @@ export default function HomePage() {
                   year: "numeric",
                 })}
               </p>
-              <p className="text-sm text-gray-600 mt-2">
+              <p
+                className={`text-sm mt-2 font-medium ${
+                  !event.registrationOpen
+                    ? "text-gray-500"
+                    : totalRemaining > 0
+                      ? "text-emerald-600"
+                      : "text-red-500"
+                }`}
+              >
                 {!event.registrationOpen
                   ? "Anmeldefrist abgelaufen"
                   : totalRemaining > 0

@@ -20,6 +20,7 @@ export default async function handler(req, res) {
     const {
       title,
       description,
+      imageUrl,
       eventDate,
       comingSoon,
       registrationDeadline,
@@ -76,6 +77,7 @@ export default async function handler(req, res) {
         data: {
           title: title.trim(),
           description: description?.trim() || null,
+          imageUrl: imageUrl?.trim() || null,
           eventDate: eventDate ? new Date(eventDate) : null,
           comingSoon: isComingSoon,
           registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
