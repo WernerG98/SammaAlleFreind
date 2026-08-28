@@ -24,12 +24,22 @@ export function buildConfirmationEmailHtml({ firstName, event, busName }) {
     <p>Hallo ${firstName},</p>
     <p>
       wir haben deine Zahlung für <strong>${event.title}</strong> erhalten.
-      Du bist fest für den Bus <strong>${busName}</strong> eingeplant.
+      Du bist fest für <strong>${busName}</strong> eingeplant.
     </p>
     <p>Wir freuen uns auf dich!</p>
     <hr />
     <p><strong>Veranstaltung:</strong> ${event.title}<br/>
     <strong>Datum:</strong> ${new Date(event.eventDate).toLocaleDateString("de-DE")}</p>
+  `;
+}
+
+export function buildBusChangedHtml({ firstName, event, busName }) {
+  return `
+    <h2>Dein Bus wurde geändert</h2>
+    <p>Hallo ${firstName},</p>
+    <p>
+      du bist jetzt für <strong>${busName}</strong> bei <strong>${event.title}</strong> eingeplant.
+    </p>
   `;
 }
 

@@ -4,6 +4,7 @@ import { requireAdmin } from "../../_lib/auth.js";
 import {
   sendEmail,
   buildConfirmationEmailHtml,
+  buildBusChangedHtml,
   buildRegistrationRemovedHtml,
   buildInterestRemovedHtml,
 } from "../../_lib/email.js";
@@ -75,6 +76,16 @@ export default async function handler(req, res) {
         to: registration.email,
         subject: `Bestätigung: ${registration.event.title}`,
         html: buildConfirmationEmailHtml({
+          firstName: registration.firstName,
+          event: registration.event,
+          busName: targetBus.name,
+        }),
+      });
+    } else if (changingBus) {
+      await sendEmail({
+        to: registration.email,
+        subject: `Bus geändert: ${registration.event.title}`,
+        html: buildBusChangedHtml({
           firstName: registration.firstName,
           event: registration.event,
           busName: targetBus.name,
