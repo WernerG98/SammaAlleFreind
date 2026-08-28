@@ -32,6 +32,24 @@ export default function EventFormPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(!isNew);
   const [submitting, setSubmitting] = useState(false);
+  const [imageError, setImageError] = useState("");
+
+  function handleImageUpload(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setImageError("");
+    if (file.size > 3 * 1024 * 1024) {
+      setImageError("Bild ist zu groß (max. 3 MB).");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => setForm((f) => ({ ...f, imageUrl: reader.result }));
+    reader.onerror = () => setImageError("Bild konnte nicht gelesen werden.");
+    reader.readAsDataURL(file);
+  }
 
   useEffect(() => {
     if (isNew) return;
@@ -109,14 +127,33 @@ export default function EventFormPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Flyer-Bild-URL (optional)</label>
+          <label className="block text-sm font-medium mb-1">Flyer-Bild (optional)</label>
+          {form.imageUrl && (
+            <img
+              src={form.imageUrl}
+              alt="Flyer-Vorschau"
+              className="w-full max-h-64 object-contain rounded-lg border mb-2 bg-gray-50"
+            />
+          )}
           <input
-            placeholder="/background.png"
-            className="w-full border rounded px-3 py-2"
-            value={form.imageUrl}
-            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="block w-full text-sm border rounded px-3 py-2"
           />
-          <p className="text-xs text-gray-500 mt-1">Wird oben auf der Veranstaltungsseite als Flyer angezeigt.</p>
+          {imageError && <p className="text-xs text-red-600 mt-1">{imageError}</p>}
+          {form.imageUrl && (
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, imageUrl: "" })}
+              className="text-xs text-red-600 hover:underline mt-1"
+            >
+              Bild entfernen
+            </button>
+          )}
+          <p className="text-xs text-gray-500 mt-1">
+            Wird oben auf der Veranstaltungsseite als Flyer angezeigt (max. 3 MB).
+          </p>
         </div>
 
         <label className="flex items-center gap-2 text-sm">

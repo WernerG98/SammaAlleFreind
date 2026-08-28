@@ -1,17 +1,37 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../lib/api.js";
+import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 
 export default function DashboardPage() {
   const [events, setEvents] = useState(null);
   const [error, setError] = useState("");
+  const [pendingId, setPendingId] = useState(null);
+  const [toDelete, setToDelete] = useState(null);
 
-  useEffect(() => {
+  function load() {
     api
       .get("/admin/events")
       .then(setEvents)
       .catch((err) => setError(err.message));
-  }, []);
+  }
+
+  useEffect(load, []);
+
+  async function confirmDelete() {
+    if (!toDelete) return;
+    setError("");
+    setPendingId(toDelete.id);
+    try {
+      await api.delete(`/admin/events/${toDelete.id}`);
+      setToDelete(null);
+      load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setPendingId(null);
+    }
+  }
 
   return (
     <div>
@@ -25,7 +45,7 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {error && <p className="text-red-600">{error}</p>}
+      {error && <p className="text-red-600 mb-4">{error}</p>}
 
       <div className="space-y-3">
         {events?.map((event) => (
@@ -52,11 +72,27 @@ export default function DashboardPage() {
               <Link to={`/admin/veranstaltungen/${event.id}`} className="text-blue-600 hover:underline">
                 Bearbeiten
               </Link>
+              <button
+                type="button"
+                disabled={pendingId === event.id}
+                onClick={() => setToDelete({ id: event.id, label: event.title })}
+                className="text-red-600 hover:underline"
+              >
+                Löschen
+              </button>
             </div>
           </div>
         ))}
         {events?.length === 0 && <p className="text-gray-500">Noch keine Veranstaltungen angelegt.</p>}
       </div>
+
+      <ConfirmDialog
+        open={!!toDelete}
+        title="Veranstaltung löschen?"
+        message={`"${toDelete?.label}" wird inklusive aller Anmeldungen und Interessenten unwiderruflich gelöscht. Das kann nicht rückgängig gemacht werden.`}
+        onConfirm={confirmDelete}
+        onCancel={() => setToDelete(null)}
+      />
     </div>
   );
 }
