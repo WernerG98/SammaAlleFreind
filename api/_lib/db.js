@@ -21,9 +21,40 @@ export function isRegistrationOpen(event) {
   return true;
 }
 
-export function withRemainingSeats(event) {
+export function isEarlyAccessUnlocked(event, password) {
+  if (!event.earlyAccessEnabled) return true;
+  return Boolean(password) && password === event.earlyAccessPassword;
+}
+
+export function withRemainingSeats(event, { password } = {}) {
+  const unlocked = isEarlyAccessUnlocked(event, password);
+
+  if (event.earlyAccessEnabled && !unlocked) {
+    return {
+      id: event.id,
+      slug: event.slug,
+      title: event.title,
+      comingSoon: false,
+      earlyAccessEnabled: true,
+      locked: true,
+    };
+  }
+
   return {
-    ...event,
+    id: event.id,
+    slug: event.slug,
+    title: event.title,
+    description: event.description,
+    imageUrl: event.imageUrl,
+    eventDate: event.eventDate,
+    comingSoon: event.comingSoon,
+    registrationDeadline: event.registrationDeadline,
+    pricePerPerson: event.pricePerPerson,
+    paypalLink: event.paypalLink,
+    paymentNote: event.paymentNote,
+    isOpen: event.isOpen,
+    earlyAccessEnabled: event.earlyAccessEnabled,
+    locked: false,
     registrationOpen: isRegistrationOpen(event),
     buses: event.buses.map((bus) => {
       const paidCount = bus.registrations.filter((r) => r.paid).length;

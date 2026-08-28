@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { prisma, isRegistrationOpen } from "./_lib/db.js";
+import { prisma, isRegistrationOpen, isEarlyAccessUnlocked } from "./_lib/db.js";
 import {
   sendEmail,
   buildInterestConfirmationHtml,
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Methode nicht erlaubt." });
   }
 
-  const { eventId, busId, firstName, lastName, email, newsletterOptIn, waitlist } = req.body || {};
+  const { eventId, busId, firstName, lastName, email, newsletterOptIn, waitlist, password } = req.body || {};
 
   if (!eventId || !firstName?.trim() || !lastName?.trim() || !isValidEmail(email || "")) {
     return res.status(400).json({ error: "Bitte alle Felder gültig ausfüllen." });
@@ -25,6 +25,10 @@ export default async function handler(req, res) {
   const event = await prisma.event.findUnique({ where: { id: eventId } });
   if (!event || !event.isOpen) {
     return res.status(404).json({ error: "Veranstaltung nicht gefunden." });
+  }
+
+  if (!isEarlyAccessUnlocked(event, password)) {
+    return res.status(403).json({ error: "Falsches Passwort für den Vorabzugang." });
   }
 
   if (event.comingSoon || waitlist) {

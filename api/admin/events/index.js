@@ -59,10 +59,17 @@ export default async function handler(req, res) {
       pricePerPerson,
       paypalLink,
       paymentNote,
+      earlyAccessEnabled,
+      earlyAccessPassword,
       buses,
     } = req.body || {};
 
     const isComingSoon = Boolean(comingSoon);
+    const isEarlyAccess = Boolean(earlyAccessEnabled);
+
+    if (isEarlyAccess && !earlyAccessPassword?.trim()) {
+      return res.status(400).json({ error: "Bitte ein Passwort für den Vorabzugang vergeben." });
+    }
 
     if (!title?.trim()) {
       return res.status(400).json({ error: "Titel ist erforderlich." });
@@ -90,6 +97,8 @@ export default async function handler(req, res) {
         pricePerPerson: pricePerPerson ? Number(pricePerPerson) : null,
         paypalLink: paypalLink?.trim() || null,
         paymentNote: paymentNote?.trim() || null,
+        earlyAccessEnabled: isEarlyAccess,
+        earlyAccessPassword: isEarlyAccess ? earlyAccessPassword.trim() : null,
         buses: {
           create: (buses || []).map((bus) => ({
             name: bus.name.trim(),

@@ -24,6 +24,8 @@ export default function EventFormPage() {
     pricePerPerson: "",
     paypalLink: "",
     paymentNote: "",
+    earlyAccessEnabled: false,
+    earlyAccessPassword: "",
     isOpen: true,
   });
   const [buses, setBuses] = useState([emptyBus()]);
@@ -46,6 +48,8 @@ export default function EventFormPage() {
           pricePerPerson: event.pricePerPerson || "",
           paypalLink: event.paypalLink || "",
           paymentNote: event.paymentNote || "",
+          earlyAccessEnabled: event.earlyAccessEnabled || false,
+          earlyAccessPassword: event.earlyAccessPassword || "",
           isOpen: event.isOpen,
         });
         setBuses(event.buses.length ? event.buses : [emptyBus()]);
@@ -186,6 +190,32 @@ export default function EventFormPage() {
                 value={form.paymentNote}
                 onChange={(e) => setForm({ ...form, paymentNote: e.target.value })}
               />
+            </div>
+
+            <div className="border rounded-lg p-3 space-y-2 bg-gray-50">
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <input
+                  type="checkbox"
+                  checked={form.earlyAccessEnabled}
+                  onChange={(e) => setForm({ ...form, earlyAccessEnabled: e.target.checked })}
+                />
+                🔒 Vorabzugang — nur mit Passwort anmeldbar
+              </label>
+              {form.earlyAccessEnabled && (
+                <div>
+                  <input
+                    required
+                    placeholder="Passwort für den Vorabzugang"
+                    className="w-full border rounded px-3 py-2 text-sm"
+                    value={form.earlyAccessPassword}
+                    onChange={(e) => setForm({ ...form, earlyAccessPassword: e.target.value })}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Auf der Startseite wird "🔒 Vorabzugang" angezeigt, Details/Anmeldung nur mit diesem
+                    Passwort sichtbar. Haken entfernen, sobald es für alle offen sein soll.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div>

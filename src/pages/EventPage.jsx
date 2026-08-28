@@ -11,6 +11,10 @@ export default function EventPage() {
   const [interestDone, setInterestDone] = useState(false);
   const [showWaitlistForm, setShowWaitlistForm] = useState(false);
   const [waitlistDone, setWaitlistDone] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [accessPassword, setAccessPassword] = useState("");
+  const [unlockError, setUnlockError] = useState("");
+  const [unlocking, setUnlocking] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -26,12 +30,31 @@ export default function EventPage() {
       .catch((err) => setError(err.message));
   }, [slug]);
 
+  async function handleUnlock(e) {
+    e.preventDefault();
+    setUnlockError("");
+    setUnlocking(true);
+    try {
+      const unlocked = await api.get(`/events/${slug}?password=${encodeURIComponent(passwordInput)}`);
+      if (unlocked.locked) {
+        setUnlockError("Falsches Passwort.");
+      } else {
+        setAccessPassword(passwordInput);
+        setEvent(unlocked);
+      }
+    } catch (err) {
+      setUnlockError(err.message);
+    } finally {
+      setUnlocking(false);
+    }
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setSubmitting(true);
     try {
-      const result = await api.post("/register", { eventId: event.id, ...form });
+      const result = await api.post("/register", { eventId: event.id, ...form, password: accessPassword });
       if (result.interest) {
         setInterestDone(true);
       } else {
@@ -49,7 +72,7 @@ export default function EventPage() {
     setError("");
     setSubmitting(true);
     try {
-      await api.post("/register", { eventId: event.id, ...form, waitlist: true });
+      await api.post("/register", { eventId: event.id, ...form, waitlist: true, password: accessPassword });
       setWaitlistDone(true);
     } catch (err) {
       setError(err.message);
@@ -63,6 +86,36 @@ export default function EventPage() {
   }
   if (!event) {
     return <p className="max-w-lg mx-auto px-4 py-12 text-gray-500">Lade...</p>;
+  }
+  if (event.locked) {
+    return (
+      <div className="max-w-lg mx-auto px-4 py-12">
+        <h1 className="text-2xl font-bold">{event.title}</h1>
+        <p className="mt-2 text-amber-700 font-semibold">🔒 Vorabzugang — nur mit Passwort sichtbar.</p>
+
+        <form onSubmit={handleUnlock} className="mt-8 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
+          <div>
+            <label className="block text-sm font-medium mb-1">Passwort</label>
+            <input
+              required
+              type="password"
+              autoFocus
+              className="w-full border rounded-lg px-3 py-2"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+            />
+          </div>
+          {unlockError && <p className="text-sm text-red-600">{unlockError}</p>}
+          <button
+            type="submit"
+            disabled={unlocking}
+            className="w-full bg-amber-600 hover:bg-amber-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+          >
+            {unlocking ? "Wird geprüft…" : "Freischalten"}
+          </button>
+        </form>
+      </div>
+    );
   }
   if (event.comingSoon) {
     return (
