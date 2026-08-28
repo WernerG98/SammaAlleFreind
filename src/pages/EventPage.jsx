@@ -301,14 +301,22 @@ export default function EventPage() {
               </div>
           </div>
 
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={form.newsletterOptIn}
-              onChange={(e) => setForm({ ...form, newsletterOptIn: e.target.checked })}
-            />
-            Ich möchte den Newsletter zu zukünftigen Veranstaltungen erhalten.
-          </label>
+          <div>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={form.newsletterOptIn}
+                onChange={(e) => setForm({ ...form, newsletterOptIn: e.target.checked })}
+              />
+              Ich möchte den Newsletter zu zukünftigen Veranstaltungen erhalten.
+            </label>
+            {form.newsletterOptIn && (
+              <p className="text-xs text-gray-500 mt-1 ml-6">
+                Die automatische Bestätigungsmail landet manchmal im Spam-Ordner — bitte dort auch kurz
+                nachschauen.
+              </p>
+            )}
+          </div>
 
           {event.pricePerPerson ? (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 space-y-1">
