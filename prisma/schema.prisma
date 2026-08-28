@@ -20,6 +20,8 @@ model Event {
   paypalLink     String?
   paymentNote    String?
   isOpen         Boolean  @default(true)
+  isExternal        Boolean @default(false)
+  externalOrganizer String?
   earlyAccessEnabled  Boolean @default(false)
   earlyAccessPassword String?
   createdAt      DateTime @default(now())

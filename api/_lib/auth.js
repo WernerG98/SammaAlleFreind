@@ -11,8 +11,8 @@ function getSecretKey() {
   return new TextEncoder().encode(secret);
 }
 
-export async function createSessionCookie(username) {
-  const token = await new SignJWT({ username })
+export async function createSessionCookie(username, role = "admin") {
+  const token = await new SignJWT({ username, role })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(SESSION_DURATION)
@@ -59,10 +59,14 @@ export async function getAdminSession(req) {
   }
 }
 
-export async function requireAdmin(req, res) {
+export async function requireAdmin(req, res, { fullOnly = false } = {}) {
   const session = await getAdminSession(req);
   if (!session) {
     res.status(401).json({ error: "Nicht angemeldet." });
+    return null;
+  }
+  if (fullOnly && session.role !== "admin") {
+    res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
     return null;
   }
   return session;

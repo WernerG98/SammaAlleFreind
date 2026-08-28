@@ -3,7 +3,7 @@ import { requireAdmin } from "../../_lib/auth.js";
 import { sendEmail, buildNewsletterHtml } from "../../_lib/email.js";
 
 export default async function handler(req, res) {
-  const session = await requireAdmin(req, res);
+  const session = await requireAdmin(req, res, { fullOnly: true });
   if (!session) return;
 
   if (req.method !== "POST") {

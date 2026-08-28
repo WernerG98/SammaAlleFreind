@@ -26,12 +26,22 @@ export default function EventFormPage() {
     paymentNote: "",
     earlyAccessEnabled: false,
     earlyAccessPassword: "",
+    isExternal: false,
+    externalOrganizer: "",
     isOpen: true,
   });
   const [buses, setBuses] = useState([emptyBus()]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(!isNew);
   const [submitting, setSubmitting] = useState(false);
+  const [role, setRole] = useState("admin");
+
+  useEffect(() => {
+    api
+      .get("/admin/session")
+      .then((s) => setRole(s.role || "admin"))
+      .catch(() => {});
+  }, []);
   const [imageError, setImageError] = useState("");
 
   function handleImageUpload(e) {
@@ -68,6 +78,8 @@ export default function EventFormPage() {
           paymentNote: event.paymentNote || "",
           earlyAccessEnabled: event.earlyAccessEnabled || false,
           earlyAccessPassword: event.earlyAccessPassword || "",
+          isExternal: event.isExternal || false,
+          externalOrganizer: event.externalOrganizer || "",
           isOpen: event.isOpen,
         });
         setBuses(event.buses.length ? event.buses : [emptyBus()]);
@@ -164,6 +176,31 @@ export default function EventFormPage() {
           />
           Nur Ankündigung ("Coming Soon") — Datum, Preis und Busse stehen noch nicht fest
         </label>
+
+        {role === "external" ? (
+          <p className="text-xs text-gray-500 bg-gray-50 border rounded-lg p-3">
+            Diese Veranstaltung wird automatisch als "Externe Veranstaltung" markiert.
+          </p>
+        ) : (
+          <div className="border rounded-lg p-3 space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium">
+              <input
+                type="checkbox"
+                checked={form.isExternal}
+                onChange={(e) => setForm({ ...form, isExternal: e.target.checked })}
+              />
+              🤝 Externe Veranstaltung (anderer Verein/Person)
+            </label>
+            {form.isExternal && (
+              <input
+                placeholder="Veranstalter (z.B. Name des Vereins)"
+                className="w-full border rounded px-3 py-2 text-sm"
+                value={form.externalOrganizer}
+                onChange={(e) => setForm({ ...form, externalOrganizer: e.target.value })}
+              />
+            )}
+          </div>
+        )}
 
         {!form.comingSoon && (
           <>

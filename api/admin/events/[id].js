@@ -7,6 +7,13 @@ export default async function handler(req, res) {
 
   const { id } = req.query;
 
+  if (session.role === "external") {
+    const owningEvent = await prisma.event.findUnique({ where: { id }, select: { isExternal: true } });
+    if (!owningEvent || !owningEvent.isExternal) {
+      return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
+    }
+  }
+
   if (req.method === "GET") {
     const event = await prisma.event.findUnique({
       where: { id },
@@ -29,6 +36,8 @@ export default async function handler(req, res) {
       paymentNote,
       earlyAccessEnabled,
       earlyAccessPassword,
+      isExternal,
+      externalOrganizer,
       isOpen,
       buses,
     } = req.body || {};
@@ -101,6 +110,9 @@ export default async function handler(req, res) {
           paymentNote: paymentNote?.trim() || null,
           earlyAccessEnabled: isEarlyAccess,
           earlyAccessPassword: isEarlyAccess ? earlyAccessPassword.trim() : null,
+          isExternal: session.role === "external" ? true : Boolean(isExternal),
+          externalOrganizer:
+            session.role === "external" || isExternal ? externalOrganizer?.trim() || null : null,
           isOpen: isOpen !== undefined ? Boolean(isOpen) : undefined,
         },
       }),

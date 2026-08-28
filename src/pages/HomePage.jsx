@@ -7,6 +7,7 @@ import NewsletterSignup from "../components/NewsletterSignup.jsx";
 export default function HomePage() {
   const [events, setEvents] = useState(null);
   const [error, setError] = useState("");
+  const [tab, setTab] = useState("ours");
 
   useEffect(() => {
     api
@@ -15,22 +16,53 @@ export default function HomePage() {
       .catch((err) => setError(err.message));
   }, []);
 
+  const filteredEvents = events?.filter((event) => Boolean(event.isExternal) === (tab === "external"));
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-2xl font-bold mb-2 text-teal-900">🎉 Kommende Veranstaltungen</h1>
-      <p className="text-sm text-gray-600 mb-8">
+      <p className="text-sm text-gray-600 mb-6">
         Die Bezahlung erfolgt per PayPal. Bei anderen Zahlungsmethoden melde dich bitte ganz normal wie gewohnt
         an und schreib uns anschließend über das Kontaktformular weiter unten. Bitte beachte: Damit wir deine
         Zahlung zuordnen können, gib beim Bezahlen als Kommentar deinen Namen an, falls er nicht ohnehin
         ersichtlich ist.
       </p>
 
+      <div className="flex gap-2 mb-6 border-b">
+        <button
+          type="button"
+          onClick={() => setTab("ours")}
+          className={`px-3 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors ${
+            tab === "ours" ? "border-teal-600 text-teal-800" : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Unsere Veranstaltungen
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("external")}
+          className={`px-3 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors ${
+            tab === "external"
+              ? "border-amber-600 text-amber-800"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          🤝 Externe Veranstaltungen
+        </button>
+      </div>
+
       {error && <p className="text-red-600">{error}</p>}
       {!events && !error && <p className="text-gray-500">Lade...</p>}
-      {events?.length === 0 && <p className="text-gray-500">Aktuell sind keine Veranstaltungen geplant.</p>}
+      {filteredEvents?.length === 0 && (
+        <p className="text-gray-500">
+          {tab === "external"
+            ? "Aktuell keine externen Veranstaltungen gelistet."
+            : "Aktuell sind keine Veranstaltungen geplant."}
+        </p>
+      )}
 
       <div className="space-y-4">
-        {events?.map((event) => {
+        {filteredEvents?.map((event) => {
           if (event.locked) {
             return (
               <Link
@@ -43,6 +75,9 @@ export default function HomePage() {
                   🔒 Vorabzugang
                 </span>
                 <h2 className="text-lg font-semibold text-amber-950">{event.title}</h2>
+                {event.externalOrganizer && (
+                  <p className="text-xs text-amber-600 mt-0.5">von {event.externalOrganizer}</p>
+                )}
                 <p className="text-sm text-amber-700 mt-2 font-medium">Nur mit Passwort sichtbar</p>
               </Link>
             );
@@ -56,6 +91,9 @@ export default function HomePage() {
                 className="block bg-stone-50 border-2 border-dashed border-stone-300 rounded-xl p-5 opacity-90 hover:opacity-100 hover:border-stone-400 hover:shadow-sm transition-all"
               >
                 <h2 className="text-lg font-semibold text-stone-700">{event.title}</h2>
+                {event.externalOrganizer && (
+                  <p className="text-xs text-stone-500 mt-0.5">von {event.externalOrganizer}</p>
+                )}
                 <p className="text-sm text-stone-500 mt-2 font-semibold">
                   ⏳ Coming Soon — jetzt schon Interesse bekunden
                 </p>
@@ -91,6 +129,9 @@ export default function HomePage() {
                 {!event.registrationOpen ? "⛔ Anmeldung geschlossen" : soldOut ? "🔴 Ausgebucht" : "🎉 Jetzt anmelden"}
               </span>
               <h2 className={`text-lg font-semibold ${closed ? "text-red-950" : "text-teal-950"}`}>{event.title}</h2>
+              {event.externalOrganizer && (
+                <p className="text-xs text-gray-500 mt-0.5">von {event.externalOrganizer}</p>
+              )}
               <p className="text-sm text-gray-500 mt-1">
                 {new Date(event.eventDate).toLocaleDateString("de-DE", {
                   weekday: "long",

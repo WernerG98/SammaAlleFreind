@@ -26,6 +26,9 @@ export default async function handler(req, res) {
     if (!registration) {
       return res.status(404).json({ error: "Anmeldung nicht gefunden." });
     }
+    if (session.role === "external" && !registration.event.isExternal) {
+      return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
+    }
 
     const nextPaid = paid !== undefined ? Boolean(paid) : registration.paid;
     const wasUnpaid = !registration.paid;
@@ -103,6 +106,9 @@ export default async function handler(req, res) {
     });
 
     if (registration) {
+      if (session.role === "external" && !registration.event.isExternal) {
+        return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
+      }
       await prisma.registration.delete({ where: { id } });
       await sendEmail({
         to: registration.email,
@@ -118,6 +124,9 @@ export default async function handler(req, res) {
     });
 
     if (interest) {
+      if (session.role === "external" && !interest.event.isExternal) {
+        return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
+      }
       await prisma.eventInterest.delete({ where: { id } });
       await sendEmail({
         to: interest.email,

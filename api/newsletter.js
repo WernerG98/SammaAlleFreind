@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     if (!token) {
       // Admin-Übersicht aller Abonnenten
-      const session = await requireAdmin(req, res);
+      const session = await requireAdmin(req, res, { fullOnly: true });
       if (!session) return;
       const subscribers = await prisma.newsletterSubscriber.findMany({ orderBy: { createdAt: "asc" } });
       return res.status(200).json(subscribers);
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "DELETE") {
-    const session = await requireAdmin(req, res);
+    const session = await requireAdmin(req, res, { fullOnly: true });
     if (!session) return;
 
     const { id } = req.query;

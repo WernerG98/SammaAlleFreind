@@ -14,6 +14,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "eventId ist erforderlich." });
   }
 
+  if (session.role === "external") {
+    const owningEvent = await prisma.event.findUnique({ where: { id: eventId }, select: { isExternal: true } });
+    if (!owningEvent || !owningEvent.isExternal) {
+      return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
+    }
+  }
+
   const [registrations, interests] = await Promise.all([
     prisma.registration.findMany({
       where: { eventId },

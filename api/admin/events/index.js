@@ -15,8 +15,11 @@ export default async function handler(req, res) {
   const session = await requireAdmin(req, res);
   if (!session) return;
 
+  const isExternalRole = session.role === "external";
+
   if (req.method === "GET") {
     const events = await prisma.event.findMany({
+      where: isExternalRole ? { isExternal: true } : undefined,
       orderBy: { eventDate: "asc" },
       include: { buses: true, _count: { select: { registrations: true } } },
     });
@@ -28,6 +31,13 @@ export default async function handler(req, res) {
       const { eventId, target, subject, bodyHtml } = req.body;
       if (!eventId || !["paid", "unpaid"].includes(target) || !subject?.trim() || !bodyHtml?.trim()) {
         return res.status(400).json({ error: "eventId, target (paid/unpaid), Betreff und Inhalt sind erforderlich." });
+      }
+
+      if (isExternalRole) {
+        const owningEvent = await prisma.event.findUnique({ where: { id: eventId }, select: { isExternal: true } });
+        if (!owningEvent || !owningEvent.isExternal) {
+          return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
+        }
       }
 
       const recipients = await prisma.registration.findMany({
@@ -61,6 +71,8 @@ export default async function handler(req, res) {
       paymentNote,
       earlyAccessEnabled,
       earlyAccessPassword,
+      isExternal,
+      externalOrganizer,
       buses,
     } = req.body || {};
 
@@ -99,6 +111,9 @@ export default async function handler(req, res) {
         paymentNote: paymentNote?.trim() || null,
         earlyAccessEnabled: isEarlyAccess,
         earlyAccessPassword: isEarlyAccess ? earlyAccessPassword.trim() : null,
+        isExternal: isExternalRole ? true : Boolean(isExternal),
+        externalOrganizer:
+          isExternalRole || isExternal ? externalOrganizer?.trim() || null : null,
         buses: {
           create: (buses || []).map((bus) => ({
             name: bus.name.trim(),

@@ -8,12 +8,17 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
   const [pendingId, setPendingId] = useState(null);
   const [toDelete, setToDelete] = useState(null);
+  const [role, setRole] = useState("admin");
 
   function load() {
     api
       .get("/admin/events")
       .then(setEvents)
       .catch((err) => setError(err.message));
+    api
+      .get("/admin/session")
+      .then((s) => setRole(s.role || "admin"))
+      .catch(() => {});
   }
 
   useEffect(load, []);
@@ -36,7 +41,9 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h1 className="text-2xl font-bold">Veranstaltungen</h1>
+        <h1 className="text-2xl font-bold">
+          {role === "external" ? "Externe Veranstaltungen" : "Veranstaltungen"}
+        </h1>
         <Link
           to="/admin/veranstaltungen/neu"
           className="bg-gray-900 text-white rounded px-4 py-2 text-sm font-medium whitespace-nowrap"
@@ -55,7 +62,13 @@ export default function DashboardPage() {
           >
             <div className="min-w-0">
               <p className="font-semibold break-words">
-                {event.title} {event.comingSoon && <span className="text-xs text-gray-400">(Coming Soon)</span>}
+                {event.title}{" "}
+                {event.isExternal && (
+                  <span className="text-xs text-amber-700 bg-amber-100 rounded-full px-2 py-0.5">
+                    🤝 Extern{event.externalOrganizer ? `: ${event.externalOrganizer}` : ""}
+                  </span>
+                )}{" "}
+                {event.comingSoon && <span className="text-xs text-gray-400">(Coming Soon)</span>}
                 {!event.comingSoon && !event.isOpen && (
                   <span className="text-xs text-gray-400">(geschlossen)</span>
                 )}
