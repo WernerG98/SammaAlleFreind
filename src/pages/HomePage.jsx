@@ -36,11 +36,11 @@ export default function HomePage() {
               <Link
                 key={event.id}
                 to={`/veranstaltung/${event.slug}`}
-                className="block bg-white border-2 border-dashed border-teal-200 rounded-xl p-5 hover:border-teal-500 hover:shadow-md transition-all"
+                className="block bg-stone-50 border-2 border-dashed border-stone-300 rounded-xl p-5 opacity-90 hover:opacity-100 hover:border-stone-400 hover:shadow-sm transition-all"
               >
-                <h2 className="text-lg font-semibold">{event.title}</h2>
-                <p className="text-sm text-teal-700 mt-2 font-semibold">
-                  ✨ Coming Soon — jetzt schon Interesse bekunden
+                <h2 className="text-lg font-semibold text-stone-700">{event.title}</h2>
+                <p className="text-sm text-stone-500 mt-2 font-semibold">
+                  ⏳ Coming Soon — jetzt schon Interesse bekunden
                 </p>
               </Link>
             );
@@ -53,9 +53,13 @@ export default function HomePage() {
             <Link
               key={event.id}
               to={`/veranstaltung/${event.slug}`}
-              className="block bg-white border rounded-xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              className="relative block bg-gradient-to-br from-teal-50 to-white border-2 border-teal-300 rounded-xl pl-6 pr-5 py-5 shadow-md hover:shadow-xl hover:border-teal-500 hover:-translate-y-0.5 transition-all overflow-hidden"
             >
-              <h2 className="text-lg font-semibold">{event.title}</h2>
+              <span className="absolute left-0 top-0 bottom-0 w-1.5 bg-teal-600" aria-hidden="true" />
+              <span className="inline-block text-[11px] font-bold uppercase tracking-wide text-teal-700 bg-teal-100 rounded-full px-2 py-0.5 mb-1">
+                🎉 Jetzt anmelden
+              </span>
+              <h2 className="text-lg font-semibold text-teal-950">{event.title}</h2>
               <p className="text-sm text-gray-500 mt-1">
                 {new Date(event.eventDate).toLocaleDateString("de-DE", {
                   weekday: "long",
@@ -65,12 +69,12 @@ export default function HomePage() {
                 })}
               </p>
               <p
-                className={`text-sm mt-2 font-medium ${
+                className={`text-sm mt-2 font-semibold ${
                   !event.registrationOpen
                     ? "text-gray-500"
                     : totalRemaining > 0
-                      ? "text-emerald-600"
-                      : "text-red-500"
+                      ? "text-emerald-700"
+                      : "text-red-600"
                 }`}
               >
                 {!event.registrationOpen
