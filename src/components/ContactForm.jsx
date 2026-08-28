@@ -6,6 +6,7 @@ export default function ContactForm({
   heading = "💌 Kontakt",
   description = "Andere Zahlungsmethode, Anregungen für weitere Ausflüge oder einfach Feedback? Schreib uns kurz, wir melden uns bei dir.",
 }) {
+  const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", message: "", website: "" });
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
@@ -24,9 +25,32 @@ export default function ContactForm({
     }
   }
 
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Kontakt öffnen"
+        className="fixed bottom-4 right-4 z-40 w-14 h-14 rounded-full bg-teal-800 hover:bg-teal-900 text-white text-2xl shadow-lg flex items-center justify-center transition-colors"
+      >
+        💌
+      </button>
+    );
+  }
+
   return (
-    <div className="mt-10 bg-white border rounded-xl p-5 shadow-sm">
-      <h2 className="font-semibold mb-1">{heading}</h2>
+    <div className="fixed bottom-4 right-4 z-40 w-[calc(100vw-2rem)] max-w-sm bg-white border rounded-xl shadow-2xl p-5">
+      <div className="flex items-start justify-between gap-2 mb-1">
+        <h2 className="font-semibold">{heading}</h2>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-label="Schließen"
+          className="shrink-0 text-gray-400 hover:text-gray-600 text-lg leading-none"
+        >
+          ✕
+        </button>
+      </div>
       <p className="text-sm text-gray-600 mb-4">{description}</p>
 
       {status === "done" ? (
