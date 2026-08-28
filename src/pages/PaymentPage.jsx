@@ -66,7 +66,7 @@ export default function PaymentPage() {
           )}
           <p className="text-sm text-gray-500">
             {event.paypalLink
-              ? "Sobald deine Zahlung bei uns erfasst wurde, bekommst du automatisch eine Bestätigungsmail und dein Platz ist reserviert."
+              ? "Sobald deine Zahlung bei uns erfasst wurde, bekommst du automatisch eine Bestätigungsmail und dein Platz ist reserviert. Das kann etwas dauern, da wir jede Person manuell bestätigen."
               : "Der Zahlungslink wird in Kürze ergänzt. Du bist schon vorgemerkt — wir informieren dich, sobald du bezahlen kannst."}
           </p>
         </div>
