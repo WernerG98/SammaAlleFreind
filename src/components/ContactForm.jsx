@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { api } from "../lib/api.js";
 
-export default function ContactForm() {
+export default function ContactForm({
+  heading = "💌 Kontakt",
+  description = "Andere Zahlungsmethode, Anregungen für weitere Ausflüge oder einfach Feedback? Schreib uns kurz, wir melden uns bei dir.",
+}) {
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", message: "" });
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
@@ -22,11 +25,8 @@ export default function ContactForm() {
 
   return (
     <div className="mt-10 bg-white border rounded-xl p-5 shadow-sm">
-      <h2 className="font-semibold mb-1">💌 Kontakt</h2>
-      <p className="text-sm text-gray-600 mb-4">
-        Andere Zahlungsmethode, Anregungen für weitere Ausflüge oder einfach Feedback? Schreib uns kurz, wir
-        melden uns bei dir.
-      </p>
+      <h2 className="font-semibold mb-1">{heading}</h2>
+      <p className="text-sm text-gray-600 mb-4">{description}</p>
 
       {status === "done" ? (
         <p className="text-sm text-emerald-700">Danke für deine Nachricht, wir melden uns bald bei dir!</p>

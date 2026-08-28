@@ -153,11 +153,16 @@ export default function HomePage() {
         })}
       </div>
 
-      {tab === "ours" && (
+      {tab === "ours" ? (
         <>
           <NewsletterSignup />
           <ContactForm />
         </>
+      ) : (
+        <ContactForm
+          heading="🤝 Eigene Veranstaltung eintragen"
+          description="Möchtet ihr als lokaler Verein oder Gruppe eine Veranstaltung auf dieser Seite eintragen? Nehmt Kontakt mit uns auf. Wir richten uns nur an Arnstorf und Umgebung."
+        />
       )}
     </div>
   );
