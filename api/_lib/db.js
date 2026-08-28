@@ -18,6 +18,14 @@ export function parseCapacity(value) {
   return value !== undefined && value !== null && value !== "" ? Number(value) : null;
 }
 
+export const EVENT_RETENTION_DAYS = 7;
+
+export async function cleanupExpiredEvents() {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - EVENT_RETENTION_DAYS);
+  await prisma.event.deleteMany({ where: { eventDate: { lt: cutoff } } });
+}
+
 export function isRegistrationOpen(event) {
   if (event.comingSoon) return false;
   if (!event.isOpen) return false;

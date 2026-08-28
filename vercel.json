@@ -5,5 +5,11 @@
       "source": "/((?!api/|@vite|@react-refresh|src/|node_modules/).*)",
       "destination": "/index.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/events",
+      "schedule": "0 3 * * *"
+    }
   ]
 }

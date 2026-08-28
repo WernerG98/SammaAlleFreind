@@ -3,6 +3,20 @@ import { Link } from "react-router-dom";
 import { api } from "../../lib/api.js";
 import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 
+const EVENT_RETENTION_DAYS = 7;
+
+function getDeletionCountdown(event) {
+  if (!event.eventDate || event.comingSoon) return null;
+  const eventDate = new Date(event.eventDate);
+  const now = new Date();
+  if (eventDate >= now) return null;
+
+  const deletionDate = new Date(eventDate);
+  deletionDate.setDate(deletionDate.getDate() + EVENT_RETENTION_DAYS);
+  const daysLeft = Math.ceil((deletionDate - now) / (1000 * 60 * 60 * 24));
+  return daysLeft;
+}
+
 export default function DashboardPage() {
   const [events, setEvents] = useState(null);
   const [error, setError] = useState("");
@@ -105,7 +119,9 @@ export default function DashboardPage() {
       </div>
 
       <div className="space-y-3">
-        {filteredEvents.map((event) => (
+        {filteredEvents.map((event) => {
+          const daysUntilDeletion = getDeletionCountdown(event);
+          return (
           <div
             key={event.id}
             className="bg-gray-900 border border-gray-800 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
@@ -136,6 +152,14 @@ export default function DashboardPage() {
                 ·{" "}
                 {event._count.registrations} Anmeldungen · {event.buses.length} Slot(s)
               </p>
+              {daysUntilDeletion !== null && (
+                <p className="text-xs text-red-400 mt-1">
+                  🗑️{" "}
+                  {daysUntilDeletion <= 0
+                    ? "Wird in Kürze automatisch gelöscht"
+                    : `Wird in ${daysUntilDeletion} Tag${daysUntilDeletion === 1 ? "" : "en"} automatisch gelöscht`}
+                </p>
+              )}
             </div>
             <div className="flex gap-3 text-sm shrink-0">
               <Link to={`/admin/veranstaltungen/${event.id}/anmeldungen`} className="text-teal-400 hover:underline">
@@ -154,7 +178,8 @@ export default function DashboardPage() {
               </button>
             </div>
           </div>
-        ))}
+          );
+        })}
         {events?.length === 0 && <p className="text-gray-500">Noch keine Veranstaltungen angelegt.</p>}
         {events?.length > 0 && filteredEvents.length === 0 && (
           <p className="text-gray-500">Keine Treffer für diese Suche.</p>

@@ -1,4 +1,4 @@
-import { prisma, parseCapacity } from "../../_lib/db.js";
+import { prisma, parseCapacity, cleanupExpiredEvents } from "../../_lib/db.js";
 import { requireAdmin } from "../../_lib/auth.js";
 import { sendEmail } from "../../_lib/email.js";
 
@@ -18,6 +18,12 @@ export default async function handler(req, res) {
   const isExternalRole = session.role === "external";
 
   if (req.method === "GET") {
+    try {
+      await cleanupExpiredEvents();
+    } catch {
+      // Aufräumen soll das Laden der Veranstaltungen nicht blockieren.
+    }
+
     const events = await prisma.event.findMany({
       where: isExternalRole ? { isExternal: true } : undefined,
       orderBy: { eventDate: "asc" },
