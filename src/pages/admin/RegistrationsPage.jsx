@@ -263,7 +263,7 @@ export default function RegistrationsPage() {
             <tr>
               <SortHeader field="name">Name</SortHeader>
               <SortHeader field="email">E-Mail</SortHeader>
-              <SortHeader field="bus">Bus</SortHeader>
+              <SortHeader field="bus">Slot</SortHeader>
               <SortHeader field="newsletter">Newsletter</SortHeader>
               <SortHeader field="paid">Bezahlt</SortHeader>
               <th className="px-4 py-2"></th>
