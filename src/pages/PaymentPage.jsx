@@ -33,8 +33,9 @@ export default function PaymentPage() {
 
       {paid ? (
         <div className="mt-6 bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-emerald-800">
-          Deine Zahlung wurde bereits bestätigt. Du bist fest dabei — wir haben dir eine Bestätigungsmail
-          geschickt.
+          {event.pricePerPerson
+            ? "Deine Zahlung wurde bereits bestätigt. Du bist fest dabei — wir haben dir eine Bestätigungsmail geschickt."
+            : "Diese Veranstaltung ist kostenlos — du bist fest dabei! Wir haben dir eine Bestätigungsmail geschickt."}
         </div>
       ) : (
         <div className="mt-6 bg-white border rounded-xl p-6 space-y-4 shadow-sm">

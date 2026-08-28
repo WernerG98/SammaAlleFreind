@@ -1,8 +1,10 @@
+import crypto from "node:crypto";
 import { prisma, isRegistrationOpen } from "./_lib/db.js";
 import {
   sendEmail,
   buildInterestConfirmationHtml,
   buildWaitlistConfirmationHtml,
+  buildConfirmationEmailHtml,
 } from "./_lib/email.js";
 
 function isValidEmail(email) {
@@ -77,6 +79,8 @@ export default async function handler(req, res) {
     return res.status(409).json({ error: "Diese E-Mail-Adresse ist für diese Veranstaltung bereits angemeldet." });
   }
 
+  const isFree = !event.pricePerPerson;
+
   const registration = await prisma.registration.create({
     data: {
       eventId,
@@ -85,8 +89,26 @@ export default async function handler(req, res) {
       lastName: lastName.trim(),
       email: email.toLowerCase().trim(),
       newsletterOptIn: Boolean(newsletterOptIn),
+      paid: isFree,
+      paidAt: isFree ? new Date() : null,
     },
   });
+
+  if (isFree) {
+    if (newsletterOptIn) {
+      await prisma.newsletterSubscriber.upsert({
+        where: { email: registration.email },
+        update: {},
+        create: { email: registration.email, unsubscribeToken: crypto.randomBytes(24).toString("hex") },
+      });
+    }
+
+    await sendEmail({
+      to: registration.email,
+      subject: `Bestätigung: ${event.title}`,
+      html: buildConfirmationEmailHtml({ firstName: registration.firstName, event, busName: bus.name }),
+    });
+  }
 
   return res.status(201).json({ id: registration.id });
 }

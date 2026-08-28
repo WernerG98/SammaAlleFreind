@@ -257,16 +257,23 @@ export default function EventPage() {
             Ich möchte den Newsletter zu zukünftigen Veranstaltungen erhalten.
           </label>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 space-y-1">
-            <p>
-              Das Geld wird nur bis 14 Tage vor der Veranstaltung zurückerstattet. Danach ist eine Rückerstattung
-              nicht mehr möglich.
-            </p>
-            <p>
-              Dein Platz ist erst reserviert, sobald deine Zahlung bei uns eingegangen und bestätigt ist — bis
-              dahin ist noch kein Platz für dich fest eingeplant.
-            </p>
-          </div>
+          {event.pricePerPerson ? (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 space-y-1">
+              <p>
+                Das Geld wird nur bis 14 Tage vor der Veranstaltung zurückerstattet. Danach ist eine
+                Rückerstattung nicht mehr möglich.
+              </p>
+              <p>
+                Dein Platz ist erst reserviert, sobald deine Zahlung bei uns eingegangen und bestätigt ist — bis
+                dahin ist noch kein Platz für dich fest eingeplant.
+              </p>
+            </div>
+          ) : (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800">
+              Diese Veranstaltung ist kostenlos — dein Platz ist direkt nach der Anmeldung fest für dich
+              reserviert.
+            </div>
+          )}
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
