@@ -17,6 +17,7 @@ export default function EventPage() {
   const [unlocking, setUnlocking] = useState(false);
   const [gasModalOpen, setGasModalOpen] = useState(false);
   const [showVollgasImage, setShowVollgasImage] = useState(false);
+  const [vollgasCountdown, setVollgasCountdown] = useState(5);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -79,12 +80,20 @@ export default function EventPage() {
 
   function handleVollgas() {
     setGasModalOpen(false);
+    setVollgasCountdown(5);
     setShowVollgasImage(true);
-    setTimeout(() => {
+  }
+
+  useEffect(() => {
+    if (!showVollgasImage) return;
+    if (vollgasCountdown <= 0) {
       setShowVollgasImage(false);
       submitRegistration();
-    }, 5000);
-  }
+      return;
+    }
+    const timer = setTimeout(() => setVollgasCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [showVollgasImage, vollgasCountdown]);
 
   async function handleWaitlistSubmit(e) {
     e.preventDefault();
@@ -488,7 +497,10 @@ export default function EventPage() {
 
       {showVollgasImage && (
         <div className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-50 px-4">
-          <p className="text-white text-2xl font-extrabold mb-4">Gute Wahl! :D</p>
+          <p className="text-white/80 text-sm font-semibold mb-2">
+            Weiterleitung in {vollgasCountdown}s…
+          </p>
+          <p className="text-white text-2xl font-extrabold mb-4">Gute Wahl! 😎</p>
           <img
             src="/Vollgas.jpg"
             alt="Vollgas"

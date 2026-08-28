@@ -4,10 +4,35 @@ import { api } from "../lib/api.js";
 import ContactForm from "../components/ContactForm.jsx";
 import NewsletterSignup from "../components/NewsletterSignup.jsx";
 
+function getEventMeta(event) {
+  if (event.locked) return { status: "locked" };
+  if (event.comingSoon) return { status: "comingSoon" };
+
+  const activeBuses = event.buses.filter((b) => b.enabled);
+  const hasUnlimitedBus = activeBuses.some((b) => b.capacity === null);
+  const totalCapacity = hasUnlimitedBus ? null : activeBuses.reduce((sum, b) => sum + b.capacity, 0);
+  const totalRemaining = hasUnlimitedBus ? null : activeBuses.reduce((sum, b) => sum + b.remaining, 0);
+  const soldOut = !hasUnlimitedBus && totalRemaining === 0;
+  const closed = !event.registrationOpen || soldOut;
+
+  return { status: closed ? "closed" : "open", totalCapacity, totalRemaining, soldOut, closed };
+}
+
+const STATUS_OPTIONS = [
+  { value: "all", label: "Alle Status" },
+  { value: "open", label: "🎉 Anmeldung möglich" },
+  { value: "locked", label: "🔒 Vorabzugang" },
+  { value: "comingSoon", label: "⏳ Coming Soon" },
+  { value: "closed", label: "⛔ Geschlossen/Ausgebucht" },
+];
+
 export default function HomePage() {
   const [events, setEvents] = useState(null);
   const [error, setError] = useState("");
   const [tab, setTab] = useState("ours");
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("date");
 
   useEffect(() => {
     api
@@ -16,7 +41,17 @@ export default function HomePage() {
       .catch((err) => setError(err.message));
   }, []);
 
-  const filteredEvents = events?.filter((event) => Boolean(event.isExternal) === (tab === "external"));
+  const visibleEvents = (events || [])
+    .filter((event) => Boolean(event.isExternal) === (tab === "external"))
+    .map((event) => ({ ...event, meta: getEventMeta(event) }))
+    .filter((event) => !search.trim() || event.title.toLowerCase().includes(search.trim().toLowerCase()))
+    .filter((event) => statusFilter === "all" || event.meta.status === statusFilter)
+    .sort((a, b) => {
+      if (sortBy === "name") return a.title.localeCompare(b.title, "de");
+      const da = a.eventDate ? new Date(a.eventDate).getTime() : Infinity;
+      const db = b.eventDate ? new Date(b.eventDate).getTime() : Infinity;
+      return da - db;
+    });
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
@@ -51,19 +86,50 @@ export default function HomePage() {
         </button>
       </div>
 
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        <input
+          type="text"
+          placeholder="Suche nach Titel…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="flex-1 min-w-[160px] border rounded-lg px-3 py-2 text-sm"
+        />
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="border rounded-lg px-3 py-2 text-sm"
+        >
+          {STATUS_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="border rounded-lg px-3 py-2 text-sm"
+        >
+          <option value="date">Sortieren: Datum</option>
+          <option value="name">Sortieren: Name</option>
+        </select>
+      </div>
+
       {error && <p className="text-red-600">{error}</p>}
       {!events && !error && <p className="text-gray-500">Lade...</p>}
-      {filteredEvents?.length === 0 && (
+      {events && visibleEvents.length === 0 && (
         <p className="text-gray-500">
-          {tab === "external"
-            ? "Aktuell keine externen Veranstaltungen gelistet."
-            : "Aktuell sind keine Veranstaltungen geplant."}
+          {events.filter((e) => Boolean(e.isExternal) === (tab === "external")).length === 0
+            ? tab === "external"
+              ? "Aktuell keine externen Veranstaltungen gelistet."
+              : "Aktuell sind keine Veranstaltungen geplant."
+            : "Keine Treffer für diese Filter."}
         </p>
       )}
 
       <div className="space-y-4">
-        {filteredEvents?.map((event) => {
-          if (event.locked) {
+        {visibleEvents.map((event) => {
+          if (event.meta.status === "locked") {
             return (
               <Link
                 key={event.id}
@@ -97,7 +163,7 @@ export default function HomePage() {
             );
           }
 
-          if (event.comingSoon) {
+          if (event.meta.status === "comingSoon") {
             return (
               <Link
                 key={event.id}
@@ -129,12 +195,7 @@ export default function HomePage() {
             );
           }
 
-          const activeBuses = event.buses.filter((b) => b.enabled);
-          const hasUnlimitedBus = activeBuses.some((b) => b.capacity === null);
-          const totalCapacity = hasUnlimitedBus ? null : activeBuses.reduce((sum, b) => sum + b.capacity, 0);
-          const totalRemaining = hasUnlimitedBus ? null : activeBuses.reduce((sum, b) => sum + b.remaining, 0);
-          const soldOut = !hasUnlimitedBus && totalRemaining === 0;
-          const closed = !event.registrationOpen || soldOut;
+          const { closed, soldOut, totalCapacity, totalRemaining } = event.meta;
 
           return (
             <Link
