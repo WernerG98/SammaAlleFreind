@@ -88,6 +88,12 @@ export default function HomePage() {
         </button>
       </div>
 
+      {tab === "external" && (
+        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-6">
+          Für die Inhalte der externen Veranstaltungen sind die jeweiligen Ansprechpersonen verantwortlich.
+        </p>
+      )}
+
       <div className="flex flex-wrap items-center gap-2 mb-6">
         <input
           type="text"
