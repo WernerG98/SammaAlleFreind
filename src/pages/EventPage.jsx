@@ -164,7 +164,9 @@ export default function EventPage() {
           })}
         </p>
       )}
-      {event.description && <p className="mt-4 text-gray-700 whitespace-pre-line">{event.description}</p>}
+      {event.description && (
+        <div className="mt-4 text-gray-700" dangerouslySetInnerHTML={{ __html: event.description }} />
+      )}
 
       {deadlinePassed ? (
         <div className="mt-8 bg-white border rounded-xl p-6 shadow-sm">
