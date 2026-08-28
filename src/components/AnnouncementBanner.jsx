@@ -23,7 +23,7 @@ export default function AnnouncementBanner() {
   }
 
   return (
-    <div className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-orange-500 text-white text-sm">
+    <div className="bg-gradient-to-r from-teal-900 via-teal-800 to-stone-800 text-white text-sm">
       <div className="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
         <p className="font-medium">
           Die neue Seite für unsere Veranstaltungen! Bugs bitte direkt melden, das würde uns sehr helfen. :)

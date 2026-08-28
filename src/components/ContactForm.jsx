@@ -22,7 +22,7 @@ export default function ContactForm() {
 
   return (
     <div className="mt-10 bg-white border rounded-xl p-5 shadow-sm">
-      <h2 className="font-semibold mb-1">Kontakt</h2>
+      <h2 className="font-semibold mb-1">💌 Kontakt</h2>
       <p className="text-sm text-gray-600 mb-4">
         Andere Zahlungsmethode, Anregungen für weitere Ausflüge oder einfach Feedback? Schreib uns kurz, wir
         melden uns bei dir.
@@ -70,7 +70,7 @@ export default function ContactForm() {
           <button
             type="submit"
             disabled={status === "submitting"}
-            className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
+            className="bg-teal-800 hover:bg-teal-900 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
           >
             {status === "submitting" ? "Wird gesendet…" : "Nachricht senden"}
           </button>

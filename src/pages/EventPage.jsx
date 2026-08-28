@@ -52,7 +52,7 @@ export default function EventPage() {
     return (
       <div className="max-w-lg mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold">{event.title}</h1>
-        <p className="mt-2 text-violet-600 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
+        <p className="mt-2 text-teal-600 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
         {event.description && <p className="mt-4 text-gray-700 whitespace-pre-line">{event.description}</p>}
 
         {interestDone ? (
@@ -103,7 +103,7 @@ export default function EventPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
             >
               {submitting ? "Wird gesendet…" : "Interesse bekunden"}
             </button>
@@ -206,8 +206,8 @@ export default function EventPage() {
                         full
                           ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                           : selected
-                            ? "border-violet-600 bg-violet-50 text-violet-800"
-                            : "border-gray-200 hover:border-violet-300"
+                            ? "border-teal-600 bg-teal-50 text-teal-800"
+                            : "border-gray-200 hover:border-teal-300"
                       }`}
                     >
                       <span className="font-medium flex items-center gap-1">
@@ -249,7 +249,7 @@ export default function EventPage() {
           <button
             type="submit"
             disabled={submitting || availableBuses.length === 0 || !form.busId}
-            className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
           >
             {submitting ? "Wird gesendet…" : "Anmelden"}
           </button>
