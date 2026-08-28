@@ -10,13 +10,19 @@ export default function PublicLayout() {
     <div className="min-h-screen w-full flex flex-col bg-gradient-to-br from-stone-200 via-stone-100 to-teal-100">
       <AnnouncementBanner />
 
-      <div className="w-full px-3 sm:px-4 pt-5 sm:pt-6">
-        <Link to="/" className="max-w-3xl mx-auto flex items-center gap-2 text-teal-950">
-          <img src="/Logo.png" alt="" className="h-9 w-9 rounded-full shadow-sm" />
-          <span className="flex flex-wrap items-baseline gap-x-2">
-            <span className="font-bold text-lg tracking-tight">SammaAlleFreind</span>
-            <span className="text-sm text-teal-800/80">
-              — Kampf gegen Langeweile in Arnstorf und Umgebung 😉
+      <div className="w-full px-3 sm:px-4 pt-6 sm:pt-8">
+        <Link to="/" className="max-w-3xl mx-auto flex items-center gap-3 sm:gap-4 text-teal-950">
+          <img
+            src="/Logo.png"
+            alt=""
+            className="h-16 w-16 sm:h-20 sm:w-20 rounded-full shadow-md ring-2 ring-white"
+          />
+          <span className="flex flex-col">
+            <span className="font-extrabold text-3xl sm:text-4xl tracking-tight text-teal-950">
+              SammaAlleFreind
+            </span>
+            <span className="text-sm sm:text-base font-medium text-teal-800/80">
+              Kampf gegen Langeweile in Arnstorf und Umgebung 😉
             </span>
           </span>
         </Link>
