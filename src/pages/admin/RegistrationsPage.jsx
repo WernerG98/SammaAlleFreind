@@ -84,6 +84,9 @@ export default function RegistrationsPage() {
   const [pendingId, setPendingId] = useState(null);
   const [toRemove, setToRemove] = useState(null);
   const [busFilter, setBusFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState("name");
+  const [sortDir, setSortDir] = useState("asc");
 
   function load() {
     api
@@ -108,8 +111,61 @@ export default function RegistrationsPage() {
     });
   }, [buses, registrations]);
 
-  const filteredRegistrations =
-    busFilter === "all" ? registrations : registrations.filter((r) => r.busId === busFilter);
+  function sortValue(reg, field) {
+    switch (field) {
+      case "name":
+        return `${reg.firstName} ${reg.lastName}`.toLowerCase();
+      case "email":
+        return reg.email.toLowerCase();
+      case "bus":
+        return reg.bus?.name?.toLowerCase() || "";
+      case "newsletter":
+        return reg.newsletterOptIn ? 1 : 0;
+      case "paid":
+        return reg.paid ? 1 : 0;
+      default:
+        return "";
+    }
+  }
+
+  function toggleSort(field) {
+    if (sortField === field) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  }
+
+  function SortHeader({ field, children }) {
+    const active = sortField === field;
+    return (
+      <th className="px-4 py-2">
+        <button
+          type="button"
+          onClick={() => toggleSort(field)}
+          className={`flex items-center gap-1 font-semibold ${active ? "text-gray-900" : "text-gray-500"}`}
+        >
+          {children}
+          <span className="text-xs">{active ? (sortDir === "asc" ? "▲" : "▼") : "↕"}</span>
+        </button>
+      </th>
+    );
+  }
+
+  const filteredRegistrations = registrations
+    .filter((r) => busFilter === "all" || r.busId === busFilter)
+    .filter((r) => {
+      if (!search.trim()) return true;
+      const q = search.trim().toLowerCase();
+      return `${r.firstName} ${r.lastName}`.toLowerCase().includes(q) || r.email.toLowerCase().includes(q);
+    })
+    .sort((a, b) => {
+      const va = sortValue(a, sortField);
+      const vb = sortValue(b, sortField);
+      const cmp = va < vb ? -1 : va > vb ? 1 : 0;
+      return sortDir === "asc" ? cmp : -cmp;
+    });
 
   async function togglePaid(reg) {
     setError("");
@@ -193,15 +249,23 @@ export default function RegistrationsPage() {
         </div>
       )}
 
+      <input
+        type="text"
+        placeholder="Suche nach Name oder E-Mail…"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full sm:w-72 border rounded px-3 py-2 text-sm mb-4"
+      />
+
       <div className="bg-white border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-gray-100 text-left">
             <tr>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">E-Mail</th>
-              <th className="px-4 py-2">Bus</th>
-              <th className="px-4 py-2">Newsletter</th>
-              <th className="px-4 py-2">Bezahlt</th>
+              <SortHeader field="name">Name</SortHeader>
+              <SortHeader field="email">E-Mail</SortHeader>
+              <SortHeader field="bus">Bus</SortHeader>
+              <SortHeader field="newsletter">Newsletter</SortHeader>
+              <SortHeader field="paid">Bezahlt</SortHeader>
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
