@@ -1,4 +1,12 @@
-export default function ConfirmDialog({ open, title, message, confirmLabel = "Entfernen", onConfirm, onCancel }) {
+export default function ConfirmDialog({
+  open,
+  title,
+  message,
+  confirmLabel = "Entfernen",
+  confirmDisabled = false,
+  onConfirm,
+  onCancel,
+}) {
   if (!open) return null;
 
   return (
@@ -17,7 +25,8 @@ export default function ConfirmDialog({ open, title, message, confirmLabel = "En
           <button
             type="button"
             onClick={onConfirm}
-            className="px-4 py-2 text-sm rounded bg-red-600 text-white hover:bg-red-700"
+            disabled={confirmDisabled}
+            className="px-4 py-2 text-sm rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
           >
             {confirmLabel}
           </button>

@@ -83,6 +83,8 @@ export default function RegistrationsPage() {
   const [error, setError] = useState("");
   const [pendingId, setPendingId] = useState(null);
   const [toRemove, setToRemove] = useState(null);
+  const [bulkRemoveStep, setBulkRemoveStep] = useState(0);
+  const [bulkRemoving, setBulkRemoving] = useState(false);
   const [busFilter, setBusFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState("name");
@@ -233,6 +235,20 @@ export default function RegistrationsPage() {
     }
   }
 
+  async function confirmBulkRemove() {
+    setError("");
+    setBulkRemoving(true);
+    try {
+      await api.delete(`/admin/registrations?eventId=${id}`);
+      setBulkRemoveStep(0);
+      load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBulkRemoving(false);
+    }
+  }
+
   return (
     <div>
       <Link to="/admin" className="text-sm text-teal-400 hover:underline">
@@ -290,6 +306,14 @@ export default function RegistrationsPage() {
           className="border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50 whitespace-nowrap"
         >
           ⬇️ CSV exportieren
+        </button>
+        <button
+          type="button"
+          onClick={() => setBulkRemoveStep(1)}
+          disabled={registrations.length === 0}
+          className="border border-red-800 rounded px-3 py-2 text-sm text-red-400 hover:bg-red-950/40 disabled:opacity-50 whitespace-nowrap"
+        >
+          🗑️ Alle Anmeldungen entfernen
         </button>
       </div>
 
@@ -399,6 +423,25 @@ export default function RegistrationsPage() {
         message={`${toRemove?.label} wird entfernt und erhält eine Info-E-Mail darüber. Das kann nicht rückgängig gemacht werden.`}
         onConfirm={confirmRemove}
         onCancel={() => setToRemove(null)}
+      />
+
+      <ConfirmDialog
+        open={bulkRemoveStep === 1}
+        title="Wirklich ALLE Anmeldungen entfernen?"
+        message={`Alle ${registrations.length} Anmeldungen für diese Veranstaltung werden entfernt, jede Person erhält eine Info-E-Mail darüber.`}
+        confirmLabel="Weiter"
+        onConfirm={() => setBulkRemoveStep(2)}
+        onCancel={() => setBulkRemoveStep(0)}
+      />
+
+      <ConfirmDialog
+        open={bulkRemoveStep === 2}
+        title="Bist du dir wirklich sicher?"
+        message="Das kann nicht rückgängig gemacht werden. Alle Anmeldungen für diese Veranstaltung werden endgültig gelöscht."
+        confirmLabel={bulkRemoving ? "Wird entfernt…" : "Endgültig entfernen"}
+        confirmDisabled={bulkRemoving}
+        onConfirm={confirmBulkRemove}
+        onCancel={() => setBulkRemoveStep(0)}
       />
     </div>
   );
