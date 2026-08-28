@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../lib/api.js";
 
-const emptyBus = () => ({ name: "", capacity: "" });
+const emptyBus = () => ({ name: "", capacity: "", enabled: true });
 
 function toDateInputValue(date) {
   return new Date(date).toISOString().slice(0, 10);
@@ -218,6 +218,14 @@ export default function EventFormPage() {
                       value={bus.capacity}
                       onChange={(e) => updateBus(i, "capacity", e.target.value)}
                     />
+                    <label className="flex items-center gap-1 text-xs text-gray-600 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={bus.enabled !== false}
+                        onChange={(e) => updateBus(i, "enabled", e.target.checked)}
+                      />
+                      buchbar
+                    </label>
                     {buses.length > 1 && (
                       <button
                         type="button"

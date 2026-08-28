@@ -94,6 +94,7 @@ export default async function handler(req, res) {
           create: (buses || []).map((bus) => ({
             name: bus.name.trim(),
             capacity: Number(bus.capacity),
+            enabled: bus.enabled !== undefined ? Boolean(bus.enabled) : true,
           })),
         },
       },

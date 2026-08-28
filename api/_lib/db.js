@@ -31,6 +31,7 @@ export function withRemainingSeats(event) {
         id: bus.id,
         name: bus.name,
         capacity: bus.capacity,
+        enabled: bus.enabled,
         remaining: Math.max(0, bus.capacity - paidCount),
       };
     }),

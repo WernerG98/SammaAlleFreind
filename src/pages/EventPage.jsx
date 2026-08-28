@@ -9,6 +9,8 @@ export default function EventPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [interestDone, setInterestDone] = useState(false);
+  const [showWaitlistForm, setShowWaitlistForm] = useState(false);
+  const [waitlistDone, setWaitlistDone] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -35,6 +37,20 @@ export default function EventPage() {
       } else {
         navigate(`/anmeldung/${result.id}/zahlung`);
       }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleWaitlistSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
+    try {
+      await api.post("/register", { eventId: event.id, ...form, waitlist: true });
+      setWaitlistDone(true);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -113,7 +129,8 @@ export default function EventPage() {
     );
   }
 
-  const availableBuses = event.buses.filter((b) => b.remaining > 0);
+  const availableBuses = event.buses.filter((b) => b.enabled && b.remaining > 0);
+  const allFull = availableBuses.length === 0;
   const deadlinePassed = !event.registrationOpen;
 
   return (
@@ -189,39 +206,38 @@ export default function EventPage() {
 
           <div>
             <label className="block text-sm font-medium mb-2">Bus</label>
-            {availableBuses.length === 0 ? (
-              <p className="text-sm text-red-600">Alle Busse sind ausgebucht.</p>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                {event.buses.map((bus) => {
-                  const full = bus.remaining === 0;
-                  const selected = form.busId === bus.id;
-                  return (
-                    <button
-                      type="button"
-                      key={bus.id}
-                      disabled={full}
-                      onClick={() => setForm({ ...form, busId: bus.id })}
-                      className={`rounded-lg border-2 px-3 py-2 text-left text-sm transition-colors ${
-                        full
-                          ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                          : selected
-                            ? "border-teal-600 bg-teal-50 text-teal-800"
-                            : "border-gray-200 hover:border-teal-300"
-                      }`}
-                    >
-                      <span className="font-medium flex items-center gap-1">
-                        {full && <span aria-hidden="true">🔒</span>}
-                        {bus.name}
-                      </span>
-                      <span className="block text-xs mt-0.5">
-                        {full ? "ausgebucht" : `noch ${bus.remaining} Plätze frei`}
-                      </span>
-                    </button>
+            {allFull && <p className="text-sm text-red-600 mb-2">Alle Busse sind ausgebucht.</p>}
+            <div className="grid grid-cols-2 gap-2">
+              {event.buses.map((bus) => {
+                const full = bus.enabled && bus.remaining === 0;
+                const comingSoonBus = !bus.enabled;
+                const disabled = full || comingSoonBus;
+                const selected = form.busId === bus.id;
+                return (
+                  <button
+                    type="button"
+                    key={bus.id}
+                    disabled={disabled}
+                    onClick={() => setForm({ ...form, busId: bus.id })}
+                    className={`rounded-lg border-2 px-3 py-2 text-left text-sm transition-colors ${
+                      disabled
+                        ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                        : selected
+                          ? "border-teal-600 bg-teal-50 text-teal-800"
+                          : "border-gray-200 hover:border-teal-300"
+                    }`}
+                  >
+                    <span className="font-medium flex items-center gap-1">
+                      {disabled && <span aria-hidden="true">{comingSoonBus ? "⏳" : "🔒"}</span>}
+                      {bus.name}
+                    </span>
+                    <span className="block text-xs mt-0.5">
+                      {comingSoonBus ? "bald verfügbar" : full ? "ausgebucht" : `noch ${bus.remaining} Plätze frei`}
+                    </span>
+                  </button>
                   );
                 })}
               </div>
-            )}
           </div>
 
           <label className="flex items-center gap-2 text-sm">
@@ -254,6 +270,70 @@ export default function EventPage() {
             {submitting ? "Wird gesendet…" : "Anmelden"}
           </button>
         </form>
+      )}
+
+      {!deadlinePassed && allFull && (
+        <>
+          {waitlistDone ? (
+            <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-emerald-800">
+              Danke! Du stehst jetzt auf der Warteliste — wir melden uns, sobald ein Platz frei wird.
+            </div>
+          ) : !showWaitlistForm ? (
+            <button
+              type="button"
+              onClick={() => setShowWaitlistForm(true)}
+              className="mt-4 w-full text-center text-sm text-teal-700 hover:text-teal-900 underline"
+            >
+              Alle Plätze vergeben? Jetzt auf die Warteliste setzen
+            </button>
+          ) : (
+            <form onSubmit={handleWaitlistSubmit} className="mt-4 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
+              <h2 className="font-semibold">Auf die Warteliste setzen</h2>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Vorname</label>
+                  <input
+                    required
+                    className="w-full border rounded-lg px-3 py-2"
+                    value={form.firstName}
+                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Name</label>
+                  <input
+                    required
+                    className="w-full border rounded-lg px-3 py-2"
+                    value={form.lastName}
+                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">E-Mail-Adresse</label>
+                <input
+                  required
+                  type="email"
+                  className="w-full border rounded-lg px-3 py-2"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </div>
+
+              {error && <p className="text-sm text-red-600">{error}</p>}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+              >
+                {submitting ? "Wird gesendet…" : "Auf die Warteliste setzen"}
+              </button>
+            </form>
+          )}
+        </>
       )}
     </div>
   );

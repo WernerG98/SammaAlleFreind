@@ -181,12 +181,12 @@ export default function RegistrationsPage() {
               className={`text-xs px-3 py-1.5 rounded-full border flex items-center gap-1 ${
                 busFilter === bus.id
                   ? "bg-gray-900 text-white border-gray-900"
-                  : bus.full
+                  : bus.full || !bus.enabled
                     ? "bg-gray-200 text-gray-500 border-gray-200"
                     : "bg-white text-gray-700"
               }`}
             >
-              {bus.full && <span aria-hidden="true">🔒</span>}
+              {(bus.full || !bus.enabled) && <span aria-hidden="true">{bus.enabled ? "🔒" : "⏳"}</span>}
               {bus.name} ({bus.paidCount}/{bus.capacity})
             </button>
           ))}

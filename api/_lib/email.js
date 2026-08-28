@@ -64,6 +64,17 @@ export function buildInterestConfirmationHtml({ firstName, event }) {
   `;
 }
 
+export function buildWaitlistConfirmationHtml({ firstName, event }) {
+  return `
+    <h2>Du stehst auf der Warteliste</h2>
+    <p>Hallo ${firstName},</p>
+    <p>
+      aktuell sind bei <strong>${event.title}</strong> leider alle Plätze vergeben. Wir haben dich auf die
+      Warteliste gesetzt und melden uns, sobald wieder ein Platz frei wird.
+    </p>
+  `;
+}
+
 export function buildRegistrationRemovedHtml({ firstName, event }) {
   return `
     <h2>Deine Anmeldung wurde entfernt</h2>

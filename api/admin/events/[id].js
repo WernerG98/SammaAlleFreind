@@ -62,14 +62,23 @@ export default async function handler(req, res) {
         .map((b) =>
           prisma.bus.update({
             where: { id: b.id },
-            data: { name: b.name.trim(), capacity: Number(b.capacity) },
+            data: {
+              name: b.name.trim(),
+              capacity: Number(b.capacity),
+              enabled: b.enabled !== undefined ? Boolean(b.enabled) : true,
+            },
           })
         ),
       ...busList
         .filter((b) => !b.id)
         .map((b) =>
           prisma.bus.create({
-            data: { eventId: id, name: b.name.trim(), capacity: Number(b.capacity) },
+            data: {
+              eventId: id,
+              name: b.name.trim(),
+              capacity: Number(b.capacity),
+              enabled: b.enabled !== undefined ? Boolean(b.enabled) : true,
+            },
           })
         ),
       prisma.event.update({
