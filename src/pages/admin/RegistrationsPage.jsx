@@ -27,10 +27,10 @@ function BulkEmailForm({ eventId }) {
   }
 
   return (
-    <div className="mt-8 bg-white border rounded-lg p-5">
-      <h2 className="font-semibold mb-3">E-Mail an Teilnehmer senden</h2>
+    <div className="mt-8 bg-gray-900 border border-gray-800 rounded-lg p-5">
+      <h2 className="font-semibold mb-3 text-gray-100">E-Mail an Teilnehmer senden</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="flex gap-4 text-sm">
+        <div className="flex gap-4 text-sm text-gray-300">
           <label className="flex items-center gap-2">
             <input type="radio" checked={target === "paid"} onChange={() => setTarget("paid")} />
             Fix dabei (bezahlt)
@@ -43,7 +43,7 @@ function BulkEmailForm({ eventId }) {
         <input
           required
           placeholder="Betreff"
-          className="w-full border rounded px-3 py-2 text-sm"
+          className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
         />
@@ -51,14 +51,14 @@ function BulkEmailForm({ eventId }) {
           required
           rows={5}
           placeholder="Inhalt (HTML wird unterstützt)"
-          className="w-full border rounded px-3 py-2 text-sm font-mono"
+          className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm font-mono focus:outline-none focus:border-teal-500"
           value={bodyHtml}
           onChange={(e) => setBodyHtml(e.target.value)}
         />
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-400">{error}</p>}
         {result && (
-          <p className="text-sm text-green-700">
+          <p className="text-sm text-emerald-400">
             Versendet an {result.sent} von {result.total} Personen.
             {result.failed.length > 0 && ` Fehlgeschlagen: ${result.failed.join(", ")}`}
           </p>
@@ -67,7 +67,7 @@ function BulkEmailForm({ eventId }) {
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="bg-gray-900 text-white rounded px-4 py-2 text-sm font-medium disabled:opacity-50"
+          className="bg-teal-600 hover:bg-teal-500 text-white rounded px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
         >
           {status === "submitting" ? "Wird gesendet…" : "Senden"}
         </button>
@@ -144,7 +144,7 @@ export default function RegistrationsPage() {
         <button
           type="button"
           onClick={() => toggleSort(field)}
-          className={`flex items-center gap-1 font-semibold ${active ? "text-gray-900" : "text-gray-500"}`}
+          className={`flex items-center gap-1 font-semibold ${active ? "text-gray-100" : "text-gray-500"}`}
         >
           {children}
           <span className="text-xs">{active ? (sortDir === "asc" ? "▲" : "▼") : "↕"}</span>
@@ -235,12 +235,12 @@ export default function RegistrationsPage() {
 
   return (
     <div>
-      <Link to="/admin" className="text-sm text-blue-600 hover:underline">
+      <Link to="/admin" className="text-sm text-teal-400 hover:underline">
         ← Zurück zur Übersicht
       </Link>
-      <h1 className="text-2xl font-bold mt-2 mb-6">Anmeldungen</h1>
+      <h1 className="text-2xl font-bold mt-2 mb-6 text-gray-100">Anmeldungen</h1>
 
-      {error && <p className="text-red-600 mb-4">{error}</p>}
+      {error && <p className="text-red-400 mb-4">{error}</p>}
 
       {buses.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
@@ -248,7 +248,9 @@ export default function RegistrationsPage() {
             type="button"
             onClick={() => setBusFilter("all")}
             className={`text-xs px-3 py-1.5 rounded-full border ${
-              busFilter === "all" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-700"
+              busFilter === "all"
+                ? "bg-teal-600 text-white border-teal-600"
+                : "bg-gray-900 text-gray-300 border-gray-700"
             }`}
           >
             Alle
@@ -260,10 +262,10 @@ export default function RegistrationsPage() {
               onClick={() => setBusFilter(bus.id)}
               className={`text-xs px-3 py-1.5 rounded-full border flex items-center gap-1 ${
                 busFilter === bus.id
-                  ? "bg-gray-900 text-white border-gray-900"
+                  ? "bg-teal-600 text-white border-teal-600"
                   : bus.full || !bus.enabled
-                    ? "bg-gray-200 text-gray-500 border-gray-200"
-                    : "bg-white text-gray-700"
+                    ? "bg-gray-800 text-gray-500 border-gray-700"
+                    : "bg-gray-900 text-gray-300 border-gray-700"
               }`}
             >
               {(bus.full || !bus.enabled) && <span aria-hidden="true">{bus.enabled ? "🔒" : "⏳"}</span>}
@@ -279,21 +281,21 @@ export default function RegistrationsPage() {
           placeholder="Suche nach Name oder E-Mail…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:w-72 border rounded px-3 py-2 text-sm"
+          className="w-full sm:w-72 border border-gray-700 bg-gray-900 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
         />
         <button
           type="button"
           onClick={exportCsv}
           disabled={filteredRegistrations.length === 0}
-          className="border rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
+          className="border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50 whitespace-nowrap"
         >
           ⬇️ CSV exportieren
         </button>
       </div>
 
-      <div className="bg-white border rounded-lg overflow-x-auto">
+      <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
         <table className="w-full text-sm min-w-[640px]">
-          <thead className="bg-gray-100 text-left">
+          <thead className="bg-gray-800 text-left">
             <tr>
               <SortHeader field="name">Name</SortHeader>
               <SortHeader field="email">E-Mail</SortHeader>
@@ -305,14 +307,14 @@ export default function RegistrationsPage() {
           </thead>
           <tbody>
             {filteredRegistrations.map((reg) => (
-              <tr key={reg.id} className="border-t">
+              <tr key={reg.id} className="border-t border-gray-800 text-gray-200">
                 <td className="px-4 py-2">
                   {reg.firstName} {reg.lastName}
                 </td>
                 <td className="px-4 py-2">{reg.email}</td>
                 <td className="px-4 py-2">
                   <select
-                    className="border rounded px-2 py-1 text-xs"
+                    className="border border-gray-700 bg-gray-800 text-gray-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-teal-500"
                     value={reg.busId}
                     disabled={pendingId === reg.id}
                     onChange={(e) => changeBus(reg, e.target.value)}
@@ -338,7 +340,7 @@ export default function RegistrationsPage() {
                     type="button"
                     disabled={pendingId === reg.id}
                     onClick={() => setToRemove({ id: reg.id, label: `${reg.firstName} ${reg.lastName}` })}
-                    className="text-red-600 hover:underline text-xs"
+                    className="text-red-400 hover:underline text-xs"
                   >
                     Entfernen
                   </button>
@@ -354,19 +356,19 @@ export default function RegistrationsPage() {
 
       {interests.length > 0 && (
         <div className="mt-8">
-          <h2 className="font-semibold mb-3">Interessenten (Coming Soon)</h2>
-          <div className="bg-white border rounded-lg overflow-x-auto">
+          <h2 className="font-semibold mb-3 text-gray-100">Interessenten (Coming Soon)</h2>
+          <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
             <table className="w-full text-sm min-w-[420px]">
-              <thead className="bg-gray-100 text-left">
+              <thead className="bg-gray-800 text-left">
                 <tr>
-                  <th className="px-4 py-2">Name</th>
-                  <th className="px-4 py-2">E-Mail</th>
+                  <th className="px-4 py-2 text-gray-300">Name</th>
+                  <th className="px-4 py-2 text-gray-300">E-Mail</th>
                   <th className="px-4 py-2"></th>
                 </tr>
               </thead>
               <tbody>
                 {interests.map((int) => (
-                  <tr key={int.id} className="border-t">
+                  <tr key={int.id} className="border-t border-gray-800 text-gray-200">
                     <td className="px-4 py-2">
                       {int.firstName} {int.lastName}
                     </td>
@@ -376,7 +378,7 @@ export default function RegistrationsPage() {
                         type="button"
                         disabled={pendingId === int.id}
                         onClick={() => setToRemove({ id: int.id, label: `${int.firstName} ${int.lastName}` })}
-                        className="text-red-600 hover:underline text-xs"
+                        className="text-red-400 hover:underline text-xs"
                       >
                         Entfernen
                       </button>

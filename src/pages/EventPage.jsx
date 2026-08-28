@@ -112,7 +112,7 @@ export default function EventPage() {
   }
 
   if (error && !event) {
-    return <p className="max-w-lg mx-auto px-4 py-12 text-red-600">{error}</p>;
+    return <p className="max-w-lg mx-auto px-4 py-12 text-red-400">{error}</p>;
   }
   if (!event) {
     return <p className="max-w-lg mx-auto px-4 py-12 text-gray-500">Lade...</p>;
@@ -120,26 +120,26 @@ export default function EventPage() {
   if (event.locked) {
     return (
       <div className="max-w-lg mx-auto px-4 py-12">
-        <h1 className="text-2xl font-bold">{event.title}</h1>
-        <p className="mt-2 text-amber-700 font-semibold">🔒 Vorabzugang — nur mit Passwort sichtbar.</p>
+        <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
+        <p className="mt-2 text-amber-400 font-semibold">🔒 Vorabzugang — nur mit Passwort sichtbar.</p>
 
-        <form onSubmit={handleUnlock} className="mt-8 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
+        <form onSubmit={handleUnlock} className="mt-8 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
           <div>
-            <label className="block text-sm font-medium mb-1">Passwort</label>
+            <label className="block text-sm font-medium mb-1 text-gray-300">Passwort</label>
             <input
               required
               type="password"
               autoFocus
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
               value={passwordInput}
               onChange={(e) => setPasswordInput(e.target.value)}
             />
           </div>
-          {unlockError && <p className="text-sm text-red-600">{unlockError}</p>}
+          {unlockError && <p className="text-sm text-red-400">{unlockError}</p>}
           <button
             type="submit"
             disabled={unlocking}
-            className="w-full bg-amber-600 hover:bg-amber-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+            className="w-full bg-amber-600 hover:bg-amber-500 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
           >
             {unlocking ? "Wird geprüft…" : "Freischalten"}
           </button>
@@ -150,9 +150,9 @@ export default function EventPage() {
   if (event.comingSoon) {
     return (
       <div className="max-w-lg mx-auto px-4 py-12">
-        <h1 className="text-2xl font-bold">{event.title}</h1>
+        <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
         {event.isExternal && (
-          <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 inline-block">
+          <p className="mt-2 text-xs text-amber-300 bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2 inline-block">
             🤝 Veranstaltet von {event.externalOrganizer || "einem externen Verein"}
             {event.externalContactEmail && (
               <>
@@ -165,38 +165,38 @@ export default function EventPage() {
             )}
           </p>
         )}
-        <p className="mt-2 text-teal-600 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
+        <p className="mt-2 text-teal-400 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
         {event.description && (
-          <div className="mt-4 text-gray-700" dangerouslySetInnerHTML={{ __html: event.description }} />
+          <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
         )}
 
         {interestDone ? (
-          <div className="mt-8 bg-emerald-50 border border-emerald-200 rounded-lg p-5 text-emerald-800">
+          <div className="mt-8 bg-emerald-950/40 border border-emerald-800 rounded-lg p-5 text-emerald-300">
             Danke! Du stehst jetzt auf der Interessentenliste — wir melden uns, sobald es Details gibt.
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
+          <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
             <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
-            <h2 className="font-semibold">Interesse bekunden</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="font-semibold text-gray-100">Interesse bekunden</h2>
+            <p className="text-sm text-gray-400">
               Trag dich schon jetzt unverbindlich auf die Liste ein, wir informieren dich, sobald es losgeht.
             </p>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Vorname</label>
+                <label className="block text-sm font-medium mb-1 text-gray-300">Vorname</label>
                 <input
                   required
-                  className="w-full border rounded-lg px-3 py-2"
+                  className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
                   value={form.firstName}
                   onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
+                <label className="block text-sm font-medium mb-1 text-gray-300">Name</label>
                 <input
                   required
-                  className="w-full border rounded-lg px-3 py-2"
+                  className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
                   value={form.lastName}
                   onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                 />
@@ -204,22 +204,22 @@ export default function EventPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">E-Mail-Adresse</label>
+              <label className="block text-sm font-medium mb-1 text-gray-300">E-Mail-Adresse</label>
               <input
                 required
                 type="email"
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
             </div>
 
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && <p className="text-sm text-red-400">{error}</p>}
 
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+              className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
             >
               {submitting ? "Wird gesendet…" : "Interesse bekunden"}
             </button>
@@ -243,9 +243,9 @@ export default function EventPage() {
         />
       )}
 
-      <h1 className="text-2xl font-bold">{event.title}</h1>
+      <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
       {event.isExternal && (
-        <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 inline-block">
+        <p className="mt-2 text-xs text-amber-300 bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2 inline-block">
           🤝 Veranstaltet von {event.externalOrganizer || "einem externen Verein"}
           {event.externalContactEmail && (
             <>
@@ -258,7 +258,7 @@ export default function EventPage() {
           )}
         </p>
       )}
-      <p className="text-sm text-gray-500 mt-1">
+      <p className="text-sm text-gray-400 mt-1">
         {new Date(event.eventDate).toLocaleDateString("de-DE", {
           timeZone: "Europe/Berlin",
           weekday: "long",
@@ -275,7 +275,7 @@ export default function EventPage() {
         Uhr
       </p>
       {event.registrationDeadline && !deadlinePassed && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-400">
           Anmeldeschluss:{" "}
           {new Date(event.registrationDeadline).toLocaleDateString("de-DE", {
             day: "2-digit",
@@ -285,33 +285,33 @@ export default function EventPage() {
         </p>
       )}
       {event.description && (
-        <div className="mt-4 text-gray-700" dangerouslySetInnerHTML={{ __html: event.description }} />
+        <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
       )}
 
       {deadlinePassed ? (
-        <div className="mt-8 bg-white border rounded-xl p-6 shadow-sm">
-          <p className="text-red-600 font-medium">Die Anmeldefrist für diese Veranstaltung ist abgelaufen.</p>
+        <div className="mt-8 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
+          <p className="text-red-400 font-medium">Die Anmeldefrist für diese Veranstaltung ist abgelaufen.</p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
           <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
-          <h2 className="font-semibold">Anmeldung</h2>
+          <h2 className="font-semibold text-gray-100">Anmeldung</h2>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Vorname</label>
+              <label className="block text-sm font-medium mb-1 text-gray-300">Vorname</label>
               <input
                 required
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
                 value={form.firstName}
                 onChange={(e) => setForm({ ...form, firstName: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Name</label>
+              <label className="block text-sm font-medium mb-1 text-gray-300">Name</label>
               <input
                 required
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
                 value={form.lastName}
                 onChange={(e) => setForm({ ...form, lastName: e.target.value })}
               />
@@ -319,19 +319,19 @@ export default function EventPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">E-Mail-Adresse</label>
+            <label className="block text-sm font-medium mb-1 text-gray-300">E-Mail-Adresse</label>
             <input
               required
               type="email"
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Bus</label>
-            {allFull && <p className="text-sm text-red-600 mb-2">Alle Busse sind ausgebucht.</p>}
+            <label className="block text-sm font-medium mb-2 text-gray-300">Bus</label>
+            {allFull && <p className="text-sm text-red-400 mb-2">Alle Busse sind ausgebucht.</p>}
             <div className="grid grid-cols-2 gap-2">
               {event.buses.map((bus) => {
                 const full = bus.enabled && bus.remaining === 0;
@@ -346,10 +346,10 @@ export default function EventPage() {
                     onClick={() => setForm({ ...form, busId: bus.id })}
                     className={`rounded-lg border-2 px-3 py-2 text-left text-sm transition-colors ${
                       disabled
-                        ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                        ? "bg-gray-800 border-gray-700 text-gray-500 cursor-not-allowed"
                         : selected
-                          ? "border-teal-600 bg-teal-50 text-teal-800"
-                          : "border-gray-200 hover:border-teal-300"
+                          ? "border-teal-500 bg-teal-950/40 text-teal-300"
+                          : "border-gray-700 text-gray-300 hover:border-teal-600"
                     }`}
                   >
                     <span className="font-medium flex items-center gap-1">
@@ -372,7 +372,7 @@ export default function EventPage() {
           </div>
 
           <div>
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2 text-sm text-gray-300">
               <input
                 type="checkbox"
                 checked={form.newsletterOptIn}
@@ -389,7 +389,7 @@ export default function EventPage() {
           </div>
 
           {event.pricePerPerson ? (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 space-y-1">
+            <div className="bg-amber-950/40 border border-amber-800 rounded-lg p-3 text-xs text-amber-300 space-y-1">
               <p>
                 Das Geld wird nur bis 14 Tage vor der Veranstaltung zurückerstattet. Danach ist eine
                 Rückerstattung nicht mehr möglich.
@@ -400,18 +400,18 @@ export default function EventPage() {
               </p>
             </div>
           ) : (
-            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800">
+            <div className="bg-emerald-950/40 border border-emerald-800 rounded-lg p-3 text-xs text-emerald-300">
               Diese Veranstaltung ist kostenlos — dein Platz ist direkt nach der Anmeldung fest für dich
               reserviert.
             </div>
           )}
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-red-400">{error}</p>}
 
           <button
             type="submit"
             disabled={submitting || availableBuses.length === 0 || !form.busId}
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+            className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
           >
             {submitting ? "Wird gesendet…" : "Anmelden"}
           </button>
@@ -421,37 +421,37 @@ export default function EventPage() {
       {!deadlinePassed && allFull && (
         <>
           {waitlistDone ? (
-            <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-emerald-800">
+            <div className="mt-4 bg-emerald-950/40 border border-emerald-800 rounded-xl p-5 text-emerald-300">
               Danke! Du stehst jetzt auf der Warteliste — wir melden uns, sobald ein Platz frei wird.
             </div>
           ) : !showWaitlistForm ? (
             <button
               type="button"
               onClick={() => setShowWaitlistForm(true)}
-              className="mt-4 w-full text-center text-sm text-teal-700 hover:text-teal-900 underline"
+              className="mt-4 w-full text-center text-sm text-teal-400 hover:text-teal-300 underline"
             >
               Alle Plätze vergeben? Jetzt auf die Warteliste setzen
             </button>
           ) : (
-            <form onSubmit={handleWaitlistSubmit} className="mt-4 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
+            <form onSubmit={handleWaitlistSubmit} className="mt-4 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
               <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
-              <h2 className="font-semibold">Auf die Warteliste setzen</h2>
+              <h2 className="font-semibold text-gray-100">Auf die Warteliste setzen</h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Vorname</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">Vorname</label>
                   <input
                     required
-                    className="w-full border rounded-lg px-3 py-2"
+                    className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
                     value={form.firstName}
                     onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Name</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">Name</label>
                   <input
                     required
-                    className="w-full border rounded-lg px-3 py-2"
+                    className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
                     value={form.lastName}
                     onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                   />
@@ -459,22 +459,22 @@ export default function EventPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">E-Mail-Adresse</label>
+                <label className="block text-sm font-medium mb-1 text-gray-300">E-Mail-Adresse</label>
                 <input
                   required
                   type="email"
-                  className="w-full border rounded-lg px-3 py-2"
+                  className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                 />
               </div>
 
-              {error && <p className="text-sm text-red-600">{error}</p>}
+              {error && <p className="text-sm text-red-400">{error}</p>}
 
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+                className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
               >
                 {submitting ? "Wird gesendet…" : "Auf die Warteliste setzen"}
               </button>
@@ -484,14 +484,14 @@ export default function EventPage() {
       )}
 
       {gasModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center">
-            <h3 className="font-semibold text-lg mb-4">🚌💨 Wie viel Gas willst du geben?</h3>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl shadow-xl max-w-sm w-full p-6 text-center">
+            <h3 className="font-semibold text-lg mb-4 text-gray-100">🚌💨 Wie viel Gas willst du geben?</h3>
             <div className="flex flex-col gap-3">
               <button
                 type="button"
                 onClick={handleVollgas}
-                className="w-full bg-red-600 hover:bg-red-700 text-white rounded-lg py-3 font-bold text-lg transition-colors"
+                className="w-full bg-red-600 hover:bg-red-500 text-white rounded-lg py-3 font-bold text-lg transition-colors"
               >
                 Vollgas
               </button>
@@ -499,7 +499,7 @@ export default function EventPage() {
                 type="button"
                 disabled
                 title="Nicht auswählbar."
-                className="w-full bg-gray-100 text-gray-400 rounded-lg py-3 font-medium cursor-not-allowed"
+                className="w-full bg-gray-800 text-gray-500 rounded-lg py-3 font-medium cursor-not-allowed"
               >
                 Kein Gas
               </button>

@@ -21,13 +21,13 @@ export default function RichTextEditor({ value, onChange }) {
   }
 
   return (
-    <div className="border rounded-lg overflow-hidden">
-      <div className="flex gap-1 border-b bg-gray-50 px-2 py-1">
+    <div className="border border-gray-700 rounded-lg overflow-hidden">
+      <div className="flex gap-1 border-b border-gray-700 bg-gray-800 px-2 py-1">
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => exec("bold")}
-          className="w-7 h-7 rounded hover:bg-gray-200 font-bold text-sm"
+          className="w-7 h-7 rounded hover:bg-gray-700 text-gray-200 font-bold text-sm"
           title="Fett"
         >
           B
@@ -36,7 +36,7 @@ export default function RichTextEditor({ value, onChange }) {
           type="button"
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => exec("italic")}
-          className="w-7 h-7 rounded hover:bg-gray-200 italic text-sm"
+          className="w-7 h-7 rounded hover:bg-gray-700 text-gray-200 italic text-sm"
           title="Kursiv"
         >
           I
@@ -45,7 +45,7 @@ export default function RichTextEditor({ value, onChange }) {
           type="button"
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => exec("underline")}
-          className="w-7 h-7 rounded hover:bg-gray-200 underline text-sm"
+          className="w-7 h-7 rounded hover:bg-gray-700 text-gray-200 underline text-sm"
           title="Unterstrichen"
         >
           U
@@ -55,7 +55,7 @@ export default function RichTextEditor({ value, onChange }) {
         ref={ref}
         contentEditable
         onInput={handleInput}
-        className="w-full px-3 py-2 min-h-[120px] focus:outline-none text-sm"
+        className="w-full px-3 py-2 min-h-[120px] bg-gray-800 text-gray-100 focus:outline-none text-sm"
         suppressContentEditableWarning
       />
     </div>

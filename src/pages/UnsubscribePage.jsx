@@ -21,8 +21,8 @@ export default function UnsubscribePage() {
   return (
     <div className="max-w-lg mx-auto px-4 py-12 text-center">
       {status === "pending" && <p className="text-gray-500">Wird bearbeitet...</p>}
-      {status === "done" && <p>Du wurdest erfolgreich vom Newsletter abgemeldet.</p>}
-      {status === "error" && <p className="text-red-600">Dieser Abmelde-Link ist ungültig oder wurde bereits verwendet.</p>}
+      {status === "done" && <p className="text-gray-300">Du wurdest erfolgreich vom Newsletter abgemeldet.</p>}
+      {status === "error" && <p className="text-red-400">Dieser Abmelde-Link ist ungültig oder wurde bereits verwendet.</p>}
     </div>
   );
 }

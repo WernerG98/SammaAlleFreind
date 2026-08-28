@@ -15,6 +15,9 @@ function toDateTimeInputValue(date) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+const inputClass =
+  "w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-3 py-2 focus:outline-none focus:border-teal-500";
+
 export default function EventFormPage() {
   const { id } = useParams();
   const isNew = id === undefined;
@@ -132,21 +135,23 @@ export default function EventFormPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold mb-6">{isNew ? "Neue Veranstaltung" : "Veranstaltung bearbeiten"}</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-100">
+        {isNew ? "Neue Veranstaltung" : "Veranstaltung bearbeiten"}
+      </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white border rounded-lg p-6">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-gray-900 border border-gray-800 rounded-lg p-6">
         <div>
-          <label className="block text-sm font-medium mb-1">Titel</label>
+          <label className="block text-sm font-medium mb-1 text-gray-300">Titel</label>
           <input
             required
-            className="w-full border rounded px-3 py-2"
+            className={inputClass}
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Beschreibung</label>
+          <label className="block text-sm font-medium mb-1 text-gray-300">Beschreibung</label>
           <RichTextEditor
             key={id || "new"}
             value={form.description}
@@ -155,26 +160,26 @@ export default function EventFormPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Flyer-Bild (optional)</label>
+          <label className="block text-sm font-medium mb-1 text-gray-300">Flyer-Bild (optional)</label>
           {form.imageUrl && (
             <img
               src={form.imageUrl}
               alt="Flyer-Vorschau"
-              className="w-full max-h-64 object-contain rounded-lg border mb-2 bg-gray-50"
+              className="w-full max-h-64 object-contain rounded-lg border border-gray-700 mb-2 bg-gray-800"
             />
           )}
           <input
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            className="block w-full text-sm border rounded px-3 py-2"
+            className="block w-full text-sm text-gray-300 border border-gray-700 bg-gray-800 rounded px-3 py-2"
           />
-          {imageError && <p className="text-xs text-red-600 mt-1">{imageError}</p>}
+          {imageError && <p className="text-xs text-red-400 mt-1">{imageError}</p>}
           {form.imageUrl && (
             <button
               type="button"
               onClick={() => setForm({ ...form, imageUrl: "" })}
-              className="text-xs text-red-600 hover:underline mt-1"
+              className="text-xs text-red-400 hover:underline mt-1"
             >
               Bild entfernen
             </button>
@@ -184,7 +189,7 @@ export default function EventFormPage() {
           </p>
         </div>
 
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex items-center gap-2 text-sm text-gray-300">
           <input
             type="checkbox"
             checked={form.comingSoon}
@@ -194,16 +199,16 @@ export default function EventFormPage() {
         </label>
 
         {role === "external" ? (
-          <div className="border rounded-lg p-3 space-y-2 bg-gray-50">
-            <p className="text-xs text-gray-500">
+          <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
+            <p className="text-xs text-gray-400">
               Diese Veranstaltung wird automatisch als "Externe Veranstaltung" markiert.
             </p>
             <div>
-              <label className="block text-sm font-medium mb-1">Verein/Ansprechperson</label>
+              <label className="block text-sm font-medium mb-1 text-gray-300">Verein/Ansprechperson</label>
               <input
                 required
                 placeholder="z.B. Name des Vereins"
-                className="w-full border rounded px-3 py-2 text-sm"
+                className={`${inputClass} text-sm`}
                 value={form.externalOrganizer}
                 onChange={(e) => setForm({ ...form, externalOrganizer: e.target.value })}
               />
@@ -212,12 +217,12 @@ export default function EventFormPage() {
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Kontakt-E-Mail</label>
+              <label className="block text-sm font-medium mb-1 text-gray-300">Kontakt-E-Mail</label>
               <input
                 required
                 type="email"
                 placeholder="kontakt@euer-verein.de"
-                className="w-full border rounded px-3 py-2 text-sm"
+                className={`${inputClass} text-sm`}
                 value={form.externalContactEmail}
                 onChange={(e) => setForm({ ...form, externalContactEmail: e.target.value })}
               />
@@ -227,8 +232,8 @@ export default function EventFormPage() {
             </div>
           </div>
         ) : (
-          <div className="border rounded-lg p-3 space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium">
+          <div className="border border-gray-700 rounded-lg p-3 space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
               <input
                 type="checkbox"
                 checked={form.isExternal}
@@ -241,7 +246,7 @@ export default function EventFormPage() {
                 <input
                   required
                   placeholder="Verein/Ansprechperson (z.B. Name des Vereins)"
-                  className="w-full border rounded px-3 py-2 text-sm"
+                  className={`${inputClass} text-sm`}
                   value={form.externalOrganizer}
                   onChange={(e) => setForm({ ...form, externalOrganizer: e.target.value })}
                 />
@@ -250,7 +255,7 @@ export default function EventFormPage() {
                     required
                     type="email"
                     placeholder="Kontakt-E-Mail (kontakt@verein.de)"
-                    className="w-full border rounded px-3 py-2 text-sm"
+                    className={`${inputClass} text-sm`}
                     value={form.externalContactEmail}
                     onChange={(e) => setForm({ ...form, externalContactEmail: e.target.value })}
                   />
@@ -267,22 +272,22 @@ export default function EventFormPage() {
           <>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Datum &amp; Startzeit</label>
+                <label className="block text-sm font-medium mb-1 text-gray-300">Datum &amp; Startzeit</label>
                 <input
                   required
                   type="datetime-local"
-                  className="w-full border rounded px-3 py-2"
+                  className={inputClass}
                   value={form.eventDate}
                   onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Preis pro Person (€)</label>
+                <label className="block text-sm font-medium mb-1 text-gray-300">Preis pro Person (€)</label>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
-                  className="w-full border rounded px-3 py-2"
+                  className={inputClass}
                   value={form.pricePerPerson}
                   onChange={(e) => setForm({ ...form, pricePerPerson: e.target.value })}
                 />
@@ -290,10 +295,10 @@ export default function EventFormPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Anmeldeschluss (optional)</label>
+              <label className="block text-sm font-medium mb-1 text-gray-300">Anmeldeschluss (optional)</label>
               <input
                 type="date"
-                className="w-full border rounded px-3 py-2"
+                className={inputClass}
                 value={form.registrationDeadline}
                 onChange={(e) => setForm({ ...form, registrationDeadline: e.target.value })}
               />
@@ -301,12 +306,12 @@ export default function EventFormPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-1 text-gray-300">
                 PayPal.me-Link der Privatperson (optional, kann später ergänzt werden)
               </label>
               <input
                 placeholder="https://paypal.me/deinname"
-                className="w-full border rounded px-3 py-2"
+                className={inputClass}
                 value={form.paypalLink}
                 onChange={(e) => setForm({ ...form, paypalLink: e.target.value })}
               />
@@ -316,19 +321,19 @@ export default function EventFormPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-1 text-gray-300">
                 Hinweis zum Verwendungszweck (optional, <code>{"{name}"}</code> wird ersetzt)
               </label>
               <input
-                className="w-full border rounded px-3 py-2"
+                className={inputClass}
                 placeholder="{name}"
                 value={form.paymentNote}
                 onChange={(e) => setForm({ ...form, paymentNote: e.target.value })}
               />
             </div>
 
-            <div className="border rounded-lg p-3 space-y-2 bg-gray-50">
-              <label className="flex items-center gap-2 text-sm font-medium">
+            <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
                 <input
                   type="checkbox"
                   checked={form.earlyAccessEnabled}
@@ -341,7 +346,7 @@ export default function EventFormPage() {
                   <input
                     required
                     placeholder="Passwort für den Vorabzugang"
-                    className="w-full border rounded px-3 py-2 text-sm"
+                    className={`${inputClass} text-sm`}
                     value={form.earlyAccessPassword}
                     onChange={(e) => setForm({ ...form, earlyAccessPassword: e.target.value })}
                   />
@@ -355,11 +360,11 @@ export default function EventFormPage() {
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium">Busse</label>
+                <label className="block text-sm font-medium text-gray-300">Busse</label>
                 <button
                   type="button"
                   onClick={() => setBuses([...buses, emptyBus()])}
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm text-teal-400 hover:underline"
                 >
                   + Slot hinzufügen
                 </button>
@@ -368,12 +373,12 @@ export default function EventFormPage() {
                 {buses.map((bus, i) => (
                   <div
                     key={bus.id || i}
-                    className="flex flex-wrap items-center gap-2 border rounded-lg p-2 sm:border-0 sm:p-0"
+                    className="flex flex-wrap items-center gap-2 border border-gray-700 rounded-lg p-2 sm:border-0 sm:p-0"
                   >
                     <input
                       required
                       placeholder="Name (z.B. Bus 1)"
-                      className="flex-1 min-w-[140px] border rounded px-3 py-2"
+                      className={`flex-1 min-w-[140px] ${inputClass}`}
                       value={bus.name}
                       onChange={(e) => updateBus(i, "name", e.target.value)}
                     />
@@ -381,11 +386,11 @@ export default function EventFormPage() {
                       type="number"
                       min="1"
                       placeholder="Plätze (optional)"
-                      className="w-32 border rounded px-3 py-2"
+                      className={`w-32 ${inputClass}`}
                       value={bus.capacity}
                       onChange={(e) => updateBus(i, "capacity", e.target.value)}
                     />
-                    <label className="flex items-center gap-1 text-xs text-gray-600 whitespace-nowrap">
+                    <label className="flex items-center gap-1 text-xs text-gray-400 whitespace-nowrap">
                       <input
                         type="checkbox"
                         checked={bus.enabled !== false}
@@ -397,7 +402,7 @@ export default function EventFormPage() {
                       <button
                         type="button"
                         onClick={() => setBuses(buses.filter((_, idx) => idx !== i))}
-                        className="text-red-600 px-2"
+                        className="text-red-400 px-2"
                       >
                         ✕
                       </button>
@@ -413,7 +418,7 @@ export default function EventFormPage() {
         )}
 
         {!isNew && (
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-2 text-sm text-gray-300">
             <input
               type="checkbox"
               checked={form.isOpen}
@@ -423,12 +428,12 @@ export default function EventFormPage() {
           </label>
         )}
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-400">{error}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="bg-gray-900 text-white rounded px-4 py-2 font-medium disabled:opacity-50"
+          className="bg-teal-600 hover:bg-teal-500 text-white rounded px-4 py-2 font-medium disabled:opacity-50 transition-colors"
         >
           {submitting ? "Speichern…" : "Speichern"}
         </button>

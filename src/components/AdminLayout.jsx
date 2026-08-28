@@ -40,33 +40,33 @@ export default function AdminLayout() {
   }
 
   if (status !== "ok") {
-    return <div className="p-8 text-center text-gray-500">Lade...</div>;
+    return <div className="min-h-screen bg-gray-950 p-8 text-center text-gray-500">Lade...</div>;
   }
 
   const navLinks = role === "external" ? EXTERNAL_NAV_LINKS : FULL_NAV_LINKS;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b sticky top-0 z-20">
+    <div className="min-h-screen bg-gray-950">
+      <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/admin" className="flex items-center gap-2 font-semibold text-gray-900">
+          <Link to="/admin" className="flex items-center gap-2 font-semibold text-gray-100">
             <img src="/Logo.png" alt="" className="h-7 w-7 rounded-full" />
             <span className="hidden sm:inline">{role === "external" ? "Externer Admin" : "Admin"}</span>
           </Link>
 
           <nav className="hidden sm:flex items-center gap-4 text-sm font-medium">
-            <Link to="/" className="text-gray-500 hover:text-gray-900">
+            <Link to="/" className="text-gray-500 hover:text-gray-200">
               ← Startseite
             </Link>
             {navLinks.map((link) => (
-              <Link key={link.to} to={link.to} className="text-gray-700 hover:text-gray-900">
+              <Link key={link.to} to={link.to} className="text-gray-300 hover:text-white">
                 {link.label}
               </Link>
             ))}
             <button
               type="button"
               onClick={handleLogout}
-              className="bg-red-50 text-red-700 hover:bg-red-100 rounded-full px-3 py-1.5 font-semibold transition-colors"
+              className="bg-red-950/60 text-red-300 hover:bg-red-900 rounded-full px-3 py-1.5 font-semibold transition-colors"
             >
               Abmelden
             </button>
@@ -75,7 +75,7 @@ export default function AdminLayout() {
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
-            className="sm:hidden w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-700"
+            className="sm:hidden w-9 h-9 flex items-center justify-center rounded border border-gray-700 text-gray-300"
             aria-label="Menü"
           >
             {menuOpen ? "✕" : "☰"}
@@ -83,19 +83,19 @@ export default function AdminLayout() {
         </div>
 
         {menuOpen && (
-          <nav className="sm:hidden border-t bg-white px-4 py-3 flex flex-col gap-3 text-sm font-medium">
+          <nav className="sm:hidden border-t border-gray-800 bg-gray-900 px-4 py-3 flex flex-col gap-3 text-sm font-medium">
             <Link to="/" className="text-gray-500">
               ← Startseite
             </Link>
             {navLinks.map((link) => (
-              <Link key={link.to} to={link.to} className="text-gray-700">
+              <Link key={link.to} to={link.to} className="text-gray-300">
                 {link.label}
               </Link>
             ))}
             <button
               type="button"
               onClick={handleLogout}
-              className="text-left bg-red-50 text-red-700 rounded-lg px-3 py-2 font-semibold"
+              className="text-left bg-red-950/60 text-red-300 rounded-lg px-3 py-2 font-semibold"
             >
               Abmelden
             </button>

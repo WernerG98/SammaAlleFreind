@@ -65,18 +65,18 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold text-gray-100">
           {role === "external" ? "Externe Veranstaltungen" : "Veranstaltungen"}
         </h1>
         <Link
           to="/admin/veranstaltungen/neu"
-          className="bg-gray-900 text-white rounded px-4 py-2 text-sm font-medium whitespace-nowrap"
+          className="bg-teal-600 hover:bg-teal-500 text-white rounded px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors"
         >
           + Neue Veranstaltung
         </Link>
       </div>
 
-      {error && <p className="text-red-600 mb-4">{error}</p>}
+      {error && <p className="text-red-400 mb-4">{error}</p>}
 
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <input
@@ -84,12 +84,12 @@ export default function DashboardPage() {
           placeholder="Suche nach Titel…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:w-64 border rounded px-3 py-2 text-sm"
+          className="w-full sm:w-64 border border-gray-700 bg-gray-900 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
         />
         <select
           value={sortField}
           onChange={(e) => setSortField(e.target.value)}
-          className="border rounded px-3 py-2 text-sm"
+          className="border border-gray-700 bg-gray-900 text-gray-100 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
         >
           <option value="eventDate">Sortieren: Datum</option>
           <option value="title">Sortieren: Titel</option>
@@ -98,7 +98,7 @@ export default function DashboardPage() {
         <button
           type="button"
           onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
-          className="border rounded px-3 py-2 text-sm text-gray-700"
+          className="border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 hover:bg-gray-800"
         >
           {sortDir === "asc" ? "▲ Aufsteigend" : "▼ Absteigend"}
         </button>
@@ -108,22 +108,22 @@ export default function DashboardPage() {
         {filteredEvents.map((event) => (
           <div
             key={event.id}
-            className="bg-white border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+            className="bg-gray-900 border border-gray-800 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
           >
             <div className="min-w-0">
-              <p className="font-semibold break-words">
+              <p className="font-semibold break-words text-gray-100">
                 {event.title}{" "}
                 {event.isExternal && (
-                  <span className="text-xs text-amber-700 bg-amber-100 rounded-full px-2 py-0.5">
+                  <span className="text-xs text-amber-300 bg-amber-950/50 rounded-full px-2 py-0.5">
                     🤝 Extern{event.externalOrganizer ? `: ${event.externalOrganizer}` : ""}
                   </span>
                 )}{" "}
-                {event.comingSoon && <span className="text-xs text-gray-400">(Coming Soon)</span>}
+                {event.comingSoon && <span className="text-xs text-gray-500">(Coming Soon)</span>}
                 {!event.comingSoon && !event.isOpen && (
-                  <span className="text-xs text-gray-400">(geschlossen)</span>
+                  <span className="text-xs text-gray-500">(geschlossen)</span>
                 )}
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400">
                 {event.eventDate
                   ? `${new Date(event.eventDate).toLocaleDateString("de-DE", {
                       timeZone: "Europe/Berlin",
@@ -138,17 +138,17 @@ export default function DashboardPage() {
               </p>
             </div>
             <div className="flex gap-3 text-sm shrink-0">
-              <Link to={`/admin/veranstaltungen/${event.id}/anmeldungen`} className="text-blue-600 hover:underline">
+              <Link to={`/admin/veranstaltungen/${event.id}/anmeldungen`} className="text-teal-400 hover:underline">
                 Anmeldungen
               </Link>
-              <Link to={`/admin/veranstaltungen/${event.id}`} className="text-blue-600 hover:underline">
+              <Link to={`/admin/veranstaltungen/${event.id}`} className="text-teal-400 hover:underline">
                 Bearbeiten
               </Link>
               <button
                 type="button"
                 disabled={pendingId === event.id}
                 onClick={() => setToDelete({ id: event.id, label: event.title })}
-                className="text-red-600 hover:underline"
+                className="text-red-400 hover:underline"
               >
                 Löschen
               </button>

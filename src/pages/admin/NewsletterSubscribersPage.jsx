@@ -62,7 +62,7 @@ export default function NewsletterSubscribersPage() {
         <button
           type="button"
           onClick={() => toggleSort(field)}
-          className={`flex items-center gap-1 font-semibold ${active ? "text-gray-900" : "text-gray-500"}`}
+          className={`flex items-center gap-1 font-semibold ${active ? "text-gray-100" : "text-gray-500"}`}
         >
           {children}
           <span className="text-xs">{active ? (sortDir === "asc" ? "▲" : "▼") : "↕"}</span>
@@ -82,21 +82,21 @@ export default function NewsletterSubscribersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Newsletter-Abonnenten</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-100">Newsletter-Abonnenten</h1>
 
-      {error && <p className="text-red-600 mb-4">{error}</p>}
+      {error && <p className="text-red-400 mb-4">{error}</p>}
 
       <input
         type="text"
         placeholder="Suche nach E-Mail…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full sm:w-72 border rounded px-3 py-2 text-sm mb-4"
+        className="w-full sm:w-72 border border-gray-700 bg-gray-900 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm mb-4 focus:outline-none focus:border-teal-500"
       />
 
-      <div className="bg-white border rounded-lg overflow-x-auto">
+      <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
         <table className="w-full text-sm min-w-[420px]">
-          <thead className="bg-gray-100 text-left">
+          <thead className="bg-gray-800 text-left">
             <tr>
               <SortHeader field="email">E-Mail</SortHeader>
               <SortHeader field="createdAt">Angemeldet seit</SortHeader>
@@ -105,7 +105,7 @@ export default function NewsletterSubscribersPage() {
           </thead>
           <tbody>
             {filteredSubscribers.map((sub) => (
-              <tr key={sub.id} className="border-t">
+              <tr key={sub.id} className="border-t border-gray-800 text-gray-200">
                 <td className="px-4 py-2">{sub.email}</td>
                 <td className="px-4 py-2">{new Date(sub.createdAt).toLocaleDateString("de-DE")}</td>
                 <td className="px-4 py-2 text-right">
@@ -113,7 +113,7 @@ export default function NewsletterSubscribersPage() {
                     type="button"
                     disabled={pendingId === sub.id}
                     onClick={() => setToRemove({ id: sub.id, label: sub.email })}
-                    className="text-red-600 hover:underline text-xs"
+                    className="text-red-400 hover:underline text-xs"
                   >
                     Entfernen
                   </button>

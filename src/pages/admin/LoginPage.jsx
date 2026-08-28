@@ -23,36 +23,36 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <form onSubmit={handleSubmit} className="bg-white border rounded-lg p-8 w-full max-w-sm space-y-4">
-        <Link to="/" className="inline-block text-sm text-teal-700 hover:text-teal-900">
+    <div className="min-h-screen flex items-center justify-center bg-gray-950">
+      <form onSubmit={handleSubmit} className="bg-gray-900 border border-gray-800 rounded-lg p-8 w-full max-w-sm space-y-4">
+        <Link to="/" className="inline-block text-sm text-teal-400 hover:text-teal-300">
           ← Zurück zur Startseite
         </Link>
-        <h1 className="text-xl font-bold">Admin-Login</h1>
+        <h1 className="text-xl font-bold text-gray-100">Admin-Login</h1>
         <div>
-          <label className="block text-sm font-medium mb-1">Benutzername</label>
+          <label className="block text-sm font-medium mb-1 text-gray-300">Benutzername</label>
           <input
             required
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded px-3 py-2 focus:outline-none focus:border-teal-500"
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Passwort</label>
+          <label className="block text-sm font-medium mb-1 text-gray-300">Passwort</label>
           <input
             required
             type="password"
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded px-3 py-2 focus:outline-none focus:border-teal-500"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
         </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-400">{error}</p>}
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-gray-900 text-white rounded py-2 font-medium disabled:opacity-50"
+          className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded py-2 font-medium disabled:opacity-50 transition-colors"
         >
           Anmelden
         </button>
