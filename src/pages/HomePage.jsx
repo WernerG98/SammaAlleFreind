@@ -75,8 +75,11 @@ export default function HomePage() {
                   🔒 Vorabzugang
                 </span>
                 <h2 className="text-lg font-semibold text-amber-950">{event.title}</h2>
-                {event.externalOrganizer && (
-                  <p className="text-xs text-amber-600 mt-0.5">von {event.externalOrganizer}</p>
+                {event.isExternal && (
+                  <p className="text-xs text-amber-600 mt-0.5">
+                    {event.externalOrganizer || "Externer Verein"}
+                    {event.externalContactEmail && ` · ${event.externalContactEmail}`}
+                  </p>
                 )}
                 <p className="text-sm text-amber-700 mt-2 font-medium">Nur mit Passwort sichtbar</p>
               </Link>
@@ -91,8 +94,11 @@ export default function HomePage() {
                 className="block bg-stone-50 border-2 border-dashed border-stone-300 rounded-xl p-5 opacity-90 hover:opacity-100 hover:border-stone-400 hover:shadow-sm transition-all"
               >
                 <h2 className="text-lg font-semibold text-stone-700">{event.title}</h2>
-                {event.externalOrganizer && (
-                  <p className="text-xs text-stone-500 mt-0.5">von {event.externalOrganizer}</p>
+                {event.isExternal && (
+                  <p className="text-xs text-stone-500 mt-0.5">
+                    {event.externalOrganizer || "Externer Verein"}
+                    {event.externalContactEmail && ` · ${event.externalContactEmail}`}
+                  </p>
                 )}
                 <p className="text-sm text-stone-500 mt-2 font-semibold">
                   ⏳ Coming Soon — jetzt schon Interesse bekunden
@@ -129,8 +135,11 @@ export default function HomePage() {
                 {!event.registrationOpen ? "⛔ Anmeldung geschlossen" : soldOut ? "🔴 Ausgebucht" : "🎉 Jetzt anmelden"}
               </span>
               <h2 className={`text-lg font-semibold ${closed ? "text-red-950" : "text-teal-950"}`}>{event.title}</h2>
-              {event.externalOrganizer && (
-                <p className="text-xs text-gray-500 mt-0.5">von {event.externalOrganizer}</p>
+              {event.isExternal && (
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {event.externalOrganizer || "Externer Verein"}
+                  {event.externalContactEmail && ` · ${event.externalContactEmail}`}
+                </p>
               )}
               <p className="text-sm text-gray-500 mt-1">
                 {new Date(event.eventDate).toLocaleDateString("de-DE", {
