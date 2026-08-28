@@ -61,7 +61,8 @@ export default function HomePage() {
         an und schreib uns anschließend über das Kontaktformular weiter unten. Bitte beachte: Damit wir deine
         Zahlung zuordnen können, gib beim Bezahlen als Kommentar deinen Namen an, falls er nicht ohnehin
         ersichtlich ist. Fix dabei bist du erst, sobald deine Zahlung eingegangen ist und du die
-        Bestätigungsmail erhalten hast.
+        Bestätigungsmail erhalten hast. Jede Zahlung wird manuell geprüft, daher kann es etwas dauern, bis
+        die Bestätigungsmail kommt.
       </p>
 
       <div className="flex gap-2 mb-6 border-b">
