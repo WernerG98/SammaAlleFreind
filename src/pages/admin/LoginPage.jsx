@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../lib/api.js";
 
 export default function LoginPage() {
@@ -25,6 +25,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <form onSubmit={handleSubmit} className="bg-white border rounded-lg p-8 w-full max-w-sm space-y-4">
+        <Link to="/" className="inline-block text-sm text-teal-700 hover:text-teal-900">
+          ← Zurück zur Startseite
+        </Link>
         <h1 className="text-xl font-bold">Admin-Login</h1>
         <div>
           <label className="block text-sm font-medium mb-1">Benutzername</label>
