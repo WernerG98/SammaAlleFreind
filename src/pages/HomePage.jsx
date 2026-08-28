@@ -146,14 +146,7 @@ export default function HomePage() {
               >
                 <span className="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-500" aria-hidden="true" />
                 <div className="flex items-start gap-3">
-                  {event.imageUrl && (
-                    <img
-                      src={event.imageUrl}
-                      alt=""
-                      className="w-14 h-14 shrink-0 rounded-lg object-cover border border-amber-200"
-                    />
-                  )}
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <span className="inline-block text-[11px] font-bold uppercase tracking-wide text-amber-700 bg-amber-100 rounded-full px-2 py-0.5 mb-1">
                       🔒 Vorabzugang
                     </span>
@@ -166,6 +159,13 @@ export default function HomePage() {
                     )}
                     <p className="text-sm text-amber-700 mt-2 font-medium">Nur mit Passwort sichtbar</p>
                   </div>
+                  {event.imageUrl && (
+                    <img
+                      src={event.imageUrl}
+                      alt=""
+                      className="w-14 h-14 shrink-0 rounded-lg object-cover border border-amber-200"
+                    />
+                  )}
                 </div>
               </Link>
             );
@@ -179,14 +179,7 @@ export default function HomePage() {
                 className="block bg-stone-50 border-2 border-dashed border-stone-300 rounded-xl p-5 opacity-90 hover:opacity-100 hover:border-stone-400 hover:shadow-sm transition-all"
               >
                 <div className="flex items-start gap-3">
-                  {event.imageUrl && (
-                    <img
-                      src={event.imageUrl}
-                      alt=""
-                      className="w-14 h-14 shrink-0 rounded-lg object-cover border border-stone-200"
-                    />
-                  )}
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <h2 className="text-lg font-semibold text-stone-700">{event.title}</h2>
                     {event.isExternal && (
                       <p className="text-xs text-stone-500 mt-0.5">
@@ -198,6 +191,13 @@ export default function HomePage() {
                       ⏳ Coming Soon — jetzt schon Interesse bekunden
                     </p>
                   </div>
+                  {event.imageUrl && (
+                    <img
+                      src={event.imageUrl}
+                      alt=""
+                      className="w-14 h-14 shrink-0 rounded-lg object-cover border border-stone-200"
+                    />
+                  )}
                 </div>
               </Link>
             );
@@ -220,13 +220,6 @@ export default function HomePage() {
                 aria-hidden="true"
               />
               <div className="flex items-start gap-3">
-                {event.imageUrl && (
-                  <img
-                    src={event.imageUrl}
-                    alt=""
-                    className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-200"
-                  />
-                )}
                 <div className="min-w-0 flex-1">
                   <span
                     className={`inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-1 ${
@@ -273,6 +266,13 @@ export default function HomePage() {
                     </p>
                   )}
                 </div>
+                {event.imageUrl && (
+                  <img
+                    src={event.imageUrl}
+                    alt=""
+                    className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-200"
+                  />
+                )}
               </div>
             </Link>
           );
