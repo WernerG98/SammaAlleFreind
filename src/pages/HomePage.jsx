@@ -46,7 +46,9 @@ export default function HomePage() {
             );
           }
 
-          const totalRemaining = event.buses.reduce((sum, b) => sum + b.remaining, 0);
+          const totalRemaining = event.buses
+            .filter((b) => b.enabled)
+            .reduce((sum, b) => sum + b.remaining, 0);
           return (
             <Link
               key={event.id}

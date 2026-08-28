@@ -232,7 +232,11 @@ export default function EventPage() {
                       {bus.name}
                     </span>
                     <span className="block text-xs mt-0.5">
-                      {comingSoonBus ? "bald verfügbar" : full ? "ausgebucht" : `noch ${bus.remaining} Plätze frei`}
+                      {comingSoonBus
+                        ? "Bei genügend Nachfrage"
+                        : full
+                          ? "ausgebucht"
+                          : `noch ${bus.remaining} Plätze frei`}
                     </span>
                   </button>
                   );
