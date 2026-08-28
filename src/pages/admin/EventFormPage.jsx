@@ -9,6 +9,12 @@ function toDateInputValue(date) {
   return new Date(date).toISOString().slice(0, 10);
 }
 
+function toDateTimeInputValue(date) {
+  const d = new Date(date);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export default function EventFormPage() {
   const { id } = useParams();
   const isNew = id === undefined;
@@ -72,7 +78,7 @@ export default function EventFormPage() {
           description: event.description || "",
           imageUrl: event.imageUrl || "",
           comingSoon: event.comingSoon,
-          eventDate: event.eventDate ? toDateInputValue(event.eventDate) : "",
+          eventDate: event.eventDate ? toDateTimeInputValue(event.eventDate) : "",
           registrationDeadline: event.registrationDeadline ? toDateInputValue(event.registrationDeadline) : "",
           pricePerPerson: event.pricePerPerson || "",
           paypalLink: event.paypalLink || "",
@@ -103,7 +109,11 @@ export default function EventFormPage() {
     setError("");
     setSubmitting(true);
     try {
-      const payload = { ...form, buses: form.comingSoon ? [] : buses };
+      const payload = {
+        ...form,
+        eventDate: form.eventDate ? new Date(form.eventDate).toISOString() : "",
+        buses: form.comingSoon ? [] : buses,
+      };
       if (isNew) {
         await api.post("/admin/events", payload);
         navigate("/admin");
@@ -257,10 +267,10 @@ export default function EventFormPage() {
           <>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Datum</label>
+                <label className="block text-sm font-medium mb-1">Datum &amp; Startzeit</label>
                 <input
                   required
-                  type="date"
+                  type="datetime-local"
                   className="w-full border rounded px-3 py-2"
                   value={form.eventDate}
                   onChange={(e) => setForm({ ...form, eventDate: e.target.value })}

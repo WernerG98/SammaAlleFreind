@@ -124,7 +124,16 @@ export default function DashboardPage() {
                 )}
               </p>
               <p className="text-sm text-gray-500">
-                {event.eventDate ? new Date(event.eventDate).toLocaleDateString("de-DE") : "Datum offen"} ·{" "}
+                {event.eventDate
+                  ? `${new Date(event.eventDate).toLocaleDateString("de-DE", {
+                      timeZone: "Europe/Berlin",
+                    })}, ${new Date(event.eventDate).toLocaleTimeString("de-DE", {
+                      timeZone: "Europe/Berlin",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })} Uhr`
+                  : "Datum offen"}{" "}
+                ·{" "}
                 {event._count.registrations} Anmeldungen · {event.buses.length} Slot(s)
               </p>
             </div>

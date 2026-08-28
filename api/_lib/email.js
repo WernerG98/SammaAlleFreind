@@ -39,7 +39,13 @@ export function buildConfirmationEmailHtml({ firstName, event, busName }) {
     <p>Wir freuen uns auf dich!</p>
     <hr />
     <p><strong>Veranstaltung:</strong> ${event.title}<br/>
-    <strong>Datum:</strong> ${new Date(event.eventDate).toLocaleDateString("de-DE")}</p>
+    <strong>Datum:</strong> ${new Date(event.eventDate).toLocaleDateString("de-DE", {
+      timeZone: "Europe/Berlin",
+    })}, ${new Date(event.eventDate).toLocaleTimeString("de-DE", {
+      timeZone: "Europe/Berlin",
+      hour: "2-digit",
+      minute: "2-digit",
+    })} Uhr</p>
     ${externalOrganizerNote(event)}
   `;
 }

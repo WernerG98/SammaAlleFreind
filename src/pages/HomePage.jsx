@@ -250,11 +250,19 @@ export default function HomePage() {
                   )}
                   <p className="text-sm text-gray-500 mt-1">
                     {new Date(event.eventDate).toLocaleDateString("de-DE", {
+                      timeZone: "Europe/Berlin",
                       weekday: "long",
                       day: "2-digit",
                       month: "2-digit",
                       year: "numeric",
                     })}
+                    ,{" "}
+                    {new Date(event.eventDate).toLocaleTimeString("de-DE", {
+                      timeZone: "Europe/Berlin",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    Uhr
                   </p>
                   {!event.registrationOpen && (
                     <p className="text-sm mt-2 font-semibold text-red-600">Anmeldefrist abgelaufen</p>
