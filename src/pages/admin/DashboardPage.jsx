@@ -9,6 +9,9 @@ export default function DashboardPage() {
   const [pendingId, setPendingId] = useState(null);
   const [toDelete, setToDelete] = useState(null);
   const [role, setRole] = useState("admin");
+  const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState("eventDate");
+  const [sortDir, setSortDir] = useState("asc");
 
   function load() {
     api
@@ -38,6 +41,27 @@ export default function DashboardPage() {
     }
   }
 
+  function sortValue(event, field) {
+    switch (field) {
+      case "title":
+        return event.title.toLowerCase();
+      case "registrations":
+        return event._count.registrations;
+      case "eventDate":
+      default:
+        return event.eventDate ? new Date(event.eventDate).getTime() : Infinity;
+    }
+  }
+
+  const filteredEvents = (events || [])
+    .filter((event) => !search.trim() || event.title.toLowerCase().includes(search.trim().toLowerCase()))
+    .sort((a, b) => {
+      const va = sortValue(a, sortField);
+      const vb = sortValue(b, sortField);
+      const cmp = va < vb ? -1 : va > vb ? 1 : 0;
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -54,8 +78,34 @@ export default function DashboardPage() {
 
       {error && <p className="text-red-600 mb-4">{error}</p>}
 
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <input
+          type="text"
+          placeholder="Suche nach Titel…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full sm:w-64 border rounded px-3 py-2 text-sm"
+        />
+        <select
+          value={sortField}
+          onChange={(e) => setSortField(e.target.value)}
+          className="border rounded px-3 py-2 text-sm"
+        >
+          <option value="eventDate">Sortieren: Datum</option>
+          <option value="title">Sortieren: Titel</option>
+          <option value="registrations">Sortieren: Anmeldungen</option>
+        </select>
+        <button
+          type="button"
+          onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+          className="border rounded px-3 py-2 text-sm text-gray-700"
+        >
+          {sortDir === "asc" ? "▲ Aufsteigend" : "▼ Absteigend"}
+        </button>
+      </div>
+
       <div className="space-y-3">
-        {events?.map((event) => (
+        {filteredEvents.map((event) => (
           <div
             key={event.id}
             className="bg-white border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
@@ -97,6 +147,9 @@ export default function DashboardPage() {
           </div>
         ))}
         {events?.length === 0 && <p className="text-gray-500">Noch keine Veranstaltungen angelegt.</p>}
+        {events?.length > 0 && filteredEvents.length === 0 && (
+          <p className="text-gray-500">Keine Treffer für diese Suche.</p>
+        )}
       </div>
 
       <ConfirmDialog

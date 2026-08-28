@@ -93,16 +93,27 @@ export default function HomePage() {
                 to={`/veranstaltung/${event.slug}`}
                 className="block bg-stone-50 border-2 border-dashed border-stone-300 rounded-xl p-5 opacity-90 hover:opacity-100 hover:border-stone-400 hover:shadow-sm transition-all"
               >
-                <h2 className="text-lg font-semibold text-stone-700">{event.title}</h2>
-                {event.isExternal && (
-                  <p className="text-xs text-stone-500 mt-0.5">
-                    {event.externalOrganizer || "Externer Verein"}
-                    {event.externalContactEmail && ` · ${event.externalContactEmail}`}
-                  </p>
-                )}
-                <p className="text-sm text-stone-500 mt-2 font-semibold">
-                  ⏳ Coming Soon — jetzt schon Interesse bekunden
-                </p>
+                <div className="flex items-start gap-3">
+                  {event.imageUrl && (
+                    <img
+                      src={event.imageUrl}
+                      alt=""
+                      className="w-14 h-14 shrink-0 rounded-lg object-cover border border-stone-200"
+                    />
+                  )}
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-semibold text-stone-700">{event.title}</h2>
+                    {event.isExternal && (
+                      <p className="text-xs text-stone-500 mt-0.5">
+                        {event.externalOrganizer || "Externer Verein"}
+                        {event.externalContactEmail && ` · ${event.externalContactEmail}`}
+                      </p>
+                    )}
+                    <p className="text-sm text-stone-500 mt-2 font-semibold">
+                      ⏳ Coming Soon — jetzt schon Interesse bekunden
+                    </p>
+                  </div>
+                </div>
               </Link>
             );
           }
@@ -128,36 +139,53 @@ export default function HomePage() {
                 className={`absolute left-0 top-0 bottom-0 w-1.5 ${closed ? "bg-red-500" : "bg-teal-600"}`}
                 aria-hidden="true"
               />
-              <span
-                className={`inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-1 ${
-                  closed ? "text-red-700 bg-red-100" : "text-teal-700 bg-teal-100"
-                }`}
-              >
-                {!event.registrationOpen ? "⛔ Anmeldung geschlossen" : soldOut ? "🔴 Ausgebucht" : "🎉 Jetzt anmelden"}
-              </span>
-              <h2 className={`text-lg font-semibold ${closed ? "text-red-950" : "text-teal-950"}`}>{event.title}</h2>
-              {event.isExternal && (
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {event.externalOrganizer || "Externer Verein"}
-                  {event.externalContactEmail && ` · ${event.externalContactEmail}`}
-                </p>
-              )}
-              <p className="text-sm text-gray-500 mt-1">
-                {new Date(event.eventDate).toLocaleDateString("de-DE", {
-                  weekday: "long",
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })}
-              </p>
-              {!event.registrationOpen && (
-                <p className="text-sm mt-2 font-semibold text-red-600">Anmeldefrist abgelaufen</p>
-              )}
-              {totalCapacity > 0 && (
-                <p className={`text-sm mt-1 font-medium ${soldOut ? "text-red-600" : "text-gray-600"}`}>
-                  {totalRemaining} von {totalCapacity} Plätzen frei
-                </p>
-              )}
+              <div className="flex items-start gap-3">
+                {event.imageUrl && (
+                  <img
+                    src={event.imageUrl}
+                    alt=""
+                    className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-200"
+                  />
+                )}
+                <div className="min-w-0 flex-1">
+                  <span
+                    className={`inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-1 ${
+                      closed ? "text-red-700 bg-red-100" : "text-teal-700 bg-teal-100"
+                    }`}
+                  >
+                    {!event.registrationOpen
+                      ? "⛔ Anmeldung geschlossen"
+                      : soldOut
+                        ? "🔴 Ausgebucht"
+                        : "🎉 Jetzt anmelden"}
+                  </span>
+                  <h2 className={`text-lg font-semibold ${closed ? "text-red-950" : "text-teal-950"}`}>
+                    {event.title}
+                  </h2>
+                  {event.isExternal && (
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {event.externalOrganizer || "Externer Verein"}
+                      {event.externalContactEmail && ` · ${event.externalContactEmail}`}
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-500 mt-1">
+                    {new Date(event.eventDate).toLocaleDateString("de-DE", {
+                      weekday: "long",
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}
+                  </p>
+                  {!event.registrationOpen && (
+                    <p className="text-sm mt-2 font-semibold text-red-600">Anmeldefrist abgelaufen</p>
+                  )}
+                  {totalCapacity > 0 && (
+                    <p className={`text-sm mt-1 font-medium ${soldOut ? "text-red-600" : "text-gray-600"}`}>
+                      {totalRemaining} von {totalCapacity} Plätzen frei
+                    </p>
+                  )}
+                </div>
+              </div>
             </Link>
           );
         })}
