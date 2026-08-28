@@ -201,11 +201,14 @@ export default function EventFormPage() {
               </div>
               <div className="space-y-2">
                 {buses.map((bus, i) => (
-                  <div key={bus.id || i} className="flex gap-2">
+                  <div
+                    key={bus.id || i}
+                    className="flex flex-wrap items-center gap-2 border rounded-lg p-2 sm:border-0 sm:p-0"
+                  >
                     <input
                       required
                       placeholder="Name (z.B. Bus 1)"
-                      className="flex-1 border rounded px-3 py-2"
+                      className="flex-1 min-w-[140px] border rounded px-3 py-2"
                       value={bus.name}
                       onChange={(e) => updateBus(i, "name", e.target.value)}
                     />
@@ -214,7 +217,7 @@ export default function EventFormPage() {
                       type="number"
                       min="1"
                       placeholder="Plätze"
-                      className="w-28 border rounded px-3 py-2"
+                      className="w-24 border rounded px-3 py-2"
                       value={bus.capacity}
                       onChange={(e) => updateBus(i, "capacity", e.target.value)}
                     />

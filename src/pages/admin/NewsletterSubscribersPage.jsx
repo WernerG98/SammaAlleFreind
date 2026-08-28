@@ -38,8 +38,8 @@ export default function NewsletterSubscribersPage() {
 
       {error && <p className="text-red-600 mb-4">{error}</p>}
 
-      <div className="bg-white border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white border rounded-lg overflow-x-auto">
+        <table className="w-full text-sm min-w-[420px]">
           <thead className="bg-gray-100 text-left">
             <tr>
               <th className="px-4 py-2">E-Mail</th>

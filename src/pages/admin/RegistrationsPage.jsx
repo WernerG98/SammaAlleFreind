@@ -257,8 +257,8 @@ export default function RegistrationsPage() {
         className="w-full sm:w-72 border rounded px-3 py-2 text-sm mb-4"
       />
 
-      <div className="bg-white border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white border rounded-lg overflow-x-auto">
+        <table className="w-full text-sm min-w-[640px]">
           <thead className="bg-gray-100 text-left">
             <tr>
               <SortHeader field="name">Name</SortHeader>
@@ -321,8 +321,8 @@ export default function RegistrationsPage() {
       {interests.length > 0 && (
         <div className="mt-8">
           <h2 className="font-semibold mb-3">Interessenten (Coming Soon)</h2>
-          <div className="bg-white border rounded-lg overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="bg-white border rounded-lg overflow-x-auto">
+            <table className="w-full text-sm min-w-[420px]">
               <thead className="bg-gray-100 text-left">
                 <tr>
                   <th className="px-4 py-2">Name</th>

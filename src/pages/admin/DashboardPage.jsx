@@ -15,9 +15,12 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold">Veranstaltungen</h1>
-        <Link to="/admin/veranstaltungen/neu" className="bg-gray-900 text-white rounded px-4 py-2 text-sm font-medium">
+        <Link
+          to="/admin/veranstaltungen/neu"
+          className="bg-gray-900 text-white rounded px-4 py-2 text-sm font-medium whitespace-nowrap"
+        >
           + Neue Veranstaltung
         </Link>
       </div>
@@ -26,9 +29,12 @@ export default function DashboardPage() {
 
       <div className="space-y-3">
         {events?.map((event) => (
-          <div key={event.id} className="bg-white border rounded-lg p-4 flex items-center justify-between">
-            <div>
-              <p className="font-semibold">
+          <div
+            key={event.id}
+            className="bg-white border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+          >
+            <div className="min-w-0">
+              <p className="font-semibold break-words">
                 {event.title} {event.comingSoon && <span className="text-xs text-gray-400">(Coming Soon)</span>}
                 {!event.comingSoon && !event.isOpen && (
                   <span className="text-xs text-gray-400">(geschlossen)</span>
@@ -39,7 +45,7 @@ export default function DashboardPage() {
                 {event._count.registrations} Anmeldungen · {event.buses.length} Bus(se)
               </p>
             </div>
-            <div className="flex gap-3 text-sm">
+            <div className="flex gap-3 text-sm shrink-0">
               <Link to={`/admin/veranstaltungen/${event.id}/anmeldungen`} className="text-blue-600 hover:underline">
                 Anmeldungen
               </Link>
