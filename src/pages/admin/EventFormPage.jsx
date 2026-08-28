@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../lib/api.js";
+import RichTextEditor from "../../components/RichTextEditor.jsx";
 
 const emptyBus = () => ({ name: "", capacity: "", enabled: true });
 
@@ -96,11 +97,10 @@ export default function EventFormPage() {
 
         <div>
           <label className="block text-sm font-medium mb-1">Beschreibung</label>
-          <textarea
-            rows={4}
-            className="w-full border rounded px-3 py-2"
+          <RichTextEditor
+            key={id || "new"}
             value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            onChange={(html) => setForm({ ...form, description: html })}
           />
         </div>
 

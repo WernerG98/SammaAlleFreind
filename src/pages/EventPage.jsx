@@ -69,7 +69,9 @@ export default function EventPage() {
       <div className="max-w-lg mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold">{event.title}</h1>
         <p className="mt-2 text-teal-600 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
-        {event.description && <p className="mt-4 text-gray-700 whitespace-pre-line">{event.description}</p>}
+        {event.description && (
+          <div className="mt-4 text-gray-700" dangerouslySetInnerHTML={{ __html: event.description }} />
+        )}
 
         {interestDone ? (
           <div className="mt-8 bg-emerald-50 border border-emerald-200 rounded-lg p-5 text-emerald-800">
