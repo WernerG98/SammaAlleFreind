@@ -28,7 +28,7 @@ export default function PaymentPage() {
     <div className="max-w-lg mx-auto px-4 py-12">
       <h1 className="text-2xl font-bold">🎉 Fast geschafft!</h1>
       <p className="mt-2 text-gray-700">
-        Deine Anmeldung für <strong>{event.title}</strong> (Bus: {bus.name}) ist eingegangen.
+        Deine Anmeldung für <strong>{event.title}</strong> ({bus.name}) ist eingegangen.
       </p>
 
       {paid ? (
