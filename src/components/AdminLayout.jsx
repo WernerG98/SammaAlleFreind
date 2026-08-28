@@ -63,7 +63,11 @@ export default function AdminLayout() {
                 {link.label}
               </Link>
             ))}
-            <button onClick={handleLogout} className="text-gray-500 hover:text-gray-800">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="bg-red-50 text-red-700 hover:bg-red-100 rounded-full px-3 py-1.5 font-semibold transition-colors"
+            >
               Abmelden
             </button>
           </nav>
@@ -88,7 +92,11 @@ export default function AdminLayout() {
                 {link.label}
               </Link>
             ))}
-            <button onClick={handleLogout} className="text-left text-gray-500">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="text-left bg-red-50 text-red-700 rounded-lg px-3 py-2 font-semibold"
+            >
               Abmelden
             </button>
           </nav>

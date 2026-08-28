@@ -189,6 +189,19 @@ export default function EventFormPage() {
               Diese Veranstaltung wird automatisch als "Externe Veranstaltung" markiert.
             </p>
             <div>
+              <label className="block text-sm font-medium mb-1">Verein/Ansprechperson</label>
+              <input
+                required
+                placeholder="z.B. Name des Vereins"
+                className="w-full border rounded px-3 py-2 text-sm"
+                value={form.externalOrganizer}
+                onChange={(e) => setForm({ ...form, externalOrganizer: e.target.value })}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Wird zusammen mit der Kontakt-E-Mail auf der Kachel und der Veranstaltungsseite angezeigt.
+              </p>
+            </div>
+            <div>
               <label className="block text-sm font-medium mb-1">Kontakt-E-Mail</label>
               <input
                 required

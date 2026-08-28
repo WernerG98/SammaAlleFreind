@@ -91,6 +91,9 @@ export default async function handler(req, res) {
     if (isExternalEvent && !externalContactEmail?.trim()) {
       return res.status(400).json({ error: "Bitte eine Kontakt-E-Mail für die externe Veranstaltung angeben." });
     }
+    if (isExternalRole && !externalOrganizer?.trim()) {
+      return res.status(400).json({ error: "Bitte Verein/Ansprechperson angeben." });
+    }
     if (!isComingSoon && (!eventDate || !Array.isArray(buses) || buses.length === 0)) {
       return res.status(400).json({ error: "Datum und mindestens ein Bus sind erforderlich." });
     }
