@@ -22,7 +22,7 @@ export default function PaymentPage() {
   }
 
   const { event, bus, firstName, paid } = registration;
-  const reference = `${firstName} ${registration.lastName} – ${event.title}`;
+  const reference = `${firstName}, ${registration.lastName}, ${event.title}`;
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
