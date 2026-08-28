@@ -101,8 +101,8 @@ export default function EventFormPage() {
     try {
       const payload = { ...form, buses: form.comingSoon ? [] : buses };
       if (isNew) {
-        const event = await api.post("/admin/events", payload);
-        navigate(`/admin/veranstaltungen/${event.id}`);
+        await api.post("/admin/events", payload);
+        navigate("/admin");
       } else {
         await api.put(`/admin/events/${id}`, payload);
         navigate("/admin");

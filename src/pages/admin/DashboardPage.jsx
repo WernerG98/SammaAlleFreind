@@ -75,7 +75,7 @@ export default function DashboardPage() {
               </p>
               <p className="text-sm text-gray-500">
                 {event.eventDate ? new Date(event.eventDate).toLocaleDateString("de-DE") : "Datum offen"} ·{" "}
-                {event._count.registrations} Anmeldungen · {event.buses.length} Bus(se)
+                {event._count.registrations} Anmeldungen · {event.buses.length} Slot(s)
               </p>
             </div>
             <div className="flex gap-3 text-sm shrink-0">
