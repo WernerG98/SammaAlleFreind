@@ -55,12 +55,13 @@ export default function HomePage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-2 text-teal-900">🎉 Kommende Veranstaltungen</h1>
+      <h1 className="text-2xl font-bold mb-2 text-teal-900">🎉 Info zu Veranstaltungen</h1>
       <p className="text-sm text-gray-600 mb-6">
         Die Bezahlung erfolgt per PayPal. Bei anderen Zahlungsmethoden melde dich bitte ganz normal wie gewohnt
         an und schreib uns anschließend über das Kontaktformular weiter unten. Bitte beachte: Damit wir deine
         Zahlung zuordnen können, gib beim Bezahlen als Kommentar deinen Namen an, falls er nicht ohnehin
-        ersichtlich ist.
+        ersichtlich ist. Fix dabei bist du erst, sobald deine Zahlung eingegangen ist und du die
+        Bestätigungsmail erhalten hast.
       </p>
 
       <div className="flex gap-2 mb-6 border-b">
