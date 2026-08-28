@@ -198,7 +198,7 @@ export default function EventPage() {
     );
   }
 
-  const availableBuses = event.buses.filter((b) => b.enabled && b.remaining > 0);
+  const availableBuses = event.buses.filter((b) => b.enabled && (b.remaining === null || b.remaining > 0));
   const allFull = availableBuses.length === 0;
   const deadlinePassed = !event.registrationOpen;
 
@@ -321,7 +321,9 @@ export default function EventPage() {
                         ? "Bei genügend Nachfrage"
                         : full
                           ? "ausgebucht"
-                          : `noch ${bus.remaining} Plätze frei`}
+                          : bus.remaining === null
+                            ? "unbegrenzt verfügbar"
+                            : `noch ${bus.remaining} Plätze frei`}
                     </span>
                   </button>
                   );

@@ -84,7 +84,11 @@ export default function EventFormPage() {
           externalContactEmail: event.externalContactEmail || "",
           isOpen: event.isOpen,
         });
-        setBuses(event.buses.length ? event.buses : [emptyBus()]);
+        setBuses(
+          event.buses.length
+            ? event.buses.map((bus) => ({ ...bus, capacity: bus.capacity ?? "" }))
+            : [emptyBus()]
+        );
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -350,11 +354,10 @@ export default function EventFormPage() {
                       onChange={(e) => updateBus(i, "name", e.target.value)}
                     />
                     <input
-                      required
                       type="number"
                       min="1"
-                      placeholder="Plätze"
-                      className="w-24 border rounded px-3 py-2"
+                      placeholder="Plätze (optional)"
+                      className="w-32 border rounded px-3 py-2"
                       value={bus.capacity}
                       onChange={(e) => updateBus(i, "capacity", e.target.value)}
                     />
@@ -378,6 +381,9 @@ export default function EventFormPage() {
                   </div>
                 ))}
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Plätze sind optional — ohne Angabe ist der Slot unbegrenzt buchbar.
+              </p>
             </div>
           </>
         )}

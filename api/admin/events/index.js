@@ -1,4 +1,4 @@
-import { prisma } from "../../_lib/db.js";
+import { prisma, parseCapacity } from "../../_lib/db.js";
 import { requireAdmin } from "../../_lib/auth.js";
 import { sendEmail } from "../../_lib/email.js";
 
@@ -122,7 +122,7 @@ export default async function handler(req, res) {
         buses: {
           create: (buses || []).map((bus) => ({
             name: bus.name.trim(),
-            capacity: Number(bus.capacity),
+            capacity: parseCapacity(bus.capacity),
             enabled: bus.enabled !== undefined ? Boolean(bus.enabled) : true,
           })),
         },

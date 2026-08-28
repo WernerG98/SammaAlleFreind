@@ -72,7 +72,7 @@ export default async function handler(req, res) {
   }
 
   const paidCount = bus.registrations.filter((r) => r.paid).length;
-  if (paidCount >= bus.capacity) {
+  if (bus.capacity !== null && paidCount >= bus.capacity) {
     return res.status(409).json({ error: "Dieser Bus ist bereits ausgebucht." });
   }
 

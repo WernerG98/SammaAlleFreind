@@ -1,4 +1,4 @@
-import { prisma } from "../../_lib/db.js";
+import { prisma, parseCapacity } from "../../_lib/db.js";
 import { requireAdmin } from "../../_lib/auth.js";
 
 export default async function handler(req, res) {
@@ -84,7 +84,7 @@ export default async function handler(req, res) {
             where: { id: b.id },
             data: {
               name: b.name.trim(),
-              capacity: Number(b.capacity),
+              capacity: parseCapacity(b.capacity),
               enabled: b.enabled !== undefined ? Boolean(b.enabled) : true,
             },
           })
@@ -96,7 +96,7 @@ export default async function handler(req, res) {
             data: {
               eventId: id,
               name: b.name.trim(),
-              capacity: Number(b.capacity),
+              capacity: parseCapacity(b.capacity),
               enabled: b.enabled !== undefined ? Boolean(b.enabled) : true,
             },
           })

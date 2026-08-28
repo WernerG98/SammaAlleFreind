@@ -108,9 +108,10 @@ export default function HomePage() {
           }
 
           const activeBuses = event.buses.filter((b) => b.enabled);
-          const totalCapacity = activeBuses.reduce((sum, b) => sum + b.capacity, 0);
-          const totalRemaining = activeBuses.reduce((sum, b) => sum + b.remaining, 0);
-          const soldOut = totalRemaining === 0;
+          const hasUnlimitedBus = activeBuses.some((b) => b.capacity === null);
+          const totalCapacity = hasUnlimitedBus ? null : activeBuses.reduce((sum, b) => sum + b.capacity, 0);
+          const totalRemaining = hasUnlimitedBus ? null : activeBuses.reduce((sum, b) => sum + b.remaining, 0);
+          const soldOut = !hasUnlimitedBus && totalRemaining === 0;
           const closed = !event.registrationOpen || soldOut;
 
           return (

@@ -46,7 +46,7 @@ export default async function handler(req, res) {
       }
       if (registration.paid) {
         const targetPaidCount = targetBus.registrations.filter((r) => r.paid).length;
-        if (targetPaidCount >= targetBus.capacity) {
+        if (targetBus.capacity !== null && targetPaidCount >= targetBus.capacity) {
           return res.status(409).json({ error: "Der Zielbus hat keine freien Plätze mehr." });
         }
       }
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
     if (nextPaid && wasUnpaid) {
       const relevantRegistrations = changingBus ? targetBus.registrations : registration.bus.registrations;
       const paidCount = relevantRegistrations.filter((r) => r.paid).length;
-      if (paidCount >= targetBus.capacity) {
+      if (targetBus.capacity !== null && paidCount >= targetBus.capacity) {
         return res.status(409).json({ error: "Für diesen Bus sind bereits alle Plätze als bezahlt vergeben." });
       }
     }

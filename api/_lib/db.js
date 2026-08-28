@@ -14,6 +14,10 @@ if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
 
+export function parseCapacity(value) {
+  return value !== undefined && value !== null && value !== "" ? Number(value) : null;
+}
+
 export function isRegistrationOpen(event) {
   if (event.comingSoon) return false;
   if (!event.isOpen) return false;
@@ -69,7 +73,7 @@ export function withRemainingSeats(event, { password } = {}) {
         name: bus.name,
         capacity: bus.capacity,
         enabled: bus.enabled,
-        remaining: Math.max(0, bus.capacity - paidCount),
+        remaining: bus.capacity === null ? null : Math.max(0, bus.capacity - paidCount),
       };
     }),
   };

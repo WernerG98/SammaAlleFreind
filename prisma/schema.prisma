@@ -36,7 +36,7 @@ model Bus {
   id       String  @id @default(cuid())
   eventId  String
   name     String
-  capacity Int
+  capacity Int?
   enabled  Boolean @default(true)
 
   event         Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)

@@ -107,7 +107,7 @@ export default function RegistrationsPage() {
   const busStats = useMemo(() => {
     return buses.map((bus) => {
       const paidCount = registrations.filter((r) => r.busId === bus.id && r.paid).length;
-      return { ...bus, paidCount, full: paidCount >= bus.capacity };
+      return { ...bus, paidCount, full: bus.capacity !== null && paidCount >= bus.capacity };
     });
   }, [buses, registrations]);
 
@@ -243,7 +243,7 @@ export default function RegistrationsPage() {
               }`}
             >
               {(bus.full || !bus.enabled) && <span aria-hidden="true">{bus.enabled ? "🔒" : "⏳"}</span>}
-              {bus.name} ({bus.paidCount}/{bus.capacity})
+              {bus.name} ({bus.paidCount}/{bus.capacity ?? "∞"})
             </button>
           ))}
         </div>
