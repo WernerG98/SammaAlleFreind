@@ -52,22 +52,13 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const { action, email } = req.body || {};
+    const { email } = req.body || {};
 
     if (!isValidEmail(email || "")) {
       return res.status(400).json({ error: "Bitte eine gültige E-Mail-Adresse angeben." });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
-
-    if (action === "unsubscribe") {
-      const subscriber = await prisma.newsletterSubscriber.findUnique({ where: { email: normalizedEmail } });
-      if (!subscriber) {
-        return res.status(404).json({ error: "Diese E-Mail-Adresse ist nicht im Verteiler eingetragen." });
-      }
-      await prisma.newsletterSubscriber.delete({ where: { id: subscriber.id } });
-      return res.status(200).json({ success: true });
-    }
 
     const existing = await prisma.newsletterSubscriber.findUnique({ where: { email: normalizedEmail } });
     const subscriber =
