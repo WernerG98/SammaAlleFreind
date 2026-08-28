@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { api } from "../lib/api.js";
+import Honeypot from "./Honeypot.jsx";
 
 export default function NewsletterSignup() {
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
 
@@ -11,7 +13,7 @@ export default function NewsletterSignup() {
     setStatus("submitting");
     setMessage("");
     try {
-      await api.post("/newsletter", { email });
+      await api.post("/newsletter", { email, website });
       setMessage("Fast geschafft! Wir haben dir eine Bestätigungsmail geschickt — bitte prüfe auch deinen Spam-Ordner.");
       setStatus("done");
       setEmail("");
@@ -28,6 +30,8 @@ export default function NewsletterSignup() {
         Melde dich an, um nichts zu verpassen. Jede Newsletter-Mail enthält einen Abmelde-Link, falls du keine
         Mails mehr erhalten möchtest.
       </p>
+
+      <Honeypot value={website} onChange={(e) => setWebsite(e.target.value)} />
 
       <div className="flex flex-col sm:flex-row gap-2">
         <input

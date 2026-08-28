@@ -9,7 +9,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Methode nicht erlaubt." });
   }
 
-  const { firstName, lastName, email, message } = req.body || {};
+  const { firstName, lastName, email, message, website } = req.body || {};
+
+  if (website) {
+    return res.status(400).json({ error: "Ungültige Anfrage." });
+  }
 
   if (!firstName?.trim() || !lastName?.trim() || !isValidEmail(email || "") || !message?.trim()) {
     return res.status(400).json({ error: "Bitte alle Felder gültig ausfüllen." });

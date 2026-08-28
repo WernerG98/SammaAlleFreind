@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api.js";
+import Honeypot from "../components/Honeypot.jsx";
 
 export default function EventPage() {
   const { slug } = useParams();
@@ -24,6 +25,7 @@ export default function EventPage() {
     email: "",
     busId: "",
     newsletterOptIn: false,
+    website: "",
   });
 
   useEffect(() => {
@@ -174,6 +176,7 @@ export default function EventPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
+            <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
             <h2 className="font-semibold">Interesse bekunden</h2>
             <p className="text-sm text-gray-600">
               Trag dich schon jetzt unverbindlich auf die Liste ein, wir informieren dich, sobald es losgeht.
@@ -283,6 +286,7 @@ export default function EventPage() {
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
+          <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
           <h2 className="font-semibold">Anmeldung</h2>
 
           <div className="grid grid-cols-2 gap-4">
@@ -422,6 +426,7 @@ export default function EventPage() {
             </button>
           ) : (
             <form onSubmit={handleWaitlistSubmit} className="mt-4 space-y-4 bg-white border rounded-xl p-6 shadow-sm">
+              <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
               <h2 className="font-semibold">Auf die Warteliste setzen</h2>
 
               <div className="grid grid-cols-2 gap-4">

@@ -16,7 +16,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Methode nicht erlaubt." });
   }
 
-  const { eventId, busId, firstName, lastName, email, newsletterOptIn, waitlist, password } = req.body || {};
+  const { eventId, busId, firstName, lastName, email, newsletterOptIn, waitlist, password, website } =
+    req.body || {};
+
+  if (website) {
+    return res.status(400).json({ error: "Ungültige Anfrage." });
+  }
 
   if (!eventId || !firstName?.trim() || !lastName?.trim() || !isValidEmail(email || "")) {
     return res.status(400).json({ error: "Bitte alle Felder gültig ausfüllen." });

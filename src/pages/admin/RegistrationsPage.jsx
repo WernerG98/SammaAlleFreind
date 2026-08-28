@@ -194,6 +194,30 @@ export default function RegistrationsPage() {
     }
   }
 
+  function exportCsv() {
+    const headers = ["Vorname", "Name", "E-Mail", "Slot", "Newsletter", "Bezahlt", "Angemeldet am"];
+    const rows = filteredRegistrations.map((r) => [
+      r.firstName,
+      r.lastName,
+      r.email,
+      r.bus?.name || "",
+      r.newsletterOptIn ? "Ja" : "Nein",
+      r.paid ? "Ja" : "Nein",
+      new Date(r.createdAt).toLocaleDateString("de-DE"),
+    ]);
+    const escapeCell = (val) => `"${String(val).replace(/"/g, '""')}"`;
+    const csv = [headers, ...rows].map((row) => row.map(escapeCell).join(";")).join("\r\n");
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `anmeldungen-${id}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
   async function confirmRemove() {
     if (!toRemove) return;
     setError("");
@@ -249,13 +273,23 @@ export default function RegistrationsPage() {
         </div>
       )}
 
-      <input
-        type="text"
-        placeholder="Suche nach Name oder E-Mail…"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full sm:w-72 border rounded px-3 py-2 text-sm mb-4"
-      />
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="Suche nach Name oder E-Mail…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full sm:w-72 border rounded px-3 py-2 text-sm"
+        />
+        <button
+          type="button"
+          onClick={exportCsv}
+          disabled={filteredRegistrations.length === 0}
+          className="border rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
+        >
+          ⬇️ CSV exportieren
+        </button>
+      </div>
 
       <div className="bg-white border rounded-lg overflow-x-auto">
         <table className="w-full text-sm min-w-[640px]">

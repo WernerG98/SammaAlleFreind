@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { api } from "../lib/api.js";
+import Honeypot from "./Honeypot.jsx";
 
 export default function ContactForm({
   heading = "💌 Kontakt",
   description = "Andere Zahlungsmethode, Anregungen für weitere Ausflüge oder einfach Feedback? Schreib uns kurz, wir melden uns bei dir.",
 }) {
-  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", message: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", message: "", website: "" });
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
 
@@ -16,7 +17,7 @@ export default function ContactForm({
     try {
       await api.post("/contact", form);
       setStatus("done");
-      setForm({ firstName: "", lastName: "", email: "", message: "" });
+      setForm({ firstName: "", lastName: "", email: "", message: "", website: "" });
     } catch (err) {
       setError(err.message);
       setStatus("idle");
@@ -32,6 +33,7 @@ export default function ContactForm({
         <p className="text-sm text-emerald-700">Danke für deine Nachricht, wir melden uns bald bei dir!</p>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-3">
+          <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
           <div className="grid grid-cols-2 gap-3">
             <input
               required

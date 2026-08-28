@@ -52,7 +52,11 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const { email } = req.body || {};
+    const { email, website } = req.body || {};
+
+    if (website) {
+      return res.status(400).json({ error: "Ungültige Anfrage." });
+    }
 
     if (!isValidEmail(email || "")) {
       return res.status(400).json({ error: "Bitte eine gültige E-Mail-Adresse angeben." });
