@@ -18,6 +18,16 @@ export async function sendEmail({ to, subject, html, replyTo }) {
   return resend.emails.send({ from: fromEmail, to, subject, html, replyTo: replyTo || replyToEmail });
 }
 
+function externalOrganizerNote(event) {
+  if (!event?.isExternal) return "";
+  return `
+    <p style="font-size: 13px; color: #92400e; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; margin-top: 16px;">
+      🤝 Diese Veranstaltung wird organisiert von <strong>${event.externalOrganizer || "einem externen Verein"}</strong>.
+      ${event.externalContactEmail ? `Bei Fragen dazu wende dich direkt an: <a href="mailto:${event.externalContactEmail}">${event.externalContactEmail}</a>` : ""}
+    </p>
+  `;
+}
+
 export function buildConfirmationEmailHtml({ firstName, event, busName }) {
   return `
     <h2>Deine Zahlung wurde bestätigt</h2>
@@ -30,6 +40,7 @@ export function buildConfirmationEmailHtml({ firstName, event, busName }) {
     <hr />
     <p><strong>Veranstaltung:</strong> ${event.title}<br/>
     <strong>Datum:</strong> ${new Date(event.eventDate).toLocaleDateString("de-DE")}</p>
+    ${externalOrganizerNote(event)}
   `;
 }
 
@@ -40,6 +51,7 @@ export function buildBusChangedHtml({ firstName, event, busName }) {
     <p>
       du bist jetzt für <strong>${busName}</strong> bei <strong>${event.title}</strong> eingeplant.
     </p>
+    ${externalOrganizerNote(event)}
   `;
 }
 
@@ -71,6 +83,7 @@ export function buildInterestConfirmationHtml({ firstName, event }) {
       du stehst jetzt auf der Interessentenliste für <strong>${event.title}</strong>. Sobald es Details und
       Termine gibt, melden wir uns bei dir.
     </p>
+    ${externalOrganizerNote(event)}
   `;
 }
 
@@ -82,6 +95,7 @@ export function buildWaitlistConfirmationHtml({ firstName, event }) {
       aktuell sind bei <strong>${event.title}</strong> leider alle Plätze vergeben. Wir haben dich auf die
       Warteliste gesetzt und melden uns, sobald wieder ein Platz frei wird.
     </p>
+    ${externalOrganizerNote(event)}
   `;
 }
 
@@ -93,6 +107,7 @@ export function buildRegistrationRemovedHtml({ firstName, event }) {
       deine Anmeldung für <strong>${event.title}</strong> wurde von uns aus der Liste entfernt. Falls das aus
       deiner Sicht ein Irrtum ist, melde dich gerne bei uns.
     </p>
+    ${externalOrganizerNote(event)}
   `;
 }
 
@@ -104,6 +119,7 @@ export function buildInterestRemovedHtml({ firstName, event }) {
       du wurdest von der Interessentenliste für <strong>${event.title}</strong> entfernt. Falls das aus deiner
       Sicht ein Irrtum ist, melde dich gerne bei uns.
     </p>
+    ${externalOrganizerNote(event)}
   `;
 }
 
