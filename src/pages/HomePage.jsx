@@ -71,17 +71,28 @@ export default function HomePage() {
                 className="relative block bg-gradient-to-br from-amber-50 to-white border-2 border-amber-300 rounded-xl pl-6 pr-5 py-5 shadow-md hover:shadow-xl hover:border-amber-500 hover:-translate-y-0.5 transition-all overflow-hidden"
               >
                 <span className="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-500" aria-hidden="true" />
-                <span className="inline-block text-[11px] font-bold uppercase tracking-wide text-amber-700 bg-amber-100 rounded-full px-2 py-0.5 mb-1">
-                  🔒 Vorabzugang
-                </span>
-                <h2 className="text-lg font-semibold text-amber-950">{event.title}</h2>
-                {event.isExternal && (
-                  <p className="text-xs text-amber-600 mt-0.5">
-                    {event.externalOrganizer || "Externer Verein"}
-                    {event.externalContactEmail && ` · ${event.externalContactEmail}`}
-                  </p>
-                )}
-                <p className="text-sm text-amber-700 mt-2 font-medium">Nur mit Passwort sichtbar</p>
+                <div className="flex items-start gap-3">
+                  {event.imageUrl && (
+                    <img
+                      src={event.imageUrl}
+                      alt=""
+                      className="w-14 h-14 shrink-0 rounded-lg object-cover border border-amber-200"
+                    />
+                  )}
+                  <div className="min-w-0">
+                    <span className="inline-block text-[11px] font-bold uppercase tracking-wide text-amber-700 bg-amber-100 rounded-full px-2 py-0.5 mb-1">
+                      🔒 Vorabzugang
+                    </span>
+                    <h2 className="text-lg font-semibold text-amber-950">{event.title}</h2>
+                    {event.isExternal && (
+                      <p className="text-xs text-amber-600 mt-0.5">
+                        {event.externalOrganizer || "Externer Verein"}
+                        {event.externalContactEmail && ` · ${event.externalContactEmail}`}
+                      </p>
+                    )}
+                    <p className="text-sm text-amber-700 mt-2 font-medium">Nur mit Passwort sichtbar</p>
+                  </div>
+                </div>
               </Link>
             );
           }
