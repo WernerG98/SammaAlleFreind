@@ -263,7 +263,7 @@ export default function EventFormPage() {
                   onClick={() => setBuses([...buses, emptyBus()])}
                   className="text-sm text-blue-600 hover:underline"
                 >
-                  + Bus hinzufügen
+                  + Slot hinzufügen
                 </button>
               </div>
               <div className="space-y-2">
