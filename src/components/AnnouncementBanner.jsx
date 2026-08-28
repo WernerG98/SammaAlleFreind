@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { api } from "../lib/api.js";
 
 const STORAGE_KEY = "announcement-banner-dismissed-v2";
 
-const MESSAGES = [
+const DEFAULT_MESSAGES = [
   "🐞 Die neue Seite für unsere Veranstaltungen! Schwierigkeiten und Bugs bitte direkt melden, das würde uns sehr helfen. :)",
   "🤝 Wir stellen die Seite gerne auch lokalen Arnstorfer Vereinen und Personen zur Eventplanung zur Verfügung — einfach Kontakt aufnehmen!",
 ];
 
 export default function AnnouncementBanner() {
+  const [messages, setMessages] = useState(DEFAULT_MESSAGES);
   const [dismissed, setDismissed] = useState(() => {
     try {
       return localStorage.getItem(STORAGE_KEY) === "1";
@@ -15,6 +17,17 @@ export default function AnnouncementBanner() {
       return false;
     }
   });
+
+  useEffect(() => {
+    api
+      .get("/announcement")
+      .then((data) => {
+        if (Array.isArray(data.messages) && data.messages.length > 0) {
+          setMessages(data.messages);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   if (dismissed) return null;
 
@@ -32,11 +45,11 @@ export default function AnnouncementBanner() {
   // visible content and the next message visibly jumps into view instead of
   // scrolling in smoothly.
   const REPEATS_PER_HALF = 6;
-  const half = Array.from({ length: REPEATS_PER_HALF }, () => MESSAGES).flat();
+  const half = Array.from({ length: REPEATS_PER_HALF }, () => messages).flat();
   const track = [...half, ...half];
-  // Base duration was tuned for one copy of MESSAGES per half; scale it up so
-  // the scroll speed (px/s) stays the same now that each half repeats it
-  // REPEATS_PER_HALF times.
+  // Base duration was tuned for one copy of the message set per half; scale
+  // it up so the scroll speed (px/s) stays the same now that each half
+  // repeats it REPEATS_PER_HALF times.
   const durationSeconds = 28 * REPEATS_PER_HALF;
 
   return (

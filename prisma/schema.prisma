@@ -80,3 +80,9 @@ model NewsletterSubscriber {
   unsubscribeToken String   @unique
   createdAt        DateTime @default(now())
 }
+
+model SiteSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String @db.Text
+}

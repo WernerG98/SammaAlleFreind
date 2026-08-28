@@ -13,7 +13,7 @@ export default function NewsletterPage() {
     setResult(null);
     setSubmitting(true);
     try {
-      const res = await api.post("/admin/newsletter/send", form);
+      const res = await api.post("/newsletter", { action: "send", ...form });
       setResult(res);
     } catch (err) {
       setError(err.message);

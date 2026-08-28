@@ -1,7 +1,12 @@
 import crypto from "node:crypto";
 import { prisma } from "./_lib/db.js";
 import { requireAdmin } from "./_lib/auth.js";
-import { sendEmail, buildNewsletterOptInHtml, buildNewsletterRemovedHtml } from "./_lib/email.js";
+import {
+  sendEmail,
+  buildNewsletterOptInHtml,
+  buildNewsletterRemovedHtml,
+  buildNewsletterHtml,
+} from "./_lib/email.js";
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -52,6 +57,40 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
+    if (req.body?.action === "send") {
+      const session = await requireAdmin(req, res, { fullOnly: true });
+      if (!session) return;
+
+      const { subject, bodyHtml } = req.body;
+      if (!subject?.trim() || !bodyHtml?.trim()) {
+        return res.status(400).json({ error: "Betreff und Inhalt sind erforderlich." });
+      }
+
+      const subscribers = await prisma.newsletterSubscriber.findMany();
+      const baseUrl = process.env.PUBLIC_BASE_URL || "http://localhost:3000";
+
+      let sent = 0;
+      const failed = [];
+
+      for (const subscriber of subscribers) {
+        try {
+          await sendEmail({
+            to: subscriber.email,
+            subject: subject.trim(),
+            html: buildNewsletterHtml({
+              bodyHtml,
+              unsubscribeUrl: `${baseUrl}/newsletter/abmelden?token=${subscriber.unsubscribeToken}`,
+            }),
+          });
+          sent += 1;
+        } catch {
+          failed.push(subscriber.email);
+        }
+      }
+
+      return res.status(200).json({ sent, total: subscribers.length, failed });
+    }
+
     const { email, website } = req.body || {};
 
     if (website) {
