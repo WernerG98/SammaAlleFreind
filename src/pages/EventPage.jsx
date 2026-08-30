@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api.js";
 import Honeypot from "../components/Honeypot.jsx";
+import AlreadyRegisteredBox from "../components/AlreadyRegisteredBox.jsx";
 
 export default function EventPage() {
   const { slug } = useParams();
@@ -291,6 +292,8 @@ export default function EventPage() {
       {event.description && (
         <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
       )}
+
+      <AlreadyRegisteredBox slug={event.slug} />
 
       {deadlinePassed ? (
         <div className="mt-8 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
