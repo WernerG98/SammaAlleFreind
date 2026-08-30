@@ -48,6 +48,7 @@ export function withRemainingSeats(event, { password } = {}) {
       slug: event.slug,
       title: event.title,
       imageUrl: event.imageUrl,
+      eventDate: event.eventDate,
       comingSoon: false,
       earlyAccessEnabled: true,
       locked: true,
