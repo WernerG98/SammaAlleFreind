@@ -3,6 +3,74 @@ import { Link, useParams } from "react-router-dom";
 import { api } from "../../lib/api.js";
 import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 
+function InterestEmailForm({ eventId }) {
+  const [subject, setSubject] = useState("");
+  const [bodyHtml, setBodyHtml] = useState("");
+  const [status, setStatus] = useState("idle");
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setResult(null);
+    setStatus("submitting");
+    try {
+      const res = await api.post("/admin/events", {
+        action: "send-email",
+        eventId,
+        target: "interested",
+        subject,
+        bodyHtml,
+      });
+      setResult(res);
+      setStatus("done");
+    } catch (err) {
+      setError(err.message);
+      setStatus("idle");
+    }
+  }
+
+  return (
+    <div className="mt-8 bg-gray-900 border border-gray-800 rounded-lg p-5">
+      <h2 className="font-semibold mb-3 text-gray-100">Rundmail an alle Interessenten senden</h2>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <input
+          required
+          placeholder="Betreff"
+          className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+        />
+        <textarea
+          required
+          rows={5}
+          placeholder="Inhalt (HTML wird unterstützt)"
+          className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm font-mono focus:outline-none focus:border-teal-500"
+          value={bodyHtml}
+          onChange={(e) => setBodyHtml(e.target.value)}
+        />
+
+        {error && <p className="text-sm text-red-400">{error}</p>}
+        {result && (
+          <p className="text-sm text-emerald-400">
+            Versendet an {result.sent} von {result.total} Interessenten.
+            {result.failed.length > 0 && ` Fehlgeschlagen: ${result.failed.join(", ")}`}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={status === "submitting"}
+          className="bg-teal-600 hover:bg-teal-500 text-white rounded px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
+        >
+          {status === "submitting" ? "Wird gesendet…" : "Senden"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function BulkEmailForm({ eventId }) {
   const [target, setTarget] = useState("paid");
   const [subject, setSubject] = useState("");
@@ -90,6 +158,9 @@ export default function RegistrationsPage() {
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
+  const [interestSearch, setInterestSearch] = useState("");
+  const [interestSortField, setInterestSortField] = useState("name");
+  const [interestSortDir, setInterestSortDir] = useState("asc");
 
   function load() {
     api
@@ -156,6 +227,43 @@ export default function RegistrationsPage() {
     );
   }
 
+  function interestSortValue(int, field) {
+    switch (field) {
+      case "email":
+        return int.email.toLowerCase();
+      case "createdAt":
+        return new Date(int.createdAt).getTime();
+      case "name":
+      default:
+        return `${int.firstName} ${int.lastName}`.toLowerCase();
+    }
+  }
+
+  function toggleInterestSort(field) {
+    if (interestSortField === field) {
+      setInterestSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setInterestSortField(field);
+      setInterestSortDir("asc");
+    }
+  }
+
+  function InterestSortHeader({ field, children }) {
+    const active = interestSortField === field;
+    return (
+      <th className="px-4 py-2">
+        <button
+          type="button"
+          onClick={() => toggleInterestSort(field)}
+          className={`flex items-center gap-1 font-semibold ${active ? "text-gray-100" : "text-gray-500"}`}
+        >
+          {children}
+          <span className="text-xs">{active ? (interestSortDir === "asc" ? "▲" : "▼") : "↕"}</span>
+        </button>
+      </th>
+    );
+  }
+
   const filteredRegistrations = registrations
     .filter((r) => busFilter === "all" || r.busId === busFilter)
     .filter((r) => {
@@ -168,6 +276,19 @@ export default function RegistrationsPage() {
       const vb = sortValue(b, sortField);
       const cmp = va < vb ? -1 : va > vb ? 1 : 0;
       return sortDir === "asc" ? cmp : -cmp;
+    });
+
+  const filteredInterests = interests
+    .filter((int) => {
+      if (!interestSearch.trim()) return true;
+      const q = interestSearch.trim().toLowerCase();
+      return `${int.firstName} ${int.lastName}`.toLowerCase().includes(q) || int.email.toLowerCase().includes(q);
+    })
+    .sort((a, b) => {
+      const va = interestSortValue(a, interestSortField);
+      const vb = interestSortValue(b, interestSortField);
+      const cmp = va < vb ? -1 : va > vb ? 1 : 0;
+      return interestSortDir === "asc" ? cmp : -cmp;
     });
 
   async function togglePaid(reg) {
@@ -397,17 +518,24 @@ export default function RegistrationsPage() {
       {interests.length > 0 && (
         <div className="mt-8">
           <h2 className="font-semibold mb-3 text-gray-100">Interessenten (Coming Soon)</h2>
+          <input
+            type="text"
+            placeholder="Suche nach Name oder E-Mail…"
+            value={interestSearch}
+            onChange={(e) => setInterestSearch(e.target.value)}
+            className="w-full sm:w-72 border border-gray-700 bg-gray-900 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm mb-4 focus:outline-none focus:border-teal-500"
+          />
           <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
             <table className="w-full text-sm min-w-[420px]">
               <thead className="bg-gray-800 text-left">
                 <tr>
-                  <th className="px-4 py-2 text-gray-300">Name</th>
-                  <th className="px-4 py-2 text-gray-300">E-Mail</th>
+                  <InterestSortHeader field="name">Name</InterestSortHeader>
+                  <InterestSortHeader field="email">E-Mail</InterestSortHeader>
                   <th className="px-4 py-2"></th>
                 </tr>
               </thead>
               <tbody>
-                {interests.map((int) => (
+                {filteredInterests.map((int) => (
                   <tr key={int.id} className="border-t border-gray-800 text-gray-200">
                     <td className="px-4 py-2">
                       {int.firstName} {int.lastName}
@@ -427,11 +555,15 @@ export default function RegistrationsPage() {
                 ))}
               </tbody>
             </table>
+            {filteredInterests.length === 0 && (
+              <p className="text-gray-500 px-4 py-6">Keine Treffer für diese Suche.</p>
+            )}
           </div>
         </div>
       )}
 
       {registrations.length > 0 && <BulkEmailForm eventId={id} />}
+      {interests.length > 0 && <InterestEmailForm eventId={id} />}
 
       <ConfirmDialog
         open={!!toRemove}

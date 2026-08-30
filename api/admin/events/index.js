@@ -35,8 +35,10 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     if (req.body?.action === "send-email") {
       const { eventId, target, subject, bodyHtml } = req.body;
-      if (!eventId || !["paid", "unpaid"].includes(target) || !subject?.trim() || !bodyHtml?.trim()) {
-        return res.status(400).json({ error: "eventId, target (paid/unpaid), Betreff und Inhalt sind erforderlich." });
+      if (!eventId || !["paid", "unpaid", "interested"].includes(target) || !subject?.trim() || !bodyHtml?.trim()) {
+        return res
+          .status(400)
+          .json({ error: "eventId, target (paid/unpaid/interested), Betreff und Inhalt sind erforderlich." });
       }
 
       if (isExternalRole) {
@@ -46,10 +48,13 @@ export default async function handler(req, res) {
         }
       }
 
-      const recipients = await prisma.registration.findMany({
-        where: { eventId, paid: target === "paid" },
-        select: { email: true },
-      });
+      const recipients =
+        target === "interested"
+          ? await prisma.eventInterest.findMany({ where: { eventId }, select: { email: true } })
+          : await prisma.registration.findMany({
+              where: { eventId, paid: target === "paid" },
+              select: { email: true },
+            });
 
       let sent = 0;
       const failed = [];
