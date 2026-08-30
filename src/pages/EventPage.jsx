@@ -171,6 +171,24 @@ export default function EventPage() {
             )}
           </p>
         )}
+        {event.eventDate && (
+          <p className="text-sm text-gray-400 mt-1">
+            {new Date(event.eventDate).toLocaleDateString("de-DE", {
+              timeZone: "Europe/Berlin",
+              weekday: "long",
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+            ,{" "}
+            {new Date(event.eventDate).toLocaleTimeString("de-DE", {
+              timeZone: "Europe/Berlin",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}{" "}
+            Uhr
+          </p>
+        )}
         <p className="mt-2 text-teal-400 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
         {event.description && (
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />

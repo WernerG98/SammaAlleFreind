@@ -198,6 +198,22 @@ export default function EventFormPage() {
           Nur Ankündigung ("Coming Soon") — Datum, Preis und Busse stehen noch nicht fest
         </label>
 
+        {form.comingSoon && (
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-300">Datum &amp; Startzeit (optional)</label>
+            <input
+              type="datetime-local"
+              className={inputClass}
+              value={form.eventDate}
+              onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Falls schon bekannt, wird das Datum auf der Kachel angezeigt, auch wenn die Anmeldung noch nicht
+              möglich ist.
+            </p>
+          </div>
+        )}
+
         {role === "external" ? (
           <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
             <p className="text-xs text-gray-400">

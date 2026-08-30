@@ -205,6 +205,24 @@ export default function HomePage() {
                         {event.externalContactEmail && ` · ${event.externalContactEmail}`}
                       </p>
                     )}
+                    {event.eventDate && (
+                      <p className="text-sm text-gray-400 mt-1">
+                        {new Date(event.eventDate).toLocaleDateString("de-DE", {
+                          timeZone: "Europe/Berlin",
+                          weekday: "long",
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                        ,{" "}
+                        {new Date(event.eventDate).toLocaleTimeString("de-DE", {
+                          timeZone: "Europe/Berlin",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        Uhr
+                      </p>
+                    )}
                     <p className="text-sm text-gray-500 mt-2 font-semibold">
                       ⏳ Coming Soon — jetzt schon Interesse bekunden
                     </p>
