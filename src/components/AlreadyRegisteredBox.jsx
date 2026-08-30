@@ -50,7 +50,7 @@ export default function AlreadyRegisteredBox({ slug }) {
         onClick={() => setOpen(true)}
         className="mt-4 text-sm text-teal-400 hover:text-teal-300 underline"
       >
-        Bereits angemeldet? Zur Zahlung oder zum Abmelden
+        Bereits angemeldet? Hier Anmeldung stornieren oder nochmal zum Bezahlungslink.
       </button>
     );
   }
