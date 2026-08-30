@@ -156,6 +156,13 @@ export default function EventPage() {
   if (event.comingSoon) {
     return (
       <div className="max-w-lg mx-auto px-4 py-12">
+        {event.imageUrl && (
+          <img
+            src={event.imageUrl}
+            alt={`Flyer: ${event.title}`}
+            className="w-full rounded-xl shadow-md mb-6 object-cover"
+          />
+        )}
         <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
         {event.isExternal && (
           <p className="mt-2 text-xs text-amber-300 bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2 inline-block">
