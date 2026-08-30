@@ -127,7 +127,9 @@ export default function EventPage() {
     return (
       <div className="max-w-lg mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
-        <p className="mt-2 text-amber-400 font-semibold">🔒 Vorabzugang — nur mit Passwort sichtbar.</p>
+        <p className="mt-2 text-amber-400 font-semibold">
+          {event.isPrivate ? "🔒 Privat" : "🔒 Vorabzugang"} — nur mit Passwort sichtbar.
+        </p>
 
         <form onSubmit={handleUnlock} className="mt-8 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
           <div>
@@ -418,8 +420,8 @@ export default function EventPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2 text-gray-300">Bus</label>
-            {allFull && <p className="text-sm text-red-400 mb-2">Alle Busse sind ausgebucht.</p>}
+            <label className="block text-sm font-medium mb-2 text-gray-300">Slot</label>
+            {allFull && <p className="text-sm text-red-400 mb-2">Alle Slots sind ausgebucht.</p>}
             <div className="grid grid-cols-2 gap-2">
               {event.buses.map((bus) => {
                 const full = bus.enabled && bus.remaining === 0;

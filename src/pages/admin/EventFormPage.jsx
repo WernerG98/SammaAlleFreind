@@ -36,6 +36,8 @@ export default function EventFormPage() {
     noRegistrationRequired: false,
     earlyAccessEnabled: false,
     earlyAccessPassword: "",
+    isPrivate: false,
+    privatePassword: "",
     isExternal: false,
     externalOrganizer: "",
     externalContactEmail: "",
@@ -90,6 +92,8 @@ export default function EventFormPage() {
           paymentNote: event.paymentNote || "",
           earlyAccessEnabled: event.earlyAccessEnabled || false,
           earlyAccessPassword: event.earlyAccessPassword || "",
+          isPrivate: event.isPrivate || false,
+          privatePassword: event.privatePassword || "",
           isExternal: event.isExternal || false,
           externalOrganizer: event.externalOrganizer || "",
           externalContactEmail: event.externalContactEmail || "",
@@ -197,7 +201,7 @@ export default function EventFormPage() {
             checked={form.comingSoon}
             onChange={(e) => setForm({ ...form, comingSoon: e.target.checked })}
           />
-          Nur Ankündigung ("Coming Soon") — Datum, Preis und Busse stehen noch nicht fest
+          Nur Ankündigung ("Coming Soon") — Datum, Preis und Slots stehen noch nicht fest
         </label>
 
         {form.comingSoon && (
@@ -389,9 +393,35 @@ export default function EventFormPage() {
                   )}
                 </div>
 
+                <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={form.isPrivate}
+                      onChange={(e) => setForm({ ...form, isPrivate: e.target.checked })}
+                    />
+                    🔒 Privat — nur mit Passwort anmeldbar
+                  </label>
+                  {form.isPrivate && (
+                    <div>
+                      <input
+                        required
+                        placeholder="Passwort für den privaten Zugang"
+                        className={`${inputClass} text-sm`}
+                        value={form.privatePassword}
+                        onChange={(e) => setForm({ ...form, privatePassword: e.target.value })}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Auf der Startseite wird "🔒 Privat" angezeigt, Details/Anmeldung nur mit diesem
+                        Passwort sichtbar. Haken entfernen, sobald es für alle offen sein soll.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-gray-300">Busse</label>
+                    <label className="block text-sm font-medium text-gray-300">Slots</label>
                     <button
                       type="button"
                       onClick={() => setBuses([...buses, emptyBus()])}
@@ -408,7 +438,7 @@ export default function EventFormPage() {
                       >
                         <input
                           required
-                          placeholder="Name (z.B. Bus 1)"
+                          placeholder="Name (z.B. Slot 1)"
                           className={`flex-1 min-w-[140px] ${inputClass}`}
                           value={bus.name}
                           onChange={(e) => updateBus(i, "name", e.target.value)}

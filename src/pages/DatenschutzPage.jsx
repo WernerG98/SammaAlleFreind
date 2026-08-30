@@ -40,14 +40,14 @@ export default function DatenschutzPage() {
         <h3 className="font-medium text-gray-100 mt-3 mb-1">Anmeldung zu einer Veranstaltung</h3>
         <p>
           Bei der Anmeldung zu einer Veranstaltung erheben wir Vorname, Nachname und E-Mail-Adresse sowie den
-          gewählten Bus/Slot. Diese Daten werden zur Organisation der Veranstaltung, zur Platzverwaltung und
+          gewählten Slot. Diese Daten werden zur Organisation der Veranstaltung, zur Platzverwaltung und
           zur Zahlungszuordnung verwendet. Rechtsgrundlage ist die Erfüllung eines Vertrags bzw. vorvertraglicher
           Maßnahmen (Art. 6 Abs. 1 lit. b DSGVO).
         </p>
 
         <h3 className="font-medium text-gray-100 mt-3 mb-1">Interessenten- und Warteliste</h3>
         <p>
-          Für Veranstaltungen ohne feste Anmeldung ("Coming Soon") oder bei ausgebuchten Bussen kannst du dich
+          Für Veranstaltungen ohne feste Anmeldung ("Coming Soon") oder bei ausgebuchten Slots kannst du dich
           unverbindlich auf eine Liste eintragen. Dabei werden Vorname, Nachname und E-Mail-Adresse gespeichert,
           um dich bei Verfügbarkeit zu informieren.
         </p>

@@ -35,15 +35,19 @@ export function isRegistrationOpen(event) {
   return true;
 }
 
-export function isEarlyAccessUnlocked(event, password) {
-  if (!event.earlyAccessEnabled) return true;
-  return Boolean(password) && password === event.earlyAccessPassword;
+export function isAccessUnlocked(event, password) {
+  const passwords = [];
+  if (event.earlyAccessEnabled) passwords.push(event.earlyAccessPassword);
+  if (event.isPrivate) passwords.push(event.privatePassword);
+  if (passwords.length === 0) return true;
+  return Boolean(password) && passwords.includes(password);
 }
 
 export function withRemainingSeats(event, { password } = {}) {
-  const unlocked = isEarlyAccessUnlocked(event, password);
+  const locked = event.earlyAccessEnabled || event.isPrivate;
+  const unlocked = isAccessUnlocked(event, password);
 
-  if (event.earlyAccessEnabled && !unlocked) {
+  if (locked && !unlocked) {
     return {
       id: event.id,
       slug: event.slug,
@@ -51,7 +55,8 @@ export function withRemainingSeats(event, { password } = {}) {
       imageUrl: event.imageUrl,
       eventDate: event.eventDate,
       comingSoon: false,
-      earlyAccessEnabled: true,
+      earlyAccessEnabled: event.earlyAccessEnabled,
+      isPrivate: event.isPrivate,
       locked: true,
       isExternal: event.isExternal,
       externalOrganizer: event.externalOrganizer,
@@ -74,6 +79,7 @@ export function withRemainingSeats(event, { password } = {}) {
     paymentNote: event.paymentNote,
     isOpen: event.isOpen,
     earlyAccessEnabled: event.earlyAccessEnabled,
+    isPrivate: event.isPrivate,
     isExternal: event.isExternal,
     externalOrganizer: event.externalOrganizer,
     externalContactEmail: event.externalContactEmail,

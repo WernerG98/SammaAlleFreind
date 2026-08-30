@@ -37,6 +37,8 @@ export default async function handler(req, res) {
       paymentNote,
       earlyAccessEnabled,
       earlyAccessPassword,
+      isPrivate,
+      privatePassword,
       isExternal,
       externalOrganizer,
       externalContactEmail,
@@ -47,6 +49,7 @@ export default async function handler(req, res) {
     const isComingSoon = Boolean(comingSoon);
     const isNoRegistrationRequired = !isComingSoon && Boolean(noRegistrationRequired);
     const isEarlyAccess = Boolean(earlyAccessEnabled);
+    const isPrivateAccess = Boolean(isPrivate);
     const busList = Array.isArray(buses) ? buses : [];
     const isExternalEvent = session.role === "external" ? true : Boolean(isExternal);
 
@@ -57,10 +60,13 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Datum ist erforderlich." });
     }
     if (!isComingSoon && !isNoRegistrationRequired && busList.length === 0) {
-      return res.status(400).json({ error: "Mindestens ein Bus ist erforderlich." });
+      return res.status(400).json({ error: "Mindestens ein Slot ist erforderlich." });
     }
     if (isEarlyAccess && !earlyAccessPassword?.trim()) {
       return res.status(400).json({ error: "Bitte ein Passwort für den Vorabzugang vergeben." });
+    }
+    if (isPrivateAccess && !privatePassword?.trim()) {
+      return res.status(400).json({ error: "Bitte ein Passwort für den privaten Zugang vergeben." });
     }
     if (isExternalEvent && !externalContactEmail?.trim()) {
       return res.status(400).json({ error: "Bitte eine Kontakt-E-Mail für die externe Veranstaltung angeben." });
@@ -79,7 +85,7 @@ export default async function handler(req, res) {
     const blocked = toDelete.find((b) => b._count.registrations > 0);
     if (blocked) {
       return res.status(409).json({
-        error: `Bus "${blocked.name}" hat bereits Anmeldungen und kann nicht entfernt werden.`,
+        error: `Slot "${blocked.name}" hat bereits Anmeldungen und kann nicht entfernt werden.`,
       });
     }
 
@@ -124,6 +130,8 @@ export default async function handler(req, res) {
           paymentNote: paymentNote?.trim() || null,
           earlyAccessEnabled: isEarlyAccess,
           earlyAccessPassword: isEarlyAccess ? earlyAccessPassword.trim() : null,
+          isPrivate: isPrivateAccess,
+          privatePassword: isPrivateAccess ? privatePassword.trim() : null,
           isExternal: isExternalEvent,
           externalOrganizer: isExternalEvent ? externalOrganizer?.trim() || null : null,
           externalContactEmail: isExternalEvent ? externalContactEmail.trim() : null,

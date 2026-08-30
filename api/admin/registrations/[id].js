@@ -76,7 +76,7 @@ export default async function handler(req, res) {
     } else if (changingBus) {
       await sendEmail({
         to: registration.email,
-        subject: `Bus geändert: ${registration.event.title}`,
+        subject: `Slot geändert: ${registration.event.title}`,
         html: buildBusChangedHtml({
           firstName: registration.firstName,
           event: registration.event,

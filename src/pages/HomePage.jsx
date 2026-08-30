@@ -23,7 +23,7 @@ const STATUS_OPTIONS = [
   { value: "all", label: "Alle Status" },
   { value: "open", label: "🎉 Anmeldung möglich" },
   { value: "public", label: "🎉 Öffentlich (keine Anmeldung)" },
-  { value: "locked", label: "🔒 Vorabzugang" },
+  { value: "locked", label: "🔒 Gesperrt (Vorabzugang/Privat)" },
   { value: "comingSoon", label: "⏳ Coming Soon" },
   { value: "closed", label: "⛔ Geschlossen/Ausgebucht" },
 ];
@@ -150,7 +150,7 @@ export default function HomePage() {
                 <div className="flex items-start gap-3">
                   <div className="min-w-0 flex-1">
                     <span className="inline-block text-[11px] font-bold uppercase tracking-wide text-amber-300 bg-amber-950/60 rounded-full px-2 py-0.5 mb-1">
-                      🔒 Vorabzugang
+                      {event.isPrivate ? "🔒 Privat" : "🔒 Vorabzugang"}
                     </span>
                     <h2 className="text-lg font-semibold text-amber-100">{event.title}</h2>
                     {event.isExternal && (

@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { prisma, isRegistrationOpen, isEarlyAccessUnlocked } from "./_lib/db.js";
+import { prisma, isRegistrationOpen, isAccessUnlocked } from "./_lib/db.js";
 import {
   sendEmail,
   buildInterestConfirmationHtml,
@@ -36,8 +36,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Diese Veranstaltung erfordert keine Anmeldung." });
   }
 
-  if (!isEarlyAccessUnlocked(event, password)) {
-    return res.status(403).json({ error: "Falsches Passwort für den Vorabzugang." });
+  if (!isAccessUnlocked(event, password)) {
+    return res.status(403).json({ error: "Falsches Passwort." });
   }
 
   if (event.comingSoon || waitlist) {
@@ -77,7 +77,7 @@ export default async function handler(req, res) {
     include: { registrations: { select: { id: true } } },
   });
   if (!bus || bus.eventId !== eventId) {
-    return res.status(404).json({ error: "Bus nicht gefunden." });
+    return res.status(404).json({ error: "Slot nicht gefunden." });
   }
 
   const existing = await prisma.registration.findUnique({
@@ -91,7 +91,7 @@ export default async function handler(req, res) {
   }
 
   if (bus.capacity !== null && bus.registrations.length >= bus.capacity) {
-    return res.status(409).json({ error: "Dieser Bus ist bereits ausgebucht." });
+    return res.status(409).json({ error: "Dieser Slot ist bereits ausgebucht." });
   }
 
   const isFree = !event.pricePerPerson;

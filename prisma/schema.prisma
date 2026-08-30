@@ -26,6 +26,8 @@ model Event {
   externalContactEmail String?
   earlyAccessEnabled  Boolean @default(false)
   earlyAccessPassword String?
+  isPrivate           Boolean @default(false)
+  privatePassword     String?
   createdAt      DateTime @default(now())
 
   buses         Bus[]

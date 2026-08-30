@@ -83,6 +83,8 @@ export default async function handler(req, res) {
       paymentNote,
       earlyAccessEnabled,
       earlyAccessPassword,
+      isPrivate,
+      privatePassword,
       isExternal,
       externalOrganizer,
       externalContactEmail,
@@ -92,10 +94,14 @@ export default async function handler(req, res) {
     const isComingSoon = Boolean(comingSoon);
     const isNoRegistrationRequired = !isComingSoon && Boolean(noRegistrationRequired);
     const isEarlyAccess = Boolean(earlyAccessEnabled);
+    const isPrivateAccess = Boolean(isPrivate);
     const isExternalEvent = isExternalRole ? true : Boolean(isExternal);
 
     if (isEarlyAccess && !earlyAccessPassword?.trim()) {
       return res.status(400).json({ error: "Bitte ein Passwort für den Vorabzugang vergeben." });
+    }
+    if (isPrivateAccess && !privatePassword?.trim()) {
+      return res.status(400).json({ error: "Bitte ein Passwort für den privaten Zugang vergeben." });
     }
 
     if (!title?.trim()) {
@@ -111,7 +117,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Datum ist erforderlich." });
     }
     if (!isComingSoon && !isNoRegistrationRequired && (!Array.isArray(buses) || buses.length === 0)) {
-      return res.status(400).json({ error: "Mindestens ein Bus ist erforderlich." });
+      return res.status(400).json({ error: "Mindestens ein Slot ist erforderlich." });
     }
 
     const baseSlug = slugify(title);
@@ -136,6 +142,8 @@ export default async function handler(req, res) {
         paymentNote: paymentNote?.trim() || null,
         earlyAccessEnabled: isEarlyAccess,
         earlyAccessPassword: isEarlyAccess ? earlyAccessPassword.trim() : null,
+        isPrivate: isPrivateAccess,
+        privatePassword: isPrivateAccess ? privatePassword.trim() : null,
         isExternal: isExternalEvent,
         externalOrganizer: isExternalEvent ? externalOrganizer?.trim() || null : null,
         externalContactEmail: isExternalEvent ? externalContactEmail.trim() : null,

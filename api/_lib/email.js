@@ -56,7 +56,7 @@ export function buildConfirmationEmailHtml({ firstName, event, busName }) {
 
 export function buildBusChangedHtml({ firstName, event, busName }) {
   return `
-    <h2>Dein Bus wurde geändert</h2>
+    <h2>Dein Slot wurde geändert</h2>
     <p>Hallo ${firstName},</p>
     <p>
       du bist jetzt für <strong>${busName}</strong> bei <strong>${event.title}</strong> eingeplant.
