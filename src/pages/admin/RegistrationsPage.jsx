@@ -84,6 +84,7 @@ export default function RegistrationsPage() {
   const [pendingId, setPendingId] = useState(null);
   const [toRemove, setToRemove] = useState(null);
   const [bulkRemoveStep, setBulkRemoveStep] = useState(0);
+  const [bulkRemoveMode, setBulkRemoveMode] = useState("all");
   const [bulkRemoving, setBulkRemoving] = useState(false);
   const [busFilter, setBusFilter] = useState("all");
   const [search, setSearch] = useState("");
@@ -108,8 +109,8 @@ export default function RegistrationsPage() {
 
   const busStats = useMemo(() => {
     return buses.map((bus) => {
-      const paidCount = registrations.filter((r) => r.busId === bus.id && r.paid).length;
-      return { ...bus, paidCount, full: bus.capacity !== null && paidCount >= bus.capacity };
+      const registeredCount = registrations.filter((r) => r.busId === bus.id).length;
+      return { ...bus, registeredCount, full: bus.capacity !== null && registeredCount >= bus.capacity };
     });
   }, [buses, registrations]);
 
@@ -239,7 +240,8 @@ export default function RegistrationsPage() {
     setError("");
     setBulkRemoving(true);
     try {
-      await api.delete(`/admin/registrations?eventId=${id}`);
+      const query = bulkRemoveMode === "unpaid" ? `eventId=${id}&unpaidOnly=1` : `eventId=${id}`;
+      await api.delete(`/admin/registrations?${query}`);
       setBulkRemoveStep(0);
       load();
     } catch (err) {
@@ -285,7 +287,7 @@ export default function RegistrationsPage() {
               }`}
             >
               {(bus.full || !bus.enabled) && <span aria-hidden="true">{bus.enabled ? "🔒" : "⏳"}</span>}
-              {bus.name} ({bus.paidCount}/{bus.capacity ?? "∞"})
+              {bus.name} ({bus.registeredCount}/{bus.capacity ?? "∞"})
             </button>
           ))}
         </div>
@@ -309,7 +311,21 @@ export default function RegistrationsPage() {
         </button>
         <button
           type="button"
-          onClick={() => setBulkRemoveStep(1)}
+          onClick={() => {
+            setBulkRemoveMode("unpaid");
+            setBulkRemoveStep(1);
+          }}
+          disabled={registrations.filter((r) => !r.paid).length === 0}
+          className="border border-amber-800 rounded px-3 py-2 text-sm text-amber-400 hover:bg-amber-950/40 disabled:opacity-50 whitespace-nowrap"
+        >
+          🗑️ Alle unbezahlten entfernen
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setBulkRemoveMode("all");
+            setBulkRemoveStep(1);
+          }}
           disabled={registrations.length === 0}
           className="border border-red-800 rounded px-3 py-2 text-sm text-red-400 hover:bg-red-950/40 disabled:opacity-50 whitespace-nowrap"
         >
@@ -427,8 +443,16 @@ export default function RegistrationsPage() {
 
       <ConfirmDialog
         open={bulkRemoveStep === 1}
-        title="Wirklich ALLE Anmeldungen entfernen?"
-        message={`Alle ${registrations.length} Anmeldungen für diese Veranstaltung werden entfernt, jede Person erhält eine Info-E-Mail darüber.`}
+        title={
+          bulkRemoveMode === "unpaid"
+            ? "Wirklich alle unbezahlten Anmeldungen entfernen?"
+            : "Wirklich ALLE Anmeldungen entfernen?"
+        }
+        message={
+          bulkRemoveMode === "unpaid"
+            ? `Alle ${registrations.filter((r) => !r.paid).length} unbezahlten Anmeldungen für diese Veranstaltung werden entfernt, jede Person erhält eine Info-E-Mail darüber.`
+            : `Alle ${registrations.length} Anmeldungen für diese Veranstaltung werden entfernt, jede Person erhält eine Info-E-Mail darüber.`
+        }
         confirmLabel="Weiter"
         onConfirm={() => setBulkRemoveStep(2)}
         onCancel={() => setBulkRemoveStep(0)}
@@ -437,7 +461,11 @@ export default function RegistrationsPage() {
       <ConfirmDialog
         open={bulkRemoveStep === 2}
         title="Bist du dir wirklich sicher?"
-        message="Das kann nicht rückgängig gemacht werden. Alle Anmeldungen für diese Veranstaltung werden endgültig gelöscht."
+        message={
+          bulkRemoveMode === "unpaid"
+            ? "Das kann nicht rückgängig gemacht werden. Alle unbezahlten Anmeldungen für diese Veranstaltung werden endgültig gelöscht."
+            : "Das kann nicht rückgängig gemacht werden. Alle Anmeldungen für diese Veranstaltung werden endgültig gelöscht."
+        }
         confirmLabel={bulkRemoving ? "Wird entfernt…" : "Endgültig entfernen"}
         confirmDisabled={bulkRemoving}
         onConfirm={confirmBulkRemove}

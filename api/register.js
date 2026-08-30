@@ -70,22 +70,24 @@ export default async function handler(req, res) {
 
   const bus = await prisma.bus.findUnique({
     where: { id: busId },
-    include: { registrations: { select: { paid: true } } },
+    include: { registrations: { select: { id: true } } },
   });
   if (!bus || bus.eventId !== eventId) {
     return res.status(404).json({ error: "Bus nicht gefunden." });
-  }
-
-  const paidCount = bus.registrations.filter((r) => r.paid).length;
-  if (bus.capacity !== null && paidCount >= bus.capacity) {
-    return res.status(409).json({ error: "Dieser Bus ist bereits ausgebucht." });
   }
 
   const existing = await prisma.registration.findUnique({
     where: { eventId_email: { eventId, email: email.toLowerCase().trim() } },
   });
   if (existing) {
-    return res.status(409).json({ error: "Diese E-Mail-Adresse ist für diese Veranstaltung bereits angemeldet." });
+    return res.status(409).json({
+      error: "Diese E-Mail-Adresse ist für diese Veranstaltung bereits angemeldet.",
+      registrationId: existing.id,
+    });
+  }
+
+  if (bus.capacity !== null && bus.registrations.length >= bus.capacity) {
+    return res.status(409).json({ error: "Dieser Bus ist bereits ausgebucht." });
   }
 
   const isFree = !event.pricePerPerson;

@@ -65,6 +65,10 @@ export default function EventPage() {
         navigate(`/anmeldung/${result.id}/zahlung`);
       }
     } catch (err) {
+      if (err.data?.registrationId) {
+        navigate(`/anmeldung/${err.data.registrationId}/zahlung`);
+        return;
+      }
       setError(err.message);
     } finally {
       setSubmitting(false);

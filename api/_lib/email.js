@@ -18,6 +18,10 @@ export async function sendEmail({ to, subject, html, replyTo }) {
   return resend.emails.send({ from: fromEmail, to, subject, html, replyTo: replyTo || replyToEmail });
 }
 
+export function getOrganizerEmail(event) {
+  return event.isExternal ? event.externalContactEmail : process.env.REPLY_TO_EMAIL;
+}
+
 function externalOrganizerNote(event) {
   if (!event?.isExternal) return "";
   return `
@@ -126,6 +130,33 @@ export function buildInterestRemovedHtml({ firstName, event }) {
       Sicht ein Irrtum ist, melde dich gerne bei uns.
     </p>
     ${externalOrganizerNote(event)}
+  `;
+}
+
+export function buildSelfCancelConfirmationHtml({ firstName, event, wasPaid }) {
+  return `
+    <h2>Du hast dich abgemeldet</h2>
+    <p>Hallo ${firstName},</p>
+    <p>
+      deine Anmeldung für <strong>${event.title}</strong> wurde storniert.
+    </p>
+    ${
+      wasPaid
+        ? `<p>Da deine Zahlung bereits bei uns eingegangen war, bekommst du das Geld in Kürze zurücküberwiesen.</p>`
+        : ""
+    }
+    ${externalOrganizerNote(event)}
+  `;
+}
+
+export function buildOrganizerRefundNoticeHtml({ firstName, lastName, email, event, busName }) {
+  return `
+    <h2>Stornierung mit Rückerstattung nötig</h2>
+    <p>
+      <strong>${firstName} ${lastName}</strong> (${email}) hat die bereits bezahlte Anmeldung für
+      <strong>${event.title}</strong>${busName ? ` (${busName})` : ""} selbst storniert.
+    </p>
+    <p><strong>Bitte das Geld zurücküberweisen.</strong></p>
   `;
 }
 

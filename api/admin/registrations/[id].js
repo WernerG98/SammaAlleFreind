@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
     const registration = await prisma.registration.findUnique({
       where: { id },
-      include: { event: true, bus: { include: { registrations: { select: { paid: true } } } } },
+      include: { event: true, bus: true },
     });
 
     if (!registration) {
@@ -39,26 +39,15 @@ export default async function handler(req, res) {
     if (changingBus) {
       targetBus = await prisma.bus.findUnique({
         where: { id: busId },
-        include: { registrations: { select: { paid: true } } },
+        include: { registrations: { select: { id: true } } },
       });
       if (!targetBus || targetBus.eventId !== registration.eventId) {
         return res.status(404).json({ error: "Zielbus nicht gefunden." });
       }
-      if (registration.paid) {
-        const targetPaidCount = targetBus.registrations.filter((r) => r.paid).length;
-        if (targetBus.capacity !== null && targetPaidCount >= targetBus.capacity) {
-          return res.status(409).json({ error: "Der Zielbus hat keine freien Plätze mehr." });
-        }
+      if (targetBus.capacity !== null && targetBus.registrations.length >= targetBus.capacity) {
+        return res.status(409).json({ error: "Der Zielbus hat keine freien Plätze mehr." });
       }
       targetBusId = busId;
-    }
-
-    if (nextPaid && wasUnpaid) {
-      const relevantRegistrations = changingBus ? targetBus.registrations : registration.bus.registrations;
-      const paidCount = relevantRegistrations.filter((r) => r.paid).length;
-      if (targetBus.capacity !== null && paidCount >= targetBus.capacity) {
-        return res.status(409).json({ error: "Für diesen Bus sind bereits alle Plätze als bezahlt vergeben." });
-      }
     }
 
     const updated = await prisma.registration.update({

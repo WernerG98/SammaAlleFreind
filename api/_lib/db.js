@@ -77,13 +77,16 @@ export function withRemainingSeats(event, { password } = {}) {
     locked: false,
     registrationOpen: isRegistrationOpen(event),
     buses: event.buses.map((bus) => {
-      const paidCount = bus.registrations.filter((r) => r.paid).length;
+      // A seat is reserved the moment someone registers, not only once an
+      // admin confirms payment - otherwise several people could all be told
+      // "1 Platz frei" for the same last seat while payments are pending.
+      const registeredCount = bus.registrations.length;
       return {
         id: bus.id,
         name: bus.name,
         capacity: bus.capacity,
         enabled: bus.enabled,
-        remaining: bus.capacity === null ? null : Math.max(0, bus.capacity - paidCount),
+        remaining: bus.capacity === null ? null : Math.max(0, bus.capacity - registeredCount),
       };
     }),
   };

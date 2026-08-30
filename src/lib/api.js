@@ -10,7 +10,9 @@ async function request(path, options = {}) {
   const data = contentType.includes("application/json") ? await res.json() : null;
 
   if (!res.ok) {
-    throw new Error(data?.error || `Fehler (${res.status})`);
+    const error = new Error(data?.error || `Fehler (${res.status})`);
+    error.data = data;
+    throw error;
   }
 
   return data;

@@ -36,12 +36,13 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "DELETE") {
-    const registrations = await prisma.registration.findMany({ where: { eventId } });
+    const where = req.query.unpaidOnly === "1" ? { eventId, paid: false } : { eventId };
+    const registrations = await prisma.registration.findMany({ where });
     if (registrations.length === 0) {
       return res.status(200).json({ removed: 0 });
     }
 
-    await prisma.registration.deleteMany({ where: { eventId } });
+    await prisma.registration.deleteMany({ where });
 
     for (const registration of registrations) {
       try {
