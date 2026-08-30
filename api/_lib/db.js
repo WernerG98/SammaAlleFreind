@@ -80,6 +80,7 @@ export function withRemainingSeats(event, { password } = {}) {
     isOpen: event.isOpen,
     earlyAccessEnabled: event.earlyAccessEnabled,
     isPrivate: event.isPrivate,
+    commentsEnabled: event.commentsEnabled,
     isExternal: event.isExternal,
     externalOrganizer: event.externalOrganizer,
     externalContactEmail: event.externalContactEmail,

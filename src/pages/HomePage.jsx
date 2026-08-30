@@ -5,7 +5,7 @@ import ContactForm from "../components/ContactForm.jsx";
 import NewsletterSignup from "../components/NewsletterSignup.jsx";
 
 function getEventMeta(event) {
-  if (event.locked) return { status: "locked" };
+  if (event.locked) return { status: event.isPrivate ? "private" : "locked" };
   if (event.comingSoon) return { status: "comingSoon" };
   if (event.noRegistrationRequired) return { status: "public" };
 
@@ -23,7 +23,8 @@ const STATUS_OPTIONS = [
   { value: "all", label: "Alle Status" },
   { value: "open", label: "🎉 Anmeldung möglich" },
   { value: "public", label: "🎉 Öffentlich (keine Anmeldung)" },
-  { value: "locked", label: "🔒 Gesperrt (Vorabzugang/Privat)" },
+  { value: "locked", label: "🔒 Vorabzugang" },
+  { value: "private", label: "🔒 Privat" },
   { value: "comingSoon", label: "⏳ Coming Soon" },
   { value: "closed", label: "⛔ Geschlossen/Ausgebucht" },
 ];
@@ -139,7 +140,7 @@ export default function HomePage() {
 
       <div className="space-y-4">
         {visibleEvents.map((event) => {
-          if (event.meta.status === "locked") {
+          if (event.meta.status === "locked" || event.meta.status === "private") {
             return (
               <Link
                 key={event.id}

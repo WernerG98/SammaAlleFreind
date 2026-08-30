@@ -34,6 +34,7 @@ export default function EventFormPage() {
     paypalLink: "",
     paymentNote: "",
     noRegistrationRequired: false,
+    commentsEnabled: false,
     earlyAccessEnabled: false,
     earlyAccessPassword: "",
     isPrivate: false,
@@ -85,6 +86,7 @@ export default function EventFormPage() {
           imageUrl: event.imageUrl || "",
           comingSoon: event.comingSoon,
           noRegistrationRequired: event.noRegistrationRequired || false,
+          commentsEnabled: event.commentsEnabled || false,
           eventDate: event.eventDate ? toDateTimeInputValue(event.eventDate) : "",
           registrationDeadline: event.registrationDeadline ? toDateInputValue(event.registrationDeadline) : "",
           pricePerPerson: event.pricePerPerson || "",
@@ -366,6 +368,15 @@ export default function EventFormPage() {
                     onChange={(e) => setForm({ ...form, paymentNote: e.target.value })}
                   />
                 </div>
+
+                <label className="flex items-center gap-2 text-sm text-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={form.commentsEnabled}
+                    onChange={(e) => setForm({ ...form, commentsEnabled: e.target.checked })}
+                  />
+                  💬 Kommentare zulassen — Teilnehmer können bei der Anmeldung eine Nachricht hinterlassen
+                </label>
 
                 <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-300">

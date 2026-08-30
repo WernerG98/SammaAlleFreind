@@ -28,6 +28,7 @@ model Event {
   earlyAccessPassword String?
   isPrivate           Boolean @default(false)
   privatePassword     String?
+  commentsEnabled     Boolean @default(false)
   createdAt      DateTime @default(now())
 
   buses         Bus[]
@@ -54,6 +55,7 @@ model Registration {
   lastName        String
   email           String
   newsletterOptIn Boolean   @default(false)
+  comment         String?
   paid            Boolean   @default(false)
   paidAt          DateTime?
   cancelToken     String?   @unique

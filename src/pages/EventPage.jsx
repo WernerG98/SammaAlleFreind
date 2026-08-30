@@ -27,6 +27,7 @@ export default function EventPage() {
     email: "",
     busId: "",
     newsletterOptIn: false,
+    comment: "",
     website: "",
   });
 
@@ -460,6 +461,18 @@ export default function EventPage() {
                 })}
               </div>
           </div>
+
+          {event.commentsEnabled && (
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-300">Kommentar (optional)</label>
+              <textarea
+                rows={3}
+                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
+                value={form.comment}
+                onChange={(e) => setForm({ ...form, comment: e.target.value })}
+              />
+            </div>
+          )}
 
           <div>
             <label className="flex items-center gap-2 text-sm text-gray-300">

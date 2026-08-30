@@ -148,6 +148,7 @@ export default function RegistrationsPage() {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [buses, setBuses] = useState([]);
+  const [event, setEvent] = useState(null);
   const [error, setError] = useState("");
   const [pendingId, setPendingId] = useState(null);
   const [toRemove, setToRemove] = useState(null);
@@ -169,7 +170,10 @@ export default function RegistrationsPage() {
       .catch((err) => setError(err.message));
     api
       .get(`/admin/events/${id}`)
-      .then((event) => setBuses(event.buses))
+      .then((ev) => {
+        setBuses(ev.buses);
+        setEvent(ev);
+      })
       .catch(() => {});
   }
 
@@ -177,6 +181,7 @@ export default function RegistrationsPage() {
 
   const registrations = data?.registrations || [];
   const interests = data?.interests || [];
+  const showComments = Boolean(event?.commentsEnabled) || registrations.some((r) => r.comment);
 
   const busStats = useMemo(() => {
     return buses.map((bus) => {
@@ -319,7 +324,16 @@ export default function RegistrationsPage() {
   }
 
   function exportCsv() {
-    const headers = ["Vorname", "Name", "E-Mail", "Slot", "Newsletter", "Bezahlt", "Angemeldet am"];
+    const headers = [
+      "Vorname",
+      "Name",
+      "E-Mail",
+      "Slot",
+      "Newsletter",
+      "Bezahlt",
+      "Angemeldet am",
+      ...(showComments ? ["Kommentar"] : []),
+    ];
     const rows = filteredRegistrations.map((r) => [
       r.firstName,
       r.lastName,
@@ -328,6 +342,7 @@ export default function RegistrationsPage() {
       r.newsletterOptIn ? "Ja" : "Nein",
       r.paid ? "Ja" : "Nein",
       new Date(r.createdAt).toLocaleDateString("de-DE"),
+      ...(showComments ? [r.comment || ""] : []),
     ]);
     const escapeCell = (val) => `"${String(val).replace(/"/g, '""')}"`;
     const csv = [headers, ...rows].map((row) => row.map(escapeCell).join(";")).join("\r\n");
@@ -463,6 +478,7 @@ export default function RegistrationsPage() {
               <SortHeader field="bus">Slot</SortHeader>
               <SortHeader field="newsletter">Newsletter</SortHeader>
               <SortHeader field="paid">Bezahlt</SortHeader>
+              {showComments && <th className="px-4 py-2 text-left font-semibold text-gray-500">Kommentar</th>}
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
@@ -496,6 +512,11 @@ export default function RegistrationsPage() {
                     onChange={() => togglePaid(reg)}
                   />
                 </td>
+                {showComments && (
+                  <td className="px-4 py-2 max-w-[220px] whitespace-pre-wrap text-gray-300">
+                    {reg.comment || <span className="text-gray-600">–</span>}
+                  </td>
+                )}
                 <td className="px-4 py-2 text-right">
                   <button
                     type="button"

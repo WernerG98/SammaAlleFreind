@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Methode nicht erlaubt." });
   }
 
-  const { eventId, busId, firstName, lastName, email, newsletterOptIn, waitlist, password, website } =
+  const { eventId, busId, firstName, lastName, email, newsletterOptIn, comment, waitlist, password, website } =
     req.body || {};
 
   if (website) {
@@ -104,6 +104,7 @@ export default async function handler(req, res) {
       lastName: lastName.trim(),
       email: email.toLowerCase().trim(),
       newsletterOptIn: Boolean(newsletterOptIn),
+      comment: event.commentsEnabled ? comment?.trim() || null : null,
       paid: isFree,
       paidAt: isFree ? new Date() : null,
     },

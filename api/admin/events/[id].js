@@ -39,6 +39,7 @@ export default async function handler(req, res) {
       earlyAccessPassword,
       isPrivate,
       privatePassword,
+      commentsEnabled,
       isExternal,
       externalOrganizer,
       externalContactEmail,
@@ -50,6 +51,7 @@ export default async function handler(req, res) {
     const isNoRegistrationRequired = !isComingSoon && Boolean(noRegistrationRequired);
     const isEarlyAccess = Boolean(earlyAccessEnabled);
     const isPrivateAccess = Boolean(isPrivate);
+    const isCommentsEnabled = Boolean(commentsEnabled);
     const busList = Array.isArray(buses) ? buses : [];
     const isExternalEvent = session.role === "external" ? true : Boolean(isExternal);
 
@@ -132,6 +134,7 @@ export default async function handler(req, res) {
           earlyAccessPassword: isEarlyAccess ? earlyAccessPassword.trim() : null,
           isPrivate: isPrivateAccess,
           privatePassword: isPrivateAccess ? privatePassword.trim() : null,
+          commentsEnabled: isCommentsEnabled,
           isExternal: isExternalEvent,
           externalOrganizer: isExternalEvent ? externalOrganizer?.trim() || null : null,
           externalContactEmail: isExternalEvent ? externalContactEmail.trim() : null,
