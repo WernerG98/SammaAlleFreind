@@ -1,5 +1,12 @@
+import crypto from "node:crypto";
 import { prisma } from "../_lib/db.js";
-import { sendEmail, buildSelfCancelConfirmationHtml, buildOrganizerRefundNoticeHtml, getOrganizerEmail } from "../_lib/email.js";
+import {
+  sendEmail,
+  buildCancelRequestHtml,
+  buildSelfCancelConfirmationHtml,
+  buildOrganizerRefundNoticeHtml,
+  getOrganizerEmail,
+} from "../_lib/email.js";
 
 export default async function handler(req, res) {
   const { id } = req.query;
@@ -29,17 +36,51 @@ export default async function handler(req, res) {
     });
   }
 
-  if (req.method === "DELETE") {
+  // Requests a cancellation e-mail: proves nothing about the caller, but the
+  // actual cancellation link only ever reaches the registrant's own inbox.
+  if (req.method === "POST") {
     const registration = await prisma.registration.findUnique({
       where: { id },
-      include: { event: true, bus: true },
+      include: { event: true },
     });
 
     if (!registration) {
       return res.status(404).json({ error: "Anmeldung nicht gefunden." });
     }
 
-    await prisma.registration.delete({ where: { id } });
+    const cancelToken = registration.cancelToken || crypto.randomBytes(24).toString("hex");
+    if (!registration.cancelToken) {
+      await prisma.registration.update({ where: { id }, data: { cancelToken } });
+    }
+
+    const baseUrl = process.env.PUBLIC_BASE_URL || "http://localhost:3000";
+    await sendEmail({
+      to: registration.email,
+      subject: `Anmeldung stornieren: ${registration.event.title}`,
+      html: buildCancelRequestHtml({
+        firstName: registration.firstName,
+        event: registration.event,
+        cancelUrl: `${baseUrl}/anmeldung/stornieren?token=${cancelToken}`,
+      }),
+    });
+
+    return res.status(200).json({ sent: true });
+  }
+
+  // Confirms the cancellation - the "id" here is the secret cancelToken from
+  // the emailed link, not the registration's real id, so only someone with
+  // access to the registrant's inbox can actually delete it.
+  if (req.method === "DELETE") {
+    const registration = await prisma.registration.findFirst({
+      where: { cancelToken: id },
+      include: { event: true, bus: true },
+    });
+
+    if (!registration) {
+      return res.status(404).json({ error: "Ungültiger oder bereits verwendeter Stornierungslink." });
+    }
+
+    await prisma.registration.delete({ where: { id: registration.id } });
 
     await sendEmail({
       to: registration.email,

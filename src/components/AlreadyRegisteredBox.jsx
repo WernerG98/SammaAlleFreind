@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api.js";
-import ConfirmDialog from "./ConfirmDialog.jsx";
 
 export default function AlreadyRegisteredBox({ slug }) {
   const navigate = useNavigate();
@@ -10,9 +9,8 @@ export default function AlreadyRegisteredBox({ slug }) {
   const [registrationId, setRegistrationId] = useState(null);
   const [error, setError] = useState("");
   const [searching, setSearching] = useState(false);
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [canceling, setCanceling] = useState(false);
-  const [cancelled, setCancelled] = useState(false);
+  const [requestingCancel, setRequestingCancel] = useState(false);
+  const [cancelRequested, setCancelRequested] = useState(false);
 
   async function handleSearch(e) {
     e.preventDefault();
@@ -29,17 +27,16 @@ export default function AlreadyRegisteredBox({ slug }) {
     }
   }
 
-  async function handleCancel() {
+  async function handleRequestCancel() {
     setError("");
-    setCanceling(true);
+    setRequestingCancel(true);
     try {
-      await api.delete(`/registrations/${registrationId}`);
-      setShowCancelConfirm(false);
-      setCancelled(true);
+      await api.post(`/registrations/${registrationId}`);
+      setCancelRequested(true);
     } catch (err) {
       setError(err.message);
     } finally {
-      setCanceling(false);
+      setRequestingCancel(false);
     }
   }
 
@@ -59,9 +56,10 @@ export default function AlreadyRegisteredBox({ slug }) {
     <div className="mt-4 bg-gray-900 border border-gray-800 rounded-xl p-5 shadow-sm">
       <h2 className="font-semibold text-gray-100 mb-2">Bereits angemeldet?</h2>
 
-      {cancelled ? (
+      {cancelRequested ? (
         <p className="text-sm text-gray-300">
-          Deine Anmeldung wurde storniert. Wir haben dir eine Bestätigung per E-Mail geschickt.
+          Wir haben dir eine E-Mail mit einem Stornierungslink geschickt. Erst wenn du auf diesen Link klickst,
+          wird deine Anmeldung storniert — bitte prüfe auch deinen Spam-Ordner.
         </p>
       ) : registrationId ? (
         <div className="space-y-3">
@@ -69,19 +67,23 @@ export default function AlreadyRegisteredBox({ slug }) {
           <div className="flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={() => navigate(`/anmeldung/${registrationId}/zahlung`)}
-              className="bg-teal-600 hover:bg-teal-500 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+              onClick={handleRequestCancel}
+              disabled={requestingCancel}
+              className="bg-red-600 hover:bg-red-500 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
             >
-              Zur Zahlung
+              {requestingCancel ? "Wird gesendet…" : "Anmeldung stornieren"}
             </button>
             <button
               type="button"
-              onClick={() => setShowCancelConfirm(true)}
-              className="text-sm text-red-400 hover:text-red-300 underline"
+              onClick={() => navigate(`/anmeldung/${registrationId}/zahlung`)}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors"
             >
-              Anmeldung stornieren
+              Zahlungslink
             </button>
           </div>
+          <p className="text-xs text-gray-500">
+            Der Zahlungslink funktioniert nur, wenn du dich zuvor bereits über das Formular angemeldet hast.
+          </p>
         </div>
       ) : (
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">
@@ -104,16 +106,6 @@ export default function AlreadyRegisteredBox({ slug }) {
       )}
 
       {error && <p className="text-sm text-red-400 mt-2">{error}</p>}
-
-      <ConfirmDialog
-        open={showCancelConfirm}
-        title="Anmeldung wirklich stornieren?"
-        message="Deine Anmeldung wird entfernt. Falls du bereits bezahlt hast, wird dir das Geld zurücküberwiesen. Das kann nicht rückgängig gemacht werden."
-        confirmLabel={canceling ? "Wird storniert…" : "Ja, stornieren"}
-        confirmDisabled={canceling}
-        onConfirm={handleCancel}
-        onCancel={() => setShowCancelConfirm(false)}
-      />
     </div>
   );
 }

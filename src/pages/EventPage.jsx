@@ -20,6 +20,7 @@ export default function EventPage() {
   const [gasModalOpen, setGasModalOpen] = useState(false);
   const [showVollgasImage, setShowVollgasImage] = useState(false);
   const [vollgasCountdown, setVollgasCountdown] = useState(5);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -396,7 +397,7 @@ export default function EventPage() {
           </div>
 
           {event.pricePerPerson ? (
-            <div className="bg-amber-950/40 border border-amber-800 rounded-lg p-3 text-xs text-amber-300 space-y-1">
+            <div className="bg-amber-950/40 border border-amber-800 rounded-lg p-3 text-xs text-amber-300 space-y-2">
               <p>
                 Das Geld wird nur bis 14 Tage vor der Veranstaltung zurückerstattet. Danach ist eine
                 Rückerstattung nicht mehr möglich.
@@ -405,6 +406,14 @@ export default function EventPage() {
                 Dein Platz ist erst reserviert, sobald deine Zahlung bei uns eingegangen und bestätigt ist — bis
                 dahin ist noch kein Platz für dich fest eingeplant.
               </p>
+              <label className="flex items-center gap-2 font-medium pt-1">
+                <input
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                />
+                Ich habe das gelesen und bin einverstanden.
+              </label>
             </div>
           ) : (
             <div className="bg-emerald-950/40 border border-emerald-800 rounded-lg p-3 text-xs text-emerald-300">
@@ -417,7 +426,12 @@ export default function EventPage() {
 
           <button
             type="submit"
-            disabled={submitting || availableBuses.length === 0 || !form.busId}
+            disabled={
+              submitting ||
+              availableBuses.length === 0 ||
+              !form.busId ||
+              (Boolean(event.pricePerPerson) && !acceptedTerms)
+            }
             className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
           >
             {submitting ? "Wird gesendet…" : "Anmelden"}

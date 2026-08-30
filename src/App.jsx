@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage.jsx";
 import EventPage from "./pages/EventPage.jsx";
 import PaymentPage from "./pages/PaymentPage.jsx";
 import UnsubscribePage from "./pages/UnsubscribePage.jsx";
+import CancelConfirmPage from "./pages/CancelConfirmPage.jsx";
 import ImpressumPage from "./pages/ImpressumPage.jsx";
 import DatenschutzPage from "./pages/DatenschutzPage.jsx";
 import PublicLayout from "./components/PublicLayout.jsx";
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/veranstaltung/:slug" element={<EventPage />} />
         <Route path="/anmeldung/:id/zahlung" element={<PaymentPage />} />
         <Route path="/newsletter/abmelden" element={<UnsubscribePage />} />
+        <Route path="/anmeldung/stornieren" element={<CancelConfirmPage />} />
         <Route path="/impressum" element={<ImpressumPage />} />
         <Route path="/datenschutz" element={<DatenschutzPage />} />
       </Route>

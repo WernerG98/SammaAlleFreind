@@ -160,6 +160,22 @@ export function buildOrganizerRefundNoticeHtml({ firstName, lastName, email, eve
   `;
 }
 
+export function buildCancelRequestHtml({ firstName, event, cancelUrl }) {
+  return `
+    <h2>Anmeldung stornieren</h2>
+    <p>Hallo ${firstName},</p>
+    <p>
+      du hast angefragt, deine Anmeldung für <strong>${event.title}</strong> zu stornieren. Klicke auf den
+      folgenden Link, um das zu bestätigen:
+    </p>
+    <p><a href="${cancelUrl}">${cancelUrl}</a></p>
+    <p style="font-size: 12px; color: #666;">
+      Falls du das nicht angefragt hast, kannst du diese E-Mail einfach ignorieren — es passiert nichts, solange
+      du nicht auf den Link klickst.
+    </p>
+  `;
+}
+
 export function buildNewsletterRemovedHtml() {
   return `
     <h2>Aus dem Newsletter entfernt</h2>

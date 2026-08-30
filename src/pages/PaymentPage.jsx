@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../lib/api.js";
-import ConfirmDialog from "../components/ConfirmDialog.jsx";
 
 export default function PaymentPage() {
   const { id } = useParams();
   const [registration, setRegistration] = useState(null);
   const [error, setError] = useState("");
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [canceling, setCanceling] = useState(false);
-  const [cancelled, setCancelled] = useState(false);
+  const [requestingCancel, setRequestingCancel] = useState(false);
+  const [cancelRequested, setCancelRequested] = useState(false);
 
   useEffect(() => {
     api
@@ -18,17 +16,16 @@ export default function PaymentPage() {
       .catch((err) => setError(err.message));
   }, [id]);
 
-  async function handleCancel() {
+  async function handleRequestCancel() {
     setError("");
-    setCanceling(true);
+    setRequestingCancel(true);
     try {
-      await api.delete(`/registrations/${id}`);
-      setShowCancelConfirm(false);
-      setCancelled(true);
+      await api.post(`/registrations/${id}`);
+      setCancelRequested(true);
     } catch (err) {
       setError(err.message);
     } finally {
-      setCanceling(false);
+      setRequestingCancel(false);
     }
   }
 
@@ -37,18 +34,6 @@ export default function PaymentPage() {
   }
   if (!registration) {
     return <p className="max-w-lg mx-auto px-4 py-12 text-gray-500">Lade...</p>;
-  }
-
-  if (cancelled) {
-    return (
-      <div className="max-w-lg mx-auto px-4 py-12">
-        <h1 className="text-2xl font-bold text-gray-100">Abgemeldet</h1>
-        <div className="mt-4 bg-gray-900 border border-gray-800 rounded-xl p-5 text-gray-300">
-          Deine Anmeldung wurde storniert. Wir haben dir eine Bestätigung per E-Mail geschickt
-          {registration.paid ? " — dein Geld wird in Kürze zurücküberwiesen." : "."}
-        </div>
-      </div>
-    );
   }
 
   const { event, bus, firstName, paid } = registration;
@@ -103,27 +88,23 @@ export default function PaymentPage() {
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => setShowCancelConfirm(true)}
-        className="mt-6 text-sm text-red-400 hover:text-red-300 underline"
-      >
-        Anmeldung stornieren
-      </button>
+      {cancelRequested ? (
+        <p className="mt-6 text-sm text-gray-300">
+          Wir haben dir eine E-Mail mit einem Stornierungslink geschickt. Erst wenn du auf diesen Link klickst,
+          wird deine Anmeldung storniert — bitte prüfe auch deinen Spam-Ordner.
+        </p>
+      ) : (
+        <button
+          type="button"
+          onClick={handleRequestCancel}
+          disabled={requestingCancel}
+          className="mt-6 text-sm text-red-400 hover:text-red-300 underline disabled:opacity-50"
+        >
+          {requestingCancel ? "Wird gesendet…" : "Anmeldung stornieren"}
+        </button>
+      )}
 
-      <ConfirmDialog
-        open={showCancelConfirm}
-        title="Anmeldung wirklich stornieren?"
-        message={
-          paid
-            ? "Deine Anmeldung wird entfernt. Da du bereits bezahlt hast, wird das Geld dir zurücküberwiesen."
-            : "Deine Anmeldung wird entfernt. Das kann nicht rückgängig gemacht werden."
-        }
-        confirmLabel={canceling ? "Wird storniert…" : "Ja, stornieren"}
-        confirmDisabled={canceling}
-        onConfirm={handleCancel}
-        onCancel={() => setShowCancelConfirm(false)}
-      />
+      {error && <p className="text-sm text-red-400 mt-2">{error}</p>}
     </div>
   );
 }

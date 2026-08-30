@@ -53,6 +53,7 @@ model Registration {
   newsletterOptIn Boolean   @default(false)
   paid            Boolean   @default(false)
   paidAt          DateTime?
+  cancelToken     String?   @unique
   createdAt       DateTime  @default(now())
 
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
