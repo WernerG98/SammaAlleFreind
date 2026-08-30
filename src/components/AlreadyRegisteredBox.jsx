@@ -81,9 +81,6 @@ export default function AlreadyRegisteredBox({ slug }) {
               Zahlungslink
             </button>
           </div>
-          <p className="text-xs text-gray-500">
-            Der Zahlungslink funktioniert nur, wenn du dich zuvor bereits über das Formular angemeldet hast.
-          </p>
         </div>
       ) : (
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">
