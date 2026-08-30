@@ -28,6 +28,7 @@ export async function cleanupExpiredEvents() {
 
 export function isRegistrationOpen(event) {
   if (event.comingSoon) return false;
+  if (event.noRegistrationRequired) return false;
   if (!event.isOpen) return false;
   if (event.registrationDeadline && new Date() > new Date(event.registrationDeadline)) return false;
   if (event.eventDate && new Date() > new Date(event.eventDate)) return false;
@@ -66,6 +67,7 @@ export function withRemainingSeats(event, { password } = {}) {
     imageUrl: event.imageUrl,
     eventDate: event.eventDate,
     comingSoon: event.comingSoon,
+    noRegistrationRequired: event.noRegistrationRequired,
     registrationDeadline: event.registrationDeadline,
     pricePerPerson: event.pricePerPerson,
     paypalLink: event.paypalLink,

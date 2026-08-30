@@ -253,6 +253,61 @@ export default function EventPage() {
     );
   }
 
+  if (event.noRegistrationRequired) {
+    return (
+      <div className="max-w-lg mx-auto px-4 py-12">
+        {event.imageUrl && (
+          <img
+            src={event.imageUrl}
+            alt={`Flyer: ${event.title}`}
+            className="w-full rounded-xl shadow-md mb-6 object-cover"
+          />
+        )}
+
+        <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
+        {event.isExternal && (
+          <p className="mt-2 text-xs text-amber-300 bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2 inline-block">
+            🤝 Veranstaltet von {event.externalOrganizer || "einem externen Verein"}
+            {event.externalContactEmail && (
+              <>
+                {" "}
+                — Kontakt:{" "}
+                <a href={`mailto:${event.externalContactEmail}`} className="underline">
+                  {event.externalContactEmail}
+                </a>
+              </>
+            )}
+          </p>
+        )}
+        {event.eventDate && (
+          <p className="text-sm text-gray-400 mt-1">
+            {new Date(event.eventDate).toLocaleDateString("de-DE", {
+              timeZone: "Europe/Berlin",
+              weekday: "long",
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+            ,{" "}
+            {new Date(event.eventDate).toLocaleTimeString("de-DE", {
+              timeZone: "Europe/Berlin",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}{" "}
+            Uhr
+          </p>
+        )}
+        {event.description && (
+          <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
+        )}
+
+        <div className="mt-8 bg-teal-950/40 border border-teal-800 rounded-xl p-5 text-teal-300">
+          🎉 Diese Veranstaltung ist öffentlich zugänglich — eine Anmeldung ist nicht nötig, komm einfach vorbei!
+        </div>
+      </div>
+    );
+  }
+
   const availableBuses = event.buses.filter((b) => b.enabled && (b.remaining === null || b.remaining > 0));
   const allFull = availableBuses.length === 0;
   const deadlinePassed = !event.registrationOpen;

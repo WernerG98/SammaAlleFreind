@@ -7,6 +7,7 @@ import NewsletterSignup from "../components/NewsletterSignup.jsx";
 function getEventMeta(event) {
   if (event.locked) return { status: "locked" };
   if (event.comingSoon) return { status: "comingSoon" };
+  if (event.noRegistrationRequired) return { status: "public" };
 
   const activeBuses = event.buses.filter((b) => b.enabled);
   const hasUnlimitedBus = activeBuses.some((b) => b.capacity === null);
@@ -21,6 +22,7 @@ function getEventMeta(event) {
 const STATUS_OPTIONS = [
   { value: "all", label: "Alle Status" },
   { value: "open", label: "🎉 Anmeldung möglich" },
+  { value: "public", label: "🎉 Öffentlich (keine Anmeldung)" },
   { value: "locked", label: "🔒 Vorabzugang" },
   { value: "comingSoon", label: "⏳ Coming Soon" },
   { value: "closed", label: "⛔ Geschlossen/Ausgebucht" },
@@ -226,6 +228,57 @@ export default function HomePage() {
                     <p className="text-sm text-gray-500 mt-2 font-semibold">
                       ⏳ Coming Soon — jetzt schon Interesse bekunden
                     </p>
+                  </div>
+                  {event.imageUrl && (
+                    <img
+                      src={event.imageUrl}
+                      alt=""
+                      className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-700"
+                    />
+                  )}
+                </div>
+              </Link>
+            );
+          }
+
+          if (event.meta.status === "public") {
+            return (
+              <Link
+                key={event.id}
+                to={`/veranstaltung/${event.slug}`}
+                className="relative block bg-gradient-to-br from-teal-950/30 to-gray-900 border-2 border-teal-800/60 rounded-xl pl-6 pr-5 py-5 shadow-md hover:shadow-xl hover:border-teal-500 hover:-translate-y-0.5 transition-all overflow-hidden"
+              >
+                <span className="absolute left-0 top-0 bottom-0 w-1.5 bg-teal-500" aria-hidden="true" />
+                <div className="flex items-start gap-3">
+                  <div className="min-w-0 flex-1">
+                    <span className="inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-1 text-teal-300 bg-teal-950/60">
+                      🎉 Öffentlich — keine Anmeldung nötig
+                    </span>
+                    <h2 className="text-lg font-semibold text-teal-100">{event.title}</h2>
+                    {event.isExternal && (
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {event.externalOrganizer || "Externer Verein"}
+                        {event.externalContactEmail && ` · ${event.externalContactEmail}`}
+                      </p>
+                    )}
+                    {event.eventDate && (
+                      <p className="text-sm text-gray-400 mt-1">
+                        {new Date(event.eventDate).toLocaleDateString("de-DE", {
+                          timeZone: "Europe/Berlin",
+                          weekday: "long",
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                        ,{" "}
+                        {new Date(event.eventDate).toLocaleTimeString("de-DE", {
+                          timeZone: "Europe/Berlin",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        Uhr
+                      </p>
+                    )}
                   </div>
                   {event.imageUrl && (
                     <img

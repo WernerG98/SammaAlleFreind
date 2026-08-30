@@ -32,6 +32,10 @@ export default async function handler(req, res) {
     return res.status(404).json({ error: "Veranstaltung nicht gefunden." });
   }
 
+  if (event.noRegistrationRequired) {
+    return res.status(400).json({ error: "Diese Veranstaltung erfordert keine Anmeldung." });
+  }
+
   if (!isEarlyAccessUnlocked(event, password)) {
     return res.status(403).json({ error: "Falsches Passwort für den Vorabzugang." });
   }

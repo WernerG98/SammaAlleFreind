@@ -20,6 +20,7 @@ model Event {
   paypalLink     String?
   paymentNote    String?
   isOpen         Boolean  @default(true)
+  noRegistrationRequired Boolean @default(false)
   isExternal          Boolean @default(false)
   externalOrganizer   String?
   externalContactEmail String?

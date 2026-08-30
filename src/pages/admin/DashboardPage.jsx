@@ -135,6 +135,11 @@ export default function DashboardPage() {
                   </span>
                 )}{" "}
                 {event.comingSoon && <span className="text-xs text-gray-500">(Coming Soon)</span>}
+                {event.noRegistrationRequired && (
+                  <span className="text-xs text-teal-300 bg-teal-950/50 rounded-full px-2 py-0.5">
+                    🎉 Öffentlich, keine Anmeldung
+                  </span>
+                )}
                 {!event.comingSoon && !event.isOpen && (
                   <span className="text-xs text-gray-500">(geschlossen)</span>
                 )}

@@ -30,6 +30,7 @@ export default async function handler(req, res) {
       imageUrl,
       eventDate,
       comingSoon,
+      noRegistrationRequired,
       registrationDeadline,
       pricePerPerson,
       paypalLink,
@@ -44,6 +45,7 @@ export default async function handler(req, res) {
     } = req.body || {};
 
     const isComingSoon = Boolean(comingSoon);
+    const isNoRegistrationRequired = !isComingSoon && Boolean(noRegistrationRequired);
     const isEarlyAccess = Boolean(earlyAccessEnabled);
     const busList = Array.isArray(buses) ? buses : [];
     const isExternalEvent = session.role === "external" ? true : Boolean(isExternal);
@@ -51,8 +53,11 @@ export default async function handler(req, res) {
     if (!title?.trim()) {
       return res.status(400).json({ error: "Titel ist erforderlich." });
     }
-    if (!isComingSoon && (!eventDate || busList.length === 0)) {
-      return res.status(400).json({ error: "Datum und mindestens ein Bus sind erforderlich." });
+    if (!isComingSoon && !eventDate) {
+      return res.status(400).json({ error: "Datum ist erforderlich." });
+    }
+    if (!isComingSoon && !isNoRegistrationRequired && busList.length === 0) {
+      return res.status(400).json({ error: "Mindestens ein Bus ist erforderlich." });
     }
     if (isEarlyAccess && !earlyAccessPassword?.trim()) {
       return res.status(400).json({ error: "Bitte ein Passwort für den Vorabzugang vergeben." });
@@ -112,6 +117,7 @@ export default async function handler(req, res) {
           imageUrl: imageUrl?.trim() || null,
           eventDate: eventDate ? new Date(eventDate) : null,
           comingSoon: isComingSoon,
+          noRegistrationRequired: isNoRegistrationRequired,
           registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
           pricePerPerson: pricePerPerson ? Number(pricePerPerson) : null,
           paypalLink: paypalLink?.trim() || null,

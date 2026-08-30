@@ -33,6 +33,7 @@ export default function EventFormPage() {
     pricePerPerson: "",
     paypalLink: "",
     paymentNote: "",
+    noRegistrationRequired: false,
     earlyAccessEnabled: false,
     earlyAccessPassword: "",
     isExternal: false,
@@ -81,6 +82,7 @@ export default function EventFormPage() {
           description: event.description || "",
           imageUrl: event.imageUrl || "",
           comingSoon: event.comingSoon,
+          noRegistrationRequired: event.noRegistrationRequired || false,
           eventDate: event.eventDate ? toDateTimeInputValue(event.eventDate) : "",
           registrationDeadline: event.registrationDeadline ? toDateInputValue(event.registrationDeadline) : "",
           pricePerPerson: event.pricePerPerson || "",
@@ -115,7 +117,7 @@ export default function EventFormPage() {
       const payload = {
         ...form,
         eventDate: form.eventDate ? new Date(form.eventDate).toISOString() : "",
-        buses: form.comingSoon ? [] : buses,
+        buses: form.comingSoon || form.noRegistrationRequired ? [] : buses,
       };
       if (isNew) {
         await api.post("/admin/events", payload);
@@ -286,6 +288,15 @@ export default function EventFormPage() {
 
         {!form.comingSoon && (
           <>
+            <label className="flex items-center gap-2 text-sm text-gray-300">
+              <input
+                type="checkbox"
+                checked={form.noRegistrationRequired}
+                onChange={(e) => setForm({ ...form, noRegistrationRequired: e.target.checked })}
+              />
+              🎉 Öffentliche Veranstaltung — keine Anmeldung nötig
+            </label>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1 text-gray-300">Datum &amp; Startzeit</label>
@@ -297,139 +308,145 @@ export default function EventFormPage() {
                   onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 text-gray-300">Preis pro Person (€)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  className={inputClass}
-                  value={form.pricePerPerson}
-                  onChange={(e) => setForm({ ...form, pricePerPerson: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-300">Anmeldeschluss (optional)</label>
-              <input
-                type="date"
-                className={inputClass}
-                value={form.registrationDeadline}
-                onChange={(e) => setForm({ ...form, registrationDeadline: e.target.value })}
-              />
-              <p className="text-xs text-gray-500 mt-1">Nach diesem Datum ist keine Anmeldung mehr möglich.</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-300">
-                PayPal.me-Link der Privatperson (optional, kann später ergänzt werden)
-              </label>
-              <input
-                placeholder="https://paypal.me/deinname"
-                className={inputClass}
-                value={form.paypalLink}
-                onChange={(e) => setForm({ ...form, paypalLink: e.target.value })}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Solange kein Link hinterlegt ist, steht auf der Zahlungsseite "Link folgt bald".
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-300">
-                Hinweis zum Verwendungszweck (optional, <code>{"{name}"}</code> wird ersetzt)
-              </label>
-              <input
-                className={inputClass}
-                placeholder="{name}"
-                value={form.paymentNote}
-                onChange={(e) => setForm({ ...form, paymentNote: e.target.value })}
-              />
-            </div>
-
-            <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                <input
-                  type="checkbox"
-                  checked={form.earlyAccessEnabled}
-                  onChange={(e) => setForm({ ...form, earlyAccessEnabled: e.target.checked })}
-                />
-                🔒 Vorabzugang — nur mit Passwort anmeldbar
-              </label>
-              {form.earlyAccessEnabled && (
+              {!form.noRegistrationRequired && (
                 <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">Preis pro Person (€)</label>
                   <input
-                    required
-                    placeholder="Passwort für den Vorabzugang"
-                    className={`${inputClass} text-sm`}
-                    value={form.earlyAccessPassword}
-                    onChange={(e) => setForm({ ...form, earlyAccessPassword: e.target.value })}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    className={inputClass}
+                    value={form.pricePerPerson}
+                    onChange={(e) => setForm({ ...form, pricePerPerson: e.target.value })}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Auf der Startseite wird "🔒 Vorabzugang" angezeigt, Details/Anmeldung nur mit diesem
-                    Passwort sichtbar. Haken entfernen, sobald es für alle offen sein soll.
-                  </p>
                 </div>
               )}
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-300">Busse</label>
-                <button
-                  type="button"
-                  onClick={() => setBuses([...buses, emptyBus()])}
-                  className="text-sm text-teal-400 hover:underline"
-                >
-                  + Slot hinzufügen
-                </button>
-              </div>
-              <div className="space-y-2">
-                {buses.map((bus, i) => (
-                  <div
-                    key={bus.id || i}
-                    className="flex flex-wrap items-center gap-2 border border-gray-700 rounded-lg p-2 sm:border-0 sm:p-0"
-                  >
+            {!form.noRegistrationRequired && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">Anmeldeschluss (optional)</label>
+                  <input
+                    type="date"
+                    className={inputClass}
+                    value={form.registrationDeadline}
+                    onChange={(e) => setForm({ ...form, registrationDeadline: e.target.value })}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Nach diesem Datum ist keine Anmeldung mehr möglich.</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">
+                    PayPal.me-Link der Privatperson (optional, kann später ergänzt werden)
+                  </label>
+                  <input
+                    placeholder="https://paypal.me/deinname"
+                    className={inputClass}
+                    value={form.paypalLink}
+                    onChange={(e) => setForm({ ...form, paypalLink: e.target.value })}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Solange kein Link hinterlegt ist, steht auf der Zahlungsseite "Link folgt bald".
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">
+                    Hinweis zum Verwendungszweck (optional, <code>{"{name}"}</code> wird ersetzt)
+                  </label>
+                  <input
+                    className={inputClass}
+                    placeholder="{name}"
+                    value={form.paymentNote}
+                    onChange={(e) => setForm({ ...form, paymentNote: e.target.value })}
+                  />
+                </div>
+
+                <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
                     <input
-                      required
-                      placeholder="Name (z.B. Bus 1)"
-                      className={`flex-1 min-w-[140px] ${inputClass}`}
-                      value={bus.name}
-                      onChange={(e) => updateBus(i, "name", e.target.value)}
+                      type="checkbox"
+                      checked={form.earlyAccessEnabled}
+                      onChange={(e) => setForm({ ...form, earlyAccessEnabled: e.target.checked })}
                     />
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="Plätze (optional)"
-                      className={`w-32 ${inputClass}`}
-                      value={bus.capacity}
-                      onChange={(e) => updateBus(i, "capacity", e.target.value)}
-                    />
-                    <label className="flex items-center gap-1 text-xs text-gray-400 whitespace-nowrap">
+                    🔒 Vorabzugang — nur mit Passwort anmeldbar
+                  </label>
+                  {form.earlyAccessEnabled && (
+                    <div>
                       <input
-                        type="checkbox"
-                        checked={bus.enabled !== false}
-                        onChange={(e) => updateBus(i, "enabled", e.target.checked)}
+                        required
+                        placeholder="Passwort für den Vorabzugang"
+                        className={`${inputClass} text-sm`}
+                        value={form.earlyAccessPassword}
+                        onChange={(e) => setForm({ ...form, earlyAccessPassword: e.target.value })}
                       />
-                      buchbar
-                    </label>
-                    {buses.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => setBuses(buses.filter((_, idx) => idx !== i))}
-                        className="text-red-400 px-2"
-                      >
-                        ✕
-                      </button>
-                    )}
+                      <p className="text-xs text-gray-500 mt-1">
+                        Auf der Startseite wird "🔒 Vorabzugang" angezeigt, Details/Anmeldung nur mit diesem
+                        Passwort sichtbar. Haken entfernen, sobald es für alle offen sein soll.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium text-gray-300">Busse</label>
+                    <button
+                      type="button"
+                      onClick={() => setBuses([...buses, emptyBus()])}
+                      className="text-sm text-teal-400 hover:underline"
+                    >
+                      + Slot hinzufügen
+                    </button>
                   </div>
-                ))}
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Plätze sind optional — ohne Angabe ist der Slot unbegrenzt buchbar.
-              </p>
-            </div>
+                  <div className="space-y-2">
+                    {buses.map((bus, i) => (
+                      <div
+                        key={bus.id || i}
+                        className="flex flex-wrap items-center gap-2 border border-gray-700 rounded-lg p-2 sm:border-0 sm:p-0"
+                      >
+                        <input
+                          required
+                          placeholder="Name (z.B. Bus 1)"
+                          className={`flex-1 min-w-[140px] ${inputClass}`}
+                          value={bus.name}
+                          onChange={(e) => updateBus(i, "name", e.target.value)}
+                        />
+                        <input
+                          type="number"
+                          min="1"
+                          placeholder="Plätze (optional)"
+                          className={`w-32 ${inputClass}`}
+                          value={bus.capacity}
+                          onChange={(e) => updateBus(i, "capacity", e.target.value)}
+                        />
+                        <label className="flex items-center gap-1 text-xs text-gray-400 whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={bus.enabled !== false}
+                            onChange={(e) => updateBus(i, "enabled", e.target.checked)}
+                          />
+                          buchbar
+                        </label>
+                        {buses.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setBuses(buses.filter((_, idx) => idx !== i))}
+                            className="text-red-400 px-2"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Plätze sind optional — ohne Angabe ist der Slot unbegrenzt buchbar.
+                  </p>
+                </div>
+              </>
+            )}
           </>
         )}
 
