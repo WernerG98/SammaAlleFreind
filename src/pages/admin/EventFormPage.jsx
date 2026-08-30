@@ -457,7 +457,7 @@ export default function EventFormPage() {
               checked={form.isOpen}
               onChange={(e) => setForm({ ...form, isOpen: e.target.checked })}
             />
-            Veranstaltung ist öffentlich sichtbar und offen für Anmeldungen
+            Veranstaltung ist öffentlich sichtbar
           </label>
         )}
 
