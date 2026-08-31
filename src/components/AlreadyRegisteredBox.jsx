@@ -7,6 +7,10 @@ export default function AlreadyRegisteredBox({ slug }) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [registrationId, setRegistrationId] = useState(null);
+  const [commentsEnabled, setCommentsEnabled] = useState(false);
+  const [comment, setComment] = useState("");
+  const [savingComment, setSavingComment] = useState(false);
+  const [commentSaved, setCommentSaved] = useState(false);
   const [error, setError] = useState("");
   const [searching, setSearching] = useState(false);
   const [requestingCancel, setRequestingCancel] = useState(false);
@@ -20,10 +24,26 @@ export default function AlreadyRegisteredBox({ slug }) {
     try {
       const result = await api.post(`/events/${slug}`, { email });
       setRegistrationId(result.registrationId);
+      setCommentsEnabled(result.commentsEnabled);
+      setComment(result.comment || "");
     } catch (err) {
       setError(err.message);
     } finally {
       setSearching(false);
+    }
+  }
+
+  async function handleSaveComment() {
+    setError("");
+    setSavingComment(true);
+    setCommentSaved(false);
+    try {
+      await api.patch(`/registrations/${registrationId}`, { comment });
+      setCommentSaved(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingComment(false);
     }
   }
 
@@ -81,6 +101,32 @@ export default function AlreadyRegisteredBox({ slug }) {
               Zahlungslink
             </button>
           </div>
+
+          {commentsEnabled && (
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-300">Dein Kommentar</label>
+              <textarea
+                rows={3}
+                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+                value={comment}
+                onChange={(e) => {
+                  setComment(e.target.value);
+                  setCommentSaved(false);
+                }}
+              />
+              <div className="flex items-center gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={handleSaveComment}
+                  disabled={savingComment}
+                  className="bg-teal-600 hover:bg-teal-500 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
+                >
+                  {savingComment ? "Wird gespeichert…" : "Kommentar speichern"}
+                </button>
+                {commentSaved && <span className="text-sm text-emerald-400">Gespeichert!</span>}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">

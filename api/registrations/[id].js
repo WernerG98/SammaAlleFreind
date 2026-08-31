@@ -36,6 +36,30 @@ export default async function handler(req, res) {
     });
   }
 
+  // Lets a registrant update their own comment later - guarded the same way as
+  // the GET/POST above: knowledge of the (hard-to-guess) registration id.
+  if (req.method === "PATCH") {
+    const { comment } = req.body || {};
+    const registration = await prisma.registration.findUnique({
+      where: { id },
+      include: { event: true },
+    });
+
+    if (!registration) {
+      return res.status(404).json({ error: "Anmeldung nicht gefunden." });
+    }
+    if (!registration.event.commentsEnabled) {
+      return res.status(400).json({ error: "Kommentare sind für diese Veranstaltung nicht aktiviert." });
+    }
+
+    const updated = await prisma.registration.update({
+      where: { id },
+      data: { comment: comment?.trim() || null },
+    });
+
+    return res.status(200).json({ comment: updated.comment });
+  }
+
   // Requests a cancellation e-mail: proves nothing about the caller, but the
   // actual cancellation link only ever reaches the registrant's own inbox.
   if (req.method === "POST") {

@@ -21,7 +21,11 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "Keine Anmeldung mit dieser E-Mail-Adresse gefunden." });
     }
 
-    return res.status(200).json({ registrationId: registration.id });
+    return res.status(200).json({
+      registrationId: registration.id,
+      commentsEnabled: event.commentsEnabled,
+      comment: registration.comment,
+    });
   }
 
   if (req.method !== "GET") {

@@ -32,12 +32,16 @@ function externalOrganizerNote(event) {
   `;
 }
 
-export function buildConfirmationEmailHtml({ firstName, event, busName }) {
+export function buildConfirmationEmailHtml({ firstName, event, busName, isFree }) {
   return `
-    <h2>Deine Zahlung wurde bestätigt</h2>
+    <h2>${isFree ? "Deine Anmeldung wurde bestätigt" : "Deine Zahlung wurde bestätigt"}</h2>
     <p>Hallo ${firstName},</p>
     <p>
-      wir haben deine Zahlung für <strong>${event.title}</strong> erhalten.
+      ${
+        isFree
+          ? `wir haben deine Anmeldung für <strong>${event.title}</strong> erhalten.`
+          : `wir haben deine Zahlung für <strong>${event.title}</strong> erhalten.`
+      }
       Du bist fest für <strong>${busName}</strong> eingeplant.
     </p>
     <p>Wir freuen uns auf dich!</p>

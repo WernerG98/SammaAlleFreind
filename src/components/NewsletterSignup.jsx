@@ -3,6 +3,7 @@ import { api } from "../lib/api.js";
 import Honeypot from "./Honeypot.jsx";
 
 export default function NewsletterSignup() {
+  const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
   const [status, setStatus] = useState("idle");
@@ -23,9 +24,33 @@ export default function NewsletterSignup() {
     }
   }
 
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Newsletter öffnen"
+        className="fixed bottom-20 right-4 z-40 h-14 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white shadow-lg flex items-center gap-2 px-4 transition-colors"
+      >
+        <span className="text-2xl">📬</span>
+        <span className="font-semibold text-sm">Newsletter</span>
+      </button>
+    );
+  }
+
   return (
-    <div className="mt-10 bg-gray-900 border border-gray-800 rounded-xl p-5 shadow-sm">
-      <h2 className="font-semibold mb-1 text-gray-100">📬 Newsletter</h2>
+    <div className="fixed bottom-20 right-4 z-40 w-[calc(100vw-2rem)] max-w-sm bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-5">
+      <div className="flex items-start justify-between gap-2 mb-1">
+        <h2 className="font-semibold text-gray-100">📬 Newsletter</h2>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-label="Schließen"
+          className="shrink-0 text-gray-500 hover:text-gray-300 text-lg leading-none"
+        >
+          ✕
+        </button>
+      </div>
       <p className="text-sm text-gray-400 mb-4">
         Melde dich an, um nichts zu verpassen. Jede Newsletter-Mail enthält einen Abmelde-Link, falls du keine
         Mails mehr erhalten möchtest.

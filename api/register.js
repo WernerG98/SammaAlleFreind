@@ -122,7 +122,7 @@ export default async function handler(req, res) {
     await sendEmail({
       to: registration.email,
       subject: `Bestätigung: ${event.title}`,
-      html: buildConfirmationEmailHtml({ firstName: registration.firstName, event, busName: bus.name }),
+      html: buildConfirmationEmailHtml({ firstName: registration.firstName, event, busName: bus.name, isFree: true }),
     });
   }
 
