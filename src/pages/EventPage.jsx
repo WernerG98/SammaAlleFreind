@@ -1,8 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api.js";
+import { downloadEventIcs } from "../lib/ics.js";
 import Honeypot from "../components/Honeypot.jsx";
 import AlreadyRegisteredBox from "../components/AlreadyRegisteredBox.jsx";
+import CapacityBar from "../components/CapacityBar.jsx";
+
+function AddToCalendarButton({ event }) {
+  return (
+    <button
+      type="button"
+      onClick={() => downloadEventIcs(event)}
+      className="mt-1 text-sm text-teal-400 hover:text-teal-300 underline"
+    >
+      📅 Zum Kalender hinzufügen
+    </button>
+  );
+}
 
 export default function EventPage() {
   const { slug } = useParams();
@@ -199,6 +213,7 @@ export default function EventPage() {
             Uhr
           </p>
         )}
+        {event.eventDate && <AddToCalendarButton event={event} />}
         <p className="mt-2 text-teal-400 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
         {event.description && (
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
@@ -307,6 +322,7 @@ export default function EventPage() {
             Uhr
           </p>
         )}
+        {event.eventDate && <AddToCalendarButton event={event} />}
         {event.description && (
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
         )}
@@ -363,6 +379,7 @@ export default function EventPage() {
         })}{" "}
         Uhr
       </p>
+      <AddToCalendarButton event={event} />
       {event.registrationDeadline && !deadlinePassed && (
         <p className="text-sm text-gray-400">
           Anmeldeschluss:{" "}
@@ -456,6 +473,7 @@ export default function EventPage() {
                             ? "unbegrenzt verfügbar"
                             : `noch ${bus.remaining} Plätze frei`}
                     </span>
+                    {!comingSoonBus && <CapacityBar capacity={bus.capacity} remaining={bus.remaining} className="mt-1.5" />}
                   </button>
                   );
                 })}

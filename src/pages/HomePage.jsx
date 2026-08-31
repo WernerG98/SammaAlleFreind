@@ -3,6 +3,21 @@ import { Link } from "react-router-dom";
 import { api } from "../lib/api.js";
 import ContactForm from "../components/ContactForm.jsx";
 import NewsletterSignup from "../components/NewsletterSignup.jsx";
+import CapacityBar from "../components/CapacityBar.jsx";
+
+function formatCountdown(eventDate) {
+  if (!eventDate) return null;
+  const diffMs = new Date(eventDate).getTime() - Date.now();
+  if (diffMs <= 0) return null;
+
+  const days = Math.floor(diffMs / 86400000);
+  if (days >= 1) return `noch ${days} Tag${days === 1 ? "" : "e"}`;
+
+  const hours = Math.floor(diffMs / 3600000);
+  if (hours >= 1) return `noch ${hours} Stunde${hours === 1 ? "" : "n"}`;
+
+  return "gleich";
+}
 
 function getEventMeta(event) {
   if (event.locked) return { status: event.isPrivate ? "private" : "locked" };
@@ -140,6 +155,8 @@ export default function HomePage() {
 
       <div className="space-y-4">
         {visibleEvents.map((event) => {
+          const countdown = formatCountdown(event.eventDate);
+
           if (event.meta.status === "locked" || event.meta.status === "private") {
             return (
               <Link
@@ -176,6 +193,9 @@ export default function HomePage() {
                           minute: "2-digit",
                         })}{" "}
                         Uhr
+                        {countdown && (
+                          <span className="ml-2 text-xs font-semibold text-amber-300">⏳ {countdown}</span>
+                        )}
                       </p>
                     )}
                     <p className="text-sm text-amber-400 mt-2 font-medium">Nur mit Passwort sichtbar</p>
@@ -224,6 +244,9 @@ export default function HomePage() {
                           minute: "2-digit",
                         })}{" "}
                         Uhr
+                        {countdown && (
+                          <span className="ml-2 text-xs font-semibold text-gray-500">⏳ {countdown}</span>
+                        )}
                       </p>
                     )}
                     <p className="text-sm text-gray-500 mt-2 font-semibold">
@@ -278,6 +301,9 @@ export default function HomePage() {
                           minute: "2-digit",
                         })}{" "}
                         Uhr
+                        {countdown && (
+                          <span className="ml-2 text-xs font-semibold text-teal-300">⏳ {countdown}</span>
+                        )}
                       </p>
                     )}
                   </div>
@@ -346,14 +372,22 @@ export default function HomePage() {
                       minute: "2-digit",
                     })}{" "}
                     Uhr
+                    {countdown && (
+                      <span className={`ml-2 text-xs font-semibold ${closed ? "text-red-300" : "text-teal-300"}`}>
+                        ⏳ {countdown}
+                      </span>
+                    )}
                   </p>
                   {!event.registrationOpen && (
                     <p className="text-sm mt-2 font-semibold text-red-400">Anmeldefrist abgelaufen</p>
                   )}
                   {totalCapacity > 0 && (
-                    <p className={`text-sm mt-1 font-medium ${soldOut ? "text-red-400" : "text-gray-400"}`}>
-                      {totalRemaining} von {totalCapacity} Plätzen frei
-                    </p>
+                    <>
+                      <p className={`text-sm mt-1 font-medium ${soldOut ? "text-red-400" : "text-gray-400"}`}>
+                        {totalRemaining} von {totalCapacity} Plätzen frei
+                      </p>
+                      <CapacityBar capacity={totalCapacity} remaining={totalRemaining} className="mt-1.5 max-w-[200px]" />
+                    </>
                   )}
                 </div>
                 {event.imageUrl && (
