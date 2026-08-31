@@ -89,18 +89,6 @@ export function buildNewsletterOptInHtml({ unsubscribeUrl }) {
   `;
 }
 
-export function buildInterestConfirmationHtml({ firstName, event }) {
-  return `
-    <h2>Danke für dein Interesse!</h2>
-    <p>Hallo ${firstName},</p>
-    <p>
-      du stehst jetzt auf der Interessentenliste für <strong>${event.title}</strong>. Sobald es Details und
-      Termine gibt, melden wir uns bei dir.
-    </p>
-    ${externalOrganizerNote(event)}
-  `;
-}
-
 export function buildWaitlistConfirmationHtml({ firstName, event }) {
   return `
     <h2>Du stehst auf der Warteliste</h2>

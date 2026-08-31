@@ -24,7 +24,6 @@ export default function EventPage() {
   const [event, setEvent] = useState(null);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [interestDone, setInterestDone] = useState(false);
   const [showWaitlistForm, setShowWaitlistForm] = useState(false);
   const [waitlistDone, setWaitlistDone] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
@@ -76,11 +75,7 @@ export default function EventPage() {
     setSubmitting(true);
     try {
       const result = await api.post("/register", { eventId: event.id, ...form, password: accessPassword });
-      if (result.interest) {
-        setInterestDone(true);
-      } else {
-        navigate(`/anmeldung/${result.id}/zahlung`);
-      }
+      navigate(`/anmeldung/${result.id}/zahlung`);
     } catch (err) {
       if (err.data?.registrationId) {
         navigate(`/anmeldung/${err.data.registrationId}/zahlung`);
@@ -217,62 +212,6 @@ export default function EventPage() {
         <p className="mt-2 text-teal-400 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
         {event.description && (
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
-        )}
-
-        {interestDone ? (
-          <div className="mt-8 bg-emerald-950/40 border border-emerald-800 rounded-lg p-5 text-emerald-300">
-            Danke! Du stehst jetzt auf der Interessentenliste — wir melden uns, sobald es Details gibt.
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
-            <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
-            <h2 className="font-semibold text-gray-100">Interesse bekunden</h2>
-            <p className="text-sm text-gray-400">
-              Trag dich schon jetzt unverbindlich auf die Liste ein, wir informieren dich, sobald es losgeht.
-            </p>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1 text-gray-300">Vorname</label>
-                <input
-                  required
-                  className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
-                  value={form.firstName}
-                  onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 text-gray-300">Name</label>
-                <input
-                  required
-                  className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
-                  value={form.lastName}
-                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-300">E-Mail-Adresse</label>
-              <input
-                required
-                type="email"
-                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-            </div>
-
-            {error && <p className="text-sm text-red-400">{error}</p>}
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
-            >
-              {submitting ? "Wird gesendet…" : "Interesse bekunden"}
-            </button>
-          </form>
         )}
       </div>
     );

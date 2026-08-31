@@ -252,9 +252,7 @@ export default function HomePage() {
                         )}
                       </p>
                     )}
-                    <p className="text-sm text-gray-500 mt-2 font-semibold">
-                      ⏳ Coming Soon — jetzt schon Interesse bekunden
-                    </p>
+                    <p className="text-sm text-gray-500 mt-2 font-semibold">⏳ Coming Soon</p>
                   </div>
                   {event.imageUrl && (
                     <img

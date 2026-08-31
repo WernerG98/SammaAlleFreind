@@ -1,11 +1,6 @@
 import crypto from "node:crypto";
 import { prisma, isRegistrationOpen, isAccessUnlocked } from "./_lib/db.js";
-import {
-  sendEmail,
-  buildInterestConfirmationHtml,
-  buildWaitlistConfirmationHtml,
-  buildConfirmationEmailHtml,
-} from "./_lib/email.js";
+import { sendEmail, buildWaitlistConfirmationHtml, buildConfirmationEmailHtml } from "./_lib/email.js";
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -40,17 +35,13 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: "Falsches Passwort." });
   }
 
-  if (event.comingSoon || waitlist) {
+  if (waitlist) {
     const normalizedEmail = email.toLowerCase().trim();
     const existingInterest = await prisma.eventInterest.findUnique({
       where: { eventId_email: { eventId, email: normalizedEmail } },
     });
     if (existingInterest) {
-      return res.status(409).json({
-        error: event.comingSoon
-          ? "Du stehst bereits auf der Interessentenliste für diese Veranstaltung."
-          : "Du stehst bereits auf der Warteliste für diese Veranstaltung.",
-      });
+      return res.status(409).json({ error: "Du stehst bereits auf der Warteliste für diese Veranstaltung." });
     }
 
     const interest = await prisma.eventInterest.create({
@@ -59,10 +50,8 @@ export default async function handler(req, res) {
 
     await sendEmail({
       to: normalizedEmail,
-      subject: event.comingSoon ? `Interesse an ${event.title} bestätigt` : `Warteliste: ${event.title}`,
-      html: event.comingSoon
-        ? buildInterestConfirmationHtml({ firstName: firstName.trim(), event })
-        : buildWaitlistConfirmationHtml({ firstName: firstName.trim(), event }),
+      subject: `Warteliste: ${event.title}`,
+      html: buildWaitlistConfirmationHtml({ firstName: firstName.trim(), event }),
     });
 
     return res.status(201).json({ interest: true, id: interest.id });

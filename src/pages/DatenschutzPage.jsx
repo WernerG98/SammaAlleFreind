@@ -45,11 +45,10 @@ export default function DatenschutzPage() {
           Maßnahmen (Art. 6 Abs. 1 lit. b DSGVO).
         </p>
 
-        <h3 className="font-medium text-gray-100 mt-3 mb-1">Interessenten- und Warteliste</h3>
+        <h3 className="font-medium text-gray-100 mt-3 mb-1">Warteliste</h3>
         <p>
-          Für Veranstaltungen ohne feste Anmeldung ("Coming Soon") oder bei ausgebuchten Slots kannst du dich
-          unverbindlich auf eine Liste eintragen. Dabei werden Vorname, Nachname und E-Mail-Adresse gespeichert,
-          um dich bei Verfügbarkeit zu informieren.
+          Bei ausgebuchten Slots kannst du dich unverbindlich auf eine Warteliste eintragen. Dabei werden
+          Vorname, Nachname und E-Mail-Adresse gespeichert, um dich bei Verfügbarkeit zu informieren.
         </p>
 
         <h3 className="font-medium text-gray-100 mt-3 mb-1">Newsletter</h3>

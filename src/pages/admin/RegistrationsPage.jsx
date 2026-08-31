@@ -33,7 +33,7 @@ function InterestEmailForm({ eventId }) {
 
   return (
     <div className="mt-8 bg-gray-900 border border-gray-800 rounded-lg p-5">
-      <h2 className="font-semibold mb-3 text-gray-100">Rundmail an alle Interessenten senden</h2>
+      <h2 className="font-semibold mb-3 text-gray-100">Rundmail an alle auf der Warteliste senden</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
           required
@@ -54,7 +54,7 @@ function InterestEmailForm({ eventId }) {
         {error && <p className="text-sm text-red-400">{error}</p>}
         {result && (
           <p className="text-sm text-emerald-400">
-            Versendet an {result.sent} von {result.total} Interessenten.
+            Versendet an {result.sent} von {result.total} Personen auf der Warteliste.
             {result.failed.length > 0 && ` Fehlgeschlagen: ${result.failed.join(", ")}`}
           </p>
         )}
@@ -538,7 +538,7 @@ export default function RegistrationsPage() {
 
       {interests.length > 0 && (
         <div className="mt-8">
-          <h2 className="font-semibold mb-3 text-gray-100">Interessenten (Coming Soon)</h2>
+          <h2 className="font-semibold mb-3 text-gray-100">Warteliste</h2>
           <input
             type="text"
             placeholder="Suche nach Name oder E-Mail…"
