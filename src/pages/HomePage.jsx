@@ -5,10 +5,13 @@ import ContactForm from "../components/ContactForm.jsx";
 import NewsletterSignup from "../components/NewsletterSignup.jsx";
 import CapacityBar from "../components/CapacityBar.jsx";
 
+const COUNTDOWN_THRESHOLD_DAYS = 14;
+
 function formatCountdown(eventDate) {
   if (!eventDate) return null;
   const diffMs = new Date(eventDate).getTime() - Date.now();
   if (diffMs <= 0) return null;
+  if (diffMs > COUNTDOWN_THRESHOLD_DAYS * 86400000) return null;
 
   const days = Math.floor(diffMs / 86400000);
   if (days >= 1) return `noch ${days} Tag${days === 1 ? "" : "e"}`;
