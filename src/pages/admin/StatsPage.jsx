@@ -18,7 +18,7 @@ export default function StatsPage() {
 
   useEffect(() => {
     api
-      .get("/admin/stats")
+      .get("/admin/events?stats=1")
       .then(setStats)
       .catch((err) => setError(err.message));
   }, []);
