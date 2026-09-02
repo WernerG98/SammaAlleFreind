@@ -82,7 +82,9 @@ export default function NewsletterSubscribersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6 text-gray-100">Newsletter-Abonnenten</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-100">
+        Newsletter-Abonnenten{subscribers ? ` (${subscribers.length})` : ""}
+      </h1>
 
       {error && <p className="text-red-400 mb-4">{error}</p>}
 

@@ -392,7 +392,7 @@ export default function RegistrationsPage() {
       <Link to="/admin" className="text-sm text-teal-400 hover:underline">
         ← Zurück zur Übersicht
       </Link>
-      <h1 className="text-2xl font-bold mt-2 mb-6 text-gray-100">Anmeldungen</h1>
+      <h1 className="text-2xl font-bold mt-2 mb-6 text-gray-100">Anmeldungen ({registrations.length})</h1>
 
       {error && <p className="text-red-400 mb-4">{error}</p>}
 
@@ -538,7 +538,7 @@ export default function RegistrationsPage() {
 
       {interests.length > 0 && (
         <div className="mt-8">
-          <h2 className="font-semibold mb-3 text-gray-100">Warteliste</h2>
+          <h2 className="font-semibold mb-3 text-gray-100">Warteliste ({interests.length})</h2>
           <input
             type="text"
             placeholder="Suche nach Name oder E-Mail…"

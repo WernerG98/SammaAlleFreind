@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../../lib/api.js";
 
 export default function NewsletterPage() {
@@ -6,6 +6,14 @@ export default function NewsletterPage() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [subscriberCount, setSubscriberCount] = useState(null);
+
+  useEffect(() => {
+    api
+      .get("/newsletter")
+      .then((subscribers) => setSubscriberCount(subscribers.length))
+      .catch(() => {});
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -24,7 +32,10 @@ export default function NewsletterPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold mb-6 text-gray-100">Newsletter versenden</h1>
+      <h1 className="text-2xl font-bold mb-1 text-gray-100">Newsletter versenden</h1>
+      <p className="text-sm text-gray-400 mb-5">
+        {subscriberCount === null ? "Lade Abonnentenzahl…" : `Aktuell ${subscriberCount} Abonnenten.`}
+      </p>
 
       <form onSubmit={handleSubmit} className="space-y-4 bg-gray-900 border border-gray-800 rounded-lg p-6">
         <div>

@@ -81,6 +81,7 @@ export default function DashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold text-gray-100">
           {role === "external" ? "Externe Veranstaltungen" : "Veranstaltungen"}
+          {events ? ` (${events.length})` : ""}
         </h1>
         <Link
           to="/admin/veranstaltungen/neu"
