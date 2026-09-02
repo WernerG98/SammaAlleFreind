@@ -10,6 +10,7 @@ import PublicLayout from "./components/PublicLayout.jsx";
 import AdminLayout from "./components/AdminLayout.jsx";
 import LoginPage from "./pages/admin/LoginPage.jsx";
 import DashboardPage from "./pages/admin/DashboardPage.jsx";
+import StatsPage from "./pages/admin/StatsPage.jsx";
 import EventFormPage from "./pages/admin/EventFormPage.jsx";
 import RegistrationsPage from "./pages/admin/RegistrationsPage.jsx";
 import NewsletterPage from "./pages/admin/NewsletterPage.jsx";
@@ -32,6 +33,7 @@ export default function App() {
       <Route path="/admin/login" element={<LoginPage />} />
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<DashboardPage />} />
+        <Route path="statistik" element={<StatsPage />} />
         <Route path="veranstaltungen/neu" element={<EventFormPage />} />
         <Route path="veranstaltungen/:id" element={<EventFormPage />} />
         <Route path="veranstaltungen/:id/anmeldungen" element={<RegistrationsPage />} />

@@ -4,6 +4,7 @@ import { api } from "../lib/api.js";
 
 const FULL_NAV_LINKS = [
   { to: "/admin", label: "Veranstaltungen" },
+  { to: "/admin/statistik", label: "Statistik" },
   { to: "/admin/newsletter", label: "Newsletter" },
   { to: "/admin/newsletter/abonnenten", label: "Abonnenten" },
   { to: "/admin/banner", label: "Banner" },
