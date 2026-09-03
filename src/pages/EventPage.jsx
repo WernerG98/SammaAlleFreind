@@ -11,9 +11,10 @@ function AddToCalendarButton({ event }) {
     <button
       type="button"
       onClick={() => downloadEventIcs(event)}
-      className="mt-1 text-sm text-teal-400 hover:text-teal-300 underline"
+      className="mt-2 inline-flex items-center gap-1.5 bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 text-teal-300 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
     >
-      📅 Zum Kalender hinzufügen
+      <span aria-hidden="true">📅</span>
+      Zum Kalender hinzufügen
     </button>
   );
 }
