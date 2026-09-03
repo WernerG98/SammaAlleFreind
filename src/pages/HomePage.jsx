@@ -201,6 +201,16 @@ export default function HomePage() {
                         )}
                       </p>
                     )}
+                    {event.registrationDeadline && (
+                      <p className="text-sm text-amber-200/80 mt-1">
+                        Anmeldefrist:{" "}
+                        {new Date(event.registrationDeadline).toLocaleDateString("de-DE", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                      </p>
+                    )}
                     <p className="text-sm text-amber-400 mt-2 font-medium">Nur mit Passwort sichtbar</p>
                   </div>
                   {event.imageUrl && (

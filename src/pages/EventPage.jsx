@@ -140,6 +140,16 @@ export default function EventPage() {
         <p className="mt-2 text-amber-400 font-semibold">
           {event.isPrivate ? "🔒 Privat" : "🔒 Vorabzugang"} — nur mit Passwort sichtbar.
         </p>
+        {event.registrationDeadline && (
+          <p className="mt-1 text-sm text-gray-400">
+            Anmeldefrist:{" "}
+            {new Date(event.registrationDeadline).toLocaleDateString("de-DE", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+          </p>
+        )}
 
         <form onSubmit={handleUnlock} className="mt-8 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
           <div>
