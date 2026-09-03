@@ -65,9 +65,15 @@ export default function AlreadyRegisteredBox({ slug }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-4 text-sm text-teal-400 hover:text-teal-300 underline"
+        className="mt-4 w-full flex items-center gap-3 text-left bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 rounded-lg px-4 py-3 transition-colors"
       >
-        Bereits angemeldet? Hier Anmeldung stornieren oder nochmal zum Bezahlungslink.
+        <span className="text-xl shrink-0" aria-hidden="true">
+          ✏️
+        </span>
+        <span className="text-sm text-teal-300">
+          <strong className="font-semibold text-teal-200">Bereits angemeldet?</strong> Hier Anmeldung stornieren,
+          Kommentar bearbeiten oder nochmal zum Bezahlungslink.
+        </span>
       </button>
     );
   }
@@ -103,8 +109,8 @@ export default function AlreadyRegisteredBox({ slug }) {
           </div>
 
           {commentsEnabled && (
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-300">Dein Kommentar</label>
+            <div className="border border-teal-800/60 bg-teal-950/20 rounded-lg p-3">
+              <label className="block text-sm font-medium mb-1 text-teal-200">✏️ Dein Kommentar</label>
               <textarea
                 rows={3}
                 className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
