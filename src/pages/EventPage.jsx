@@ -19,19 +19,15 @@ function AddToCalendarButton({ event }) {
   );
 }
 
-function BusInterestForm({ eventId, busId, busName, password }) {
-  const [open, setOpen] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [website, setWebsite] = useState("");
+function BusInterestForm({ eventId, busId, busName, password, firstName, lastName, email, website }) {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit() {
+  async function handleClick(e) {
+    e.stopPropagation();
     if (!firstName.trim() || !lastName.trim() || !email.trim()) {
-      setError("Bitte alle Felder ausfüllen.");
+      setError("Bitte oben Vorname, Name und E-Mail-Adresse eintragen.");
       return;
     }
     setError("");
@@ -61,57 +57,18 @@ function BusInterestForm({ eventId, busId, busName, password }) {
     );
   }
 
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen(true);
-        }}
-        className="text-xs text-teal-400 hover:text-teal-300 underline mt-1.5"
-      >
-        Interesse anmelden
-      </button>
-    );
-  }
-
   return (
-    <div
-      onClick={(e) => e.stopPropagation()}
-      className="mt-2 space-y-1.5 bg-gray-900 border border-gray-700 rounded-lg p-2.5"
-    >
-      <Honeypot value={website} onChange={(e) => setWebsite(e.target.value)} />
-      <div className="grid grid-cols-2 gap-1.5">
-        <input
-          placeholder="Vorname"
-          className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-teal-500"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-        <input
-          placeholder="Name"
-          className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-teal-500"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
-      </div>
-      <input
-        type="email"
-        placeholder="E-Mail-Adresse"
-        className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-teal-500"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      {error && <p className="text-xs text-red-400">{error}</p>}
+    <div onClick={(e) => e.stopPropagation()}>
       <button
         type="button"
-        onClick={handleSubmit}
+        onClick={handleClick}
         disabled={submitting}
-        className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded px-3 py-1.5 text-xs font-medium disabled:opacity-50 transition-colors"
+        className="mt-1.5 inline-flex items-center gap-1 bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 text-teal-300 rounded px-2 py-1 text-xs font-medium transition-colors disabled:opacity-50"
       >
+        <span aria-hidden="true">✋</span>
         {submitting ? "Wird gesendet…" : "Interesse anmelden"}
       </button>
+      {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
     </div>
   );
 }
@@ -538,6 +495,10 @@ export default function EventPage() {
                         busId={bus.id}
                         busName={bus.name}
                         password={accessPassword}
+                        firstName={form.firstName}
+                        lastName={form.lastName}
+                        email={form.email}
+                        website={form.website}
                       />
                     )}
                   </div>
