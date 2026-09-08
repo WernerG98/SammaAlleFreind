@@ -82,6 +82,7 @@ export default function EventPage() {
   const [showWaitlistForm, setShowWaitlistForm] = useState(false);
   const [waitlistDone, setWaitlistDone] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [accessPassword, setAccessPassword] = useState("");
   const [unlockError, setUnlockError] = useState("");
   const [unlocking, setUnlocking] = useState(false);
@@ -111,11 +112,12 @@ export default function EventPage() {
     setUnlockError("");
     setUnlocking(true);
     try {
-      const unlocked = await api.get(`/events/${slug}?password=${encodeURIComponent(passwordInput)}`);
+      const trimmedPassword = passwordInput.trim();
+      const unlocked = await api.get(`/events/${slug}?password=${encodeURIComponent(trimmedPassword)}`);
       if (unlocked.locked) {
         setUnlockError("Falsches Passwort.");
       } else {
-        setAccessPassword(passwordInput);
+        setAccessPassword(trimmedPassword);
         setEvent(unlocked);
       }
     } catch (err) {
@@ -217,14 +219,26 @@ export default function EventPage() {
         <form onSubmit={handleUnlock} className="mt-8 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-300">Passwort</label>
-            <input
-              required
-              type="password"
-              autoFocus
-              className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                required
+                type={showPasswordInput ? "text" : "password"}
+                autoFocus
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg pl-3 pr-16 py-2 focus:outline-none focus:border-teal-500"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswordInput((s) => !s)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-200"
+              >
+                {showPasswordInput ? "Verbergen" : "Anzeigen"}
+              </button>
+            </div>
           </div>
           {unlockError && <p className="text-sm text-red-400">{unlockError}</p>}
           <button
