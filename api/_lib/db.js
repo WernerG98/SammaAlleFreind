@@ -55,6 +55,7 @@ export function withRemainingSeats(event, { password } = {}) {
       imageUrl: event.imageUrl,
       eventDate: event.isPrivate ? null : event.eventDate,
       registrationDeadline: event.registrationDeadline,
+      pricePerPerson: event.pricePerPerson,
       comingSoon: false,
       earlyAccessEnabled: event.earlyAccessEnabled,
       isPrivate: event.isPrivate,

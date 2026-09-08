@@ -205,6 +205,14 @@ export default function EventPage() {
             })}
           </p>
         )}
+        <p className="mt-1 text-sm text-gray-400">
+          {event.pricePerPerson
+            ? `${Number(event.pricePerPerson).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })} € pro Person`
+            : "Kostenlos"}
+        </p>
 
         <form onSubmit={handleUnlock} className="mt-8 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
           <div>

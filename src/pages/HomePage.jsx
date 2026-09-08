@@ -211,6 +211,14 @@ export default function HomePage() {
                         })}
                       </p>
                     )}
+                    <p className="text-sm text-amber-200/80 mt-1">
+                      {event.pricePerPerson
+                        ? `${Number(event.pricePerPerson).toLocaleString("de-DE", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })} € pro Person`
+                        : "Kostenlos"}
+                    </p>
                     <p className="text-sm text-amber-400 mt-2 font-medium">Nur mit Passwort sichtbar</p>
                   </div>
                   {event.imageUrl && (
