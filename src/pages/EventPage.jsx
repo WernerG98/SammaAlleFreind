@@ -586,6 +586,16 @@ export default function EventPage() {
 
           {error && <p className="text-sm text-red-400">{error}</p>}
 
+          {availableBuses.length > 0 && !form.busId && (
+            <p className="text-sm text-amber-400">Bitte oben einen Slot auswählen.</p>
+          )}
+          {availableBuses.length > 0 &&
+            form.busId &&
+            Boolean(event.pricePerPerson) &&
+            !acceptedTerms && (
+              <p className="text-sm text-amber-400">Bitte die Bedingungen oben bestätigen.</p>
+            )}
+
           <button
             type="submit"
             disabled={
