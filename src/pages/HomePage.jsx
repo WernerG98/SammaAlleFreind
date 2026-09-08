@@ -389,6 +389,14 @@ export default function HomePage() {
                       </span>
                     )}
                   </p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    {event.pricePerPerson
+                      ? `${Number(event.pricePerPerson).toLocaleString("de-DE", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })} € pro Person`
+                      : "Kostenlos"}
+                  </p>
                   {!event.registrationOpen && (
                     <p className="text-sm mt-2 font-semibold text-red-400">Anmeldefrist abgelaufen</p>
                   )}

@@ -19,6 +19,103 @@ function AddToCalendarButton({ event }) {
   );
 }
 
+function BusInterestForm({ eventId, busId, busName, password }) {
+  const [open, setOpen] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit() {
+    if (!firstName.trim() || !lastName.trim() || !email.trim()) {
+      setError("Bitte alle Felder ausfüllen.");
+      return;
+    }
+    setError("");
+    setSubmitting(true);
+    try {
+      await api.post("/register", {
+        eventId,
+        firstName,
+        lastName,
+        email,
+        website,
+        waitlist: true,
+        interestedBusId: busId,
+        password,
+      });
+      setDone(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (done) {
+    return (
+      <p className="text-xs text-emerald-400 mt-1.5">Danke! Wir melden uns, sobald {busName} bestätigt ist.</p>
+    );
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(true);
+        }}
+        className="text-xs text-teal-400 hover:text-teal-300 underline mt-1.5"
+      >
+        Interesse anmelden
+      </button>
+    );
+  }
+
+  return (
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="mt-2 space-y-1.5 bg-gray-900 border border-gray-700 rounded-lg p-2.5"
+    >
+      <Honeypot value={website} onChange={(e) => setWebsite(e.target.value)} />
+      <div className="grid grid-cols-2 gap-1.5">
+        <input
+          placeholder="Vorname"
+          className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-teal-500"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+        <input
+          placeholder="Name"
+          className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-teal-500"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+        />
+      </div>
+      <input
+        type="email"
+        placeholder="E-Mail-Adresse"
+        className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-teal-500"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      {error && <p className="text-xs text-red-400">{error}</p>}
+      <button
+        type="button"
+        onClick={handleSubmit}
+        disabled={submitting}
+        className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded px-3 py-1.5 text-xs font-medium disabled:opacity-50 transition-colors"
+      >
+        {submitting ? "Wird gesendet…" : "Interesse anmelden"}
+      </button>
+    </div>
+  );
+}
+
 export default function EventPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -395,19 +492,30 @@ export default function EventPage() {
                 const full = bus.enabled && bus.remaining === 0;
                 const comingSoonBus = !bus.enabled;
                 const disabled = full || comingSoonBus;
+                const selectable = !full && !comingSoonBus;
                 const selected = form.busId === bus.id;
                 return (
-                  <button
-                    type="button"
+                  <div
                     key={bus.id}
-                    disabled={disabled}
-                    onClick={() => setForm({ ...form, busId: bus.id })}
+                    role={selectable ? "button" : undefined}
+                    tabIndex={selectable ? 0 : undefined}
+                    onClick={selectable ? () => setForm({ ...form, busId: bus.id }) : undefined}
+                    onKeyDown={
+                      selectable
+                        ? (e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setForm({ ...form, busId: bus.id });
+                            }
+                          }
+                        : undefined
+                    }
                     className={`rounded-lg border-2 px-3 py-2 text-left text-sm transition-colors ${
                       disabled
-                        ? "bg-gray-800 border-gray-700 text-gray-500 cursor-not-allowed"
+                        ? "bg-gray-800 border-gray-700 text-gray-500"
                         : selected
-                          ? "border-teal-500 bg-teal-950/40 text-teal-300"
-                          : "border-gray-700 text-gray-300 hover:border-teal-600"
+                          ? "border-teal-500 bg-teal-950/40 text-teal-300 cursor-pointer"
+                          : "border-gray-700 text-gray-300 hover:border-teal-600 cursor-pointer"
                     }`}
                   >
                     <span className="font-medium flex items-center gap-1">
@@ -424,7 +532,15 @@ export default function EventPage() {
                             : `noch ${bus.remaining} Plätze frei`}
                     </span>
                     {!comingSoonBus && <CapacityBar capacity={bus.capacity} remaining={bus.remaining} className="mt-1.5" />}
-                  </button>
+                    {comingSoonBus && (
+                      <BusInterestForm
+                        eventId={event.id}
+                        busId={bus.id}
+                        busName={bus.name}
+                        password={accessPassword}
+                      />
+                    )}
+                  </div>
                   );
                 })}
               </div>

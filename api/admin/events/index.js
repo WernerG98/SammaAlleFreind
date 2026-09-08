@@ -132,7 +132,7 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     if (req.body?.action === "send-email") {
-      const { eventId, target, subject, bodyHtml } = req.body;
+      const { eventId, target, busId, subject, bodyHtml } = req.body;
       if (!eventId || !["paid", "unpaid", "interested"].includes(target) || !subject?.trim() || !bodyHtml?.trim()) {
         return res
           .status(400)
@@ -148,7 +148,10 @@ export default async function handler(req, res) {
 
       const recipients =
         target === "interested"
-          ? await prisma.eventInterest.findMany({ where: { eventId }, select: { email: true } })
+          ? await prisma.eventInterest.findMany({
+              where: { eventId, ...(busId ? { busId } : {}) },
+              select: { email: true },
+            })
           : await prisma.registration.findMany({
               where: { eventId, paid: target === "paid" },
               select: { email: true },

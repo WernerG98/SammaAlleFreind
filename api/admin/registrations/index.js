@@ -28,6 +28,7 @@ export default async function handler(req, res) {
       }),
       prisma.eventInterest.findMany({
         where: { eventId },
+        include: { bus: true },
         orderBy: { createdAt: "asc" },
       }),
     ]);

@@ -43,8 +43,9 @@ model Bus {
   capacity Int?
   enabled  Boolean @default(true)
 
-  event         Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event         Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
   registrations Registration[]
+  interests     EventInterest[]
 }
 
 model Registration {
@@ -70,12 +71,14 @@ model Registration {
 model EventInterest {
   id        String   @id @default(cuid())
   eventId   String
+  busId     String?
   firstName String
   lastName  String
   email     String
   createdAt DateTime @default(now())
 
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  bus   Bus?  @relation(fields: [busId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, email])
 }

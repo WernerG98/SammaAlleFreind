@@ -89,13 +89,16 @@ export function buildNewsletterOptInHtml({ unsubscribeUrl }) {
   `;
 }
 
-export function buildWaitlistConfirmationHtml({ firstName, event }) {
+export function buildWaitlistConfirmationHtml({ firstName, event, busName }) {
   return `
-    <h2>Du stehst auf der Warteliste</h2>
+    <h2>${busName ? "Dein Interesse wurde vermerkt" : "Du stehst auf der Warteliste"}</h2>
     <p>Hallo ${firstName},</p>
     <p>
-      aktuell sind bei <strong>${event.title}</strong> leider alle Plätze vergeben. Wir haben dich auf die
-      Warteliste gesetzt und melden uns, sobald wieder ein Platz frei wird.
+      ${
+        busName
+          ? `du hast dein Interesse an <strong>${busName}</strong> bei <strong>${event.title}</strong> hinterlegt. Dieser Slot ist aktuell noch nicht bestätigt — wir melden uns, sobald es losgeht und du dich verbindlich anmelden kannst.`
+          : `aktuell sind bei <strong>${event.title}</strong> leider alle Plätze vergeben. Wir haben dich auf die Warteliste gesetzt und melden uns, sobald wieder ein Platz frei wird.`
+      }
     </p>
     ${externalOrganizerNote(event)}
   `;

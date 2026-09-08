@@ -3,7 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { api } from "../../lib/api.js";
 import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 
-function InterestEmailForm({ eventId }) {
+function InterestEmailForm({ eventId, buses }) {
+  const [busId, setBusId] = useState("all");
   const [subject, setSubject] = useState("");
   const [bodyHtml, setBodyHtml] = useState("");
   const [status, setStatus] = useState("idle");
@@ -20,6 +21,7 @@ function InterestEmailForm({ eventId }) {
         action: "send-email",
         eventId,
         target: "interested",
+        busId: busId === "all" ? undefined : busId,
         subject,
         bodyHtml,
       });
@@ -35,6 +37,23 @@ function InterestEmailForm({ eventId }) {
     <div className="mt-8 bg-gray-900 border border-gray-800 rounded-lg p-5">
       <h2 className="font-semibold mb-3 text-gray-100">Rundmail an alle auf der Warteliste senden</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
+        {buses.length > 0 && (
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-300">Zielgruppe</label>
+            <select
+              value={busId}
+              onChange={(e) => setBusId(e.target.value)}
+              className="w-full sm:w-64 border border-gray-700 bg-gray-800 text-gray-100 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+            >
+              <option value="all">Alle auf der Warteliste</option>
+              {buses.map((bus) => (
+                <option key={bus.id} value={bus.id}>
+                  Nur "{bus.name}"
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <input
           required
           placeholder="Betreff"
@@ -552,6 +571,7 @@ export default function RegistrationsPage() {
                 <tr>
                   <InterestSortHeader field="name">Name</InterestSortHeader>
                   <InterestSortHeader field="email">E-Mail</InterestSortHeader>
+                  <th className="px-4 py-2 text-left font-semibold text-gray-500">Slot</th>
                   <th className="px-4 py-2"></th>
                 </tr>
               </thead>
@@ -562,6 +582,7 @@ export default function RegistrationsPage() {
                       {int.firstName} {int.lastName}
                     </td>
                     <td className="px-4 py-2">{int.email}</td>
+                    <td className="px-4 py-2 text-gray-400">{int.bus?.name || "Allgemein"}</td>
                     <td className="px-4 py-2 text-right">
                       <button
                         type="button"
@@ -584,7 +605,7 @@ export default function RegistrationsPage() {
       )}
 
       {registrations.length > 0 && <BulkEmailForm eventId={id} />}
-      {interests.length > 0 && <InterestEmailForm eventId={id} />}
+      {interests.length > 0 && <InterestEmailForm eventId={id} buses={buses} />}
 
       <ConfirmDialog
         open={!!toRemove}

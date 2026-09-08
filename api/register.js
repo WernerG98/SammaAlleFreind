@@ -11,8 +11,19 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Methode nicht erlaubt." });
   }
 
-  const { eventId, busId, firstName, lastName, email, newsletterOptIn, comment, waitlist, password, website } =
-    req.body || {};
+  const {
+    eventId,
+    busId,
+    firstName,
+    lastName,
+    email,
+    newsletterOptIn,
+    comment,
+    waitlist,
+    interestedBusId,
+    password,
+    website,
+  } = req.body || {};
 
   if (website) {
     return res.status(400).json({ error: "Ungültige Anfrage." });
@@ -44,14 +55,28 @@ export default async function handler(req, res) {
       return res.status(409).json({ error: "Du stehst bereits auf der Warteliste für diese Veranstaltung." });
     }
 
+    let interestBus = null;
+    if (interestedBusId) {
+      interestBus = await prisma.bus.findUnique({ where: { id: interestedBusId } });
+      if (!interestBus || interestBus.eventId !== eventId) {
+        return res.status(404).json({ error: "Slot nicht gefunden." });
+      }
+    }
+
     const interest = await prisma.eventInterest.create({
-      data: { eventId, firstName: firstName.trim(), lastName: lastName.trim(), email: normalizedEmail },
+      data: {
+        eventId,
+        busId: interestBus?.id || null,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: normalizedEmail,
+      },
     });
 
     await sendEmail({
       to: normalizedEmail,
-      subject: `Warteliste: ${event.title}`,
-      html: buildWaitlistConfirmationHtml({ firstName: firstName.trim(), event }),
+      subject: interestBus ? `Interesse vermerkt: ${event.title}` : `Warteliste: ${event.title}`,
+      html: buildWaitlistConfirmationHtml({ firstName: firstName.trim(), event, busName: interestBus?.name }),
     });
 
     return res.status(201).json({ interest: true, id: interest.id });
