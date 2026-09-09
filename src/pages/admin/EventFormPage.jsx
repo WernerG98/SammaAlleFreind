@@ -18,6 +18,15 @@ function toDateTimeInputValue(date) {
 const inputClass =
   "w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-3 py-2 focus:outline-none focus:border-teal-500";
 
+function Section({ title, children }) {
+  return (
+    <div className="space-y-4 pt-6 border-t border-gray-800 first:pt-0 first:border-t-0">
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-teal-500">{title}</h2>
+      <div className="space-y-4">{children}</div>
+    </div>
+  );
+}
+
 export default function EventFormPage() {
   const { id } = useParams();
   const isNew = id === undefined;
@@ -153,406 +162,424 @@ export default function EventFormPage() {
         {isNew ? "Neue Veranstaltung" : "Veranstaltung bearbeiten"}
       </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-gray-900 border border-gray-800 rounded-lg p-6">
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-300">Titel</label>
-          <input
-            required
-            className={inputClass}
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-300">Beschreibung</label>
-          <RichTextEditor
-            key={id || "new"}
-            value={form.description}
-            onChange={(html) => setForm({ ...form, description: html })}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-300">Flyer-Bild (optional)</label>
-          {form.imageUrl && (
-            <img
-              src={form.imageUrl}
-              alt="Flyer-Vorschau"
-              className="w-full max-h-64 object-contain rounded-lg border border-gray-700 mb-2 bg-gray-800"
-            />
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="block w-full text-sm text-gray-300 border border-gray-700 bg-gray-800 rounded px-3 py-2"
-          />
-          {imageError && <p className="text-xs text-red-400 mt-1">{imageError}</p>}
-          {form.imageUrl && (
-            <button
-              type="button"
-              onClick={() => setForm({ ...form, imageUrl: "" })}
-              className="text-xs text-red-400 hover:underline mt-1"
-            >
-              Bild entfernen
-            </button>
-          )}
-          <p className="text-xs text-gray-500 mt-1">
-            Wird oben auf der Veranstaltungsseite als Flyer angezeigt (max. 3 MB).
-          </p>
-        </div>
-
-        <label className="flex items-center gap-2 text-sm text-gray-300">
-          <input
-            type="checkbox"
-            checked={form.comingSoon}
-            onChange={(e) => setForm({ ...form, comingSoon: e.target.checked })}
-          />
-          Nur Ankündigung ("Coming Soon"), Datum, Preis und Slots stehen noch nicht fest
-        </label>
-
-        {form.comingSoon && (
+      <form onSubmit={handleSubmit} className="space-y-0 bg-gray-900 border border-gray-800 rounded-lg p-6">
+        <Section title="Grunddaten">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-300">Datum &amp; Startzeit (optional)</label>
+            <label className="block text-sm font-medium mb-1 text-gray-300">Titel</label>
             <input
-              type="datetime-local"
+              required
               className={inputClass}
-              value={form.eventDate}
-              onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Falls schon bekannt, wird das Datum auf der Kachel angezeigt, auch wenn die Anmeldung noch nicht
-              möglich ist.
-            </p>
           </div>
-        )}
 
-        {role === "external" ? (
-          <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
-            <p className="text-xs text-gray-400">
-              Diese Veranstaltung wird automatisch als "Externe Veranstaltung" markiert.
-            </p>
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-300">Verein/Ansprechperson</label>
-              <input
-                required
-                placeholder="z.B. Name des Vereins"
-                className={`${inputClass} text-sm`}
-                value={form.externalOrganizer}
-                onChange={(e) => setForm({ ...form, externalOrganizer: e.target.value })}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Wird zusammen mit der Kontakt-E-Mail auf der Kachel und der Veranstaltungsseite angezeigt.
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-300">Kontakt-E-Mail</label>
-              <input
-                required
-                type="email"
-                placeholder="kontakt@euer-verein.de"
-                className={`${inputClass} text-sm`}
-                value={form.externalContactEmail}
-                onChange={(e) => setForm({ ...form, externalContactEmail: e.target.value })}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Wird bei der Veranstaltung angezeigt, damit Interessierte euch direkt kontaktieren können.
-              </p>
-            </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-300">Beschreibung</label>
+            <RichTextEditor
+              key={id || "new"}
+              value={form.description}
+              onChange={(html) => setForm({ ...form, description: html })}
+            />
           </div>
-        ) : (
-          <div className="border border-gray-700 rounded-lg p-3 space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
-              <input
-                type="checkbox"
-                checked={form.isExternal}
-                onChange={(e) => setForm({ ...form, isExternal: e.target.checked })}
+
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-300">Flyer-Bild (optional)</label>
+            {form.imageUrl && (
+              <img
+                src={form.imageUrl}
+                alt="Flyer-Vorschau"
+                className="w-full max-h-64 object-contain rounded-lg border border-gray-700 mb-2 bg-gray-800"
               />
-              🤝 Externe Veranstaltung (anderer Verein/Person)
-            </label>
-            {form.isExternal && (
-              <>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="block w-full text-sm text-gray-300 border border-gray-700 bg-gray-800 rounded px-3 py-2"
+            />
+            {imageError && <p className="text-xs text-red-400 mt-1">{imageError}</p>}
+            {form.imageUrl && (
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, imageUrl: "" })}
+                className="text-xs text-red-400 hover:underline mt-1"
+              >
+                Bild entfernen
+              </button>
+            )}
+            <p className="text-xs text-gray-500 mt-1">
+              Wird oben auf der Veranstaltungsseite als Flyer angezeigt (max. 3 MB).
+            </p>
+          </div>
+        </Section>
+
+        <Section title="Art der Veranstaltung">
+          <label className="flex items-center gap-2 text-sm text-gray-300">
+            <input
+              type="checkbox"
+              checked={form.comingSoon}
+              onChange={(e) => setForm({ ...form, comingSoon: e.target.checked })}
+            />
+            Nur Ankündigung ("Coming Soon"), Datum, Preis und Slots stehen noch nicht fest
+          </label>
+
+          {form.comingSoon && (
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-300">Datum &amp; Startzeit (optional)</label>
+              <input
+                type="datetime-local"
+                className={inputClass}
+                value={form.eventDate}
+                onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Falls schon bekannt, wird das Datum auf der Kachel angezeigt, auch wenn die Anmeldung noch nicht
+                möglich ist.
+              </p>
+            </div>
+          )}
+
+          {role === "external" ? (
+            <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
+              <p className="text-xs text-gray-400">
+                Diese Veranstaltung wird automatisch als "Externe Veranstaltung" markiert.
+              </p>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-gray-300">Verein/Ansprechperson</label>
                 <input
                   required
-                  placeholder="Verein/Ansprechperson (z.B. Name des Vereins)"
+                  placeholder="z.B. Name des Vereins"
                   className={`${inputClass} text-sm`}
                   value={form.externalOrganizer}
                   onChange={(e) => setForm({ ...form, externalOrganizer: e.target.value })}
                 />
-                <div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Wird zusammen mit der Kontakt-E-Mail auf der Kachel und der Veranstaltungsseite angezeigt.
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-gray-300">Kontakt-E-Mail</label>
+                <input
+                  required
+                  type="email"
+                  placeholder="kontakt@euer-verein.de"
+                  className={`${inputClass} text-sm`}
+                  value={form.externalContactEmail}
+                  onChange={(e) => setForm({ ...form, externalContactEmail: e.target.value })}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Wird bei der Veranstaltung angezeigt, damit Interessierte euch direkt kontaktieren können.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="border border-gray-700 rounded-lg p-3 space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={form.isExternal}
+                  onChange={(e) => setForm({ ...form, isExternal: e.target.checked })}
+                />
+                🤝 Externe Veranstaltung (anderer Verein/Person)
+              </label>
+              {form.isExternal && (
+                <>
                   <input
                     required
-                    type="email"
-                    placeholder="Kontakt-E-Mail (kontakt@verein.de)"
+                    placeholder="Verein/Ansprechperson (z.B. Name des Vereins)"
                     className={`${inputClass} text-sm`}
-                    value={form.externalContactEmail}
-                    onChange={(e) => setForm({ ...form, externalContactEmail: e.target.value })}
+                    value={form.externalOrganizer}
+                    onChange={(e) => setForm({ ...form, externalOrganizer: e.target.value })}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Wird bei der Veranstaltung angezeigt, damit Interessierte direkt Kontakt aufnehmen können.
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+                  <div>
+                    <input
+                      required
+                      type="email"
+                      placeholder="Kontakt-E-Mail (kontakt@verein.de)"
+                      className={`${inputClass} text-sm`}
+                      value={form.externalContactEmail}
+                      onChange={(e) => setForm({ ...form, externalContactEmail: e.target.value })}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Wird bei der Veranstaltung angezeigt, damit Interessierte direkt Kontakt aufnehmen können.
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </Section>
 
         {!form.comingSoon && (
           <>
-            <label className="flex items-center gap-2 text-sm text-gray-300">
-              <input
-                type="checkbox"
-                checked={form.noRegistrationRequired}
-                onChange={(e) => setForm({ ...form, noRegistrationRequired: e.target.checked })}
-              />
-              🎉 Öffentliche Veranstaltung, keine Anmeldung nötig
-            </label>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1 text-gray-300">Datum &amp; Startzeit</label>
+            <Section title="Termin & Teilnahme">
+              <label className="flex items-center gap-2 text-sm text-gray-300">
                 <input
-                  required
-                  type="datetime-local"
-                  className={inputClass}
-                  value={form.eventDate}
-                  onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
+                  type="checkbox"
+                  checked={form.noRegistrationRequired}
+                  onChange={(e) => setForm({ ...form, noRegistrationRequired: e.target.checked })}
                 />
-              </div>
-              {!form.noRegistrationRequired && (
+                🎉 Öffentliche Veranstaltung, keine Anmeldung nötig
+              </label>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-300">Preis pro Person (€)</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">Datum &amp; Startzeit</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    required
+                    type="datetime-local"
                     className={inputClass}
-                    value={form.pricePerPerson}
-                    onChange={(e) => setForm({ ...form, pricePerPerson: e.target.value })}
+                    value={form.eventDate}
+                    onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
                   />
                 </div>
-              )}
-            </div>
+                {!form.noRegistrationRequired && (
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">Preis pro Person (€)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      className={inputClass}
+                      value={form.pricePerPerson}
+                      onChange={(e) => setForm({ ...form, pricePerPerson: e.target.value })}
+                    />
+                  </div>
+                )}
+              </div>
+            </Section>
 
             {!form.noRegistrationRequired && (
               <>
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-300">Anmeldeschluss (optional)</label>
-                  <input
-                    type="date"
-                    className={inputClass}
-                    value={form.registrationDeadline}
-                    onChange={(e) => setForm({ ...form, registrationDeadline: e.target.value })}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Nach diesem Datum ist keine Anmeldung mehr möglich.</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-300">
-                    PayPal.me-Link der Privatperson (optional, kann später ergänzt werden)
-                  </label>
-                  <input
-                    placeholder="https://paypal.me/deinname"
-                    className={inputClass}
-                    value={form.paypalLink}
-                    onChange={(e) => setForm({ ...form, paypalLink: e.target.value })}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Solange weder PayPal-Link noch Überweisungsdaten hinterlegt sind, steht auf der
-                    Zahlungsseite "Zahlungsinfos folgen bald".
-                  </p>
-                </div>
-
-                <div className="border border-gray-700 rounded-lg p-3 space-y-3 bg-gray-800">
-                  <p className="text-sm font-medium text-gray-300">
-                    Überweisung (optional, zusätzlich oder statt PayPal)
-                  </p>
+                <Section title="Anmeldung">
                   <div>
-                    <label className="block text-xs text-gray-400 mb-1">Kontoinhaber</label>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">Anmeldeschluss (optional)</label>
                     <input
-                      placeholder="Vorname Nachname"
-                      className={`${inputClass} text-sm`}
-                      value={form.accountHolder}
-                      onChange={(e) => setForm({ ...form, accountHolder: e.target.value })}
+                      type="date"
+                      className={inputClass}
+                      value={form.registrationDeadline}
+                      onChange={(e) => setForm({ ...form, registrationDeadline: e.target.value })}
                     />
+                    <p className="text-xs text-gray-500 mt-1">Nach diesem Datum ist keine Anmeldung mehr möglich.</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs text-gray-400 mb-1">IBAN</label>
-                      <input
-                        placeholder="DE12 3456 7890 1234 5678 90"
-                        className={`${inputClass} text-sm`}
-                        value={form.iban}
-                        onChange={(e) => setForm({ ...form, iban: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-gray-400 mb-1">BIC</label>
-                      <input
-                        placeholder="XXXXDEXXXXX"
-                        className={`${inputClass} text-sm`}
-                        value={form.bic}
-                        onChange={(e) => setForm({ ...form, bic: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-300">
-                    Hinweis zum Verwendungszweck (optional, <code>{"{name}"}</code> wird ersetzt)
-                  </label>
-                  <input
-                    className={inputClass}
-                    placeholder="{name}"
-                    value={form.paymentNote}
-                    onChange={(e) => setForm({ ...form, paymentNote: e.target.value })}
-                  />
-                </div>
-
-                <label className="flex items-center gap-2 text-sm text-gray-300">
-                  <input
-                    type="checkbox"
-                    checked={form.commentsEnabled}
-                    onChange={(e) => setForm({ ...form, commentsEnabled: e.target.checked })}
-                  />
-                  💬 Kommentare zulassen, Teilnehmer können bei der Anmeldung eine Nachricht hinterlassen
-                </label>
-
-                <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                  <label className="flex items-center gap-2 text-sm text-gray-300">
                     <input
                       type="checkbox"
-                      checked={form.earlyAccessEnabled}
-                      onChange={(e) => setForm({ ...form, earlyAccessEnabled: e.target.checked })}
+                      checked={form.commentsEnabled}
+                      onChange={(e) => setForm({ ...form, commentsEnabled: e.target.checked })}
                     />
-                    🔒 Vorabzugang, nur mit Passwort anmeldbar
+                    💬 Kommentare zulassen, Teilnehmer können bei der Anmeldung eine Nachricht hinterlassen
                   </label>
-                  {form.earlyAccessEnabled && (
-                    <div>
-                      <input
-                        required
-                        placeholder="Passwort für den Vorabzugang"
-                        className={`${inputClass} text-sm`}
-                        value={form.earlyAccessPassword}
-                        onChange={(e) => setForm({ ...form, earlyAccessPassword: e.target.value })}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Auf der Startseite wird "🔒 Vorabzugang" angezeigt, Details/Anmeldung nur mit diesem
-                        Passwort sichtbar. Haken entfernen, sobald es für alle offen sein soll.
-                      </p>
-                    </div>
-                  )}
-                </div>
+                </Section>
 
-                <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                <Section title="Zahlung">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">
+                      PayPal.me-Link der Privatperson (optional, kann später ergänzt werden)
+                    </label>
                     <input
-                      type="checkbox"
-                      checked={form.isPrivate}
-                      onChange={(e) => setForm({ ...form, isPrivate: e.target.checked })}
+                      placeholder="https://paypal.me/deinname"
+                      className={inputClass}
+                      value={form.paypalLink}
+                      onChange={(e) => setForm({ ...form, paypalLink: e.target.value })}
                     />
-                    🔒 Privat, nur mit Passwort anmeldbar
-                  </label>
-                  {form.isPrivate && (
-                    <div>
-                      <input
-                        required
-                        placeholder="Passwort für den privaten Zugang"
-                        className={`${inputClass} text-sm`}
-                        value={form.privatePassword}
-                        onChange={(e) => setForm({ ...form, privatePassword: e.target.value })}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Auf der Startseite wird "🔒 Privat" angezeigt, Details/Anmeldung nur mit diesem
-                        Passwort sichtbar. Haken entfernen, sobald es für alle offen sein soll.
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-gray-300">Slots</label>
-                    <button
-                      type="button"
-                      onClick={() => setBuses([...buses, emptyBus()])}
-                      className="text-sm text-teal-400 hover:underline"
-                    >
-                      + Slot hinzufügen
-                    </button>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Solange weder PayPal-Link noch Überweisungsdaten hinterlegt sind, steht auf der
+                      Zahlungsseite "Zahlungsinfos folgen bald".
+                    </p>
                   </div>
-                  <div className="space-y-2">
-                    {buses.map((bus, i) => (
-                      <div
-                        key={bus.id || i}
-                        className="flex flex-wrap items-center gap-2 border border-gray-700 rounded-lg p-2 sm:border-0 sm:p-0"
-                      >
+
+                  <div className="border border-gray-700 rounded-lg p-3 space-y-3 bg-gray-800">
+                    <p className="text-sm font-medium text-gray-300">
+                      Überweisung (optional, zusätzlich oder statt PayPal)
+                    </p>
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">Kontoinhaber</label>
+                      <input
+                        placeholder="Vorname Nachname"
+                        className={`${inputClass} text-sm`}
+                        value={form.accountHolder}
+                        onChange={(e) => setForm({ ...form, accountHolder: e.target.value })}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs text-gray-400 mb-1">IBAN</label>
+                        <input
+                          placeholder="DE12 3456 7890 1234 5678 90"
+                          className={`${inputClass} text-sm`}
+                          value={form.iban}
+                          onChange={(e) => setForm({ ...form, iban: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-400 mb-1">BIC</label>
+                        <input
+                          placeholder="XXXXDEXXXXX"
+                          className={`${inputClass} text-sm`}
+                          value={form.bic}
+                          onChange={(e) => setForm({ ...form, bic: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-300">
+                      Hinweis zum Verwendungszweck (optional, <code>{"{name}"}</code> wird ersetzt)
+                    </label>
+                    <input
+                      className={inputClass}
+                      placeholder="{name}"
+                      value={form.paymentNote}
+                      onChange={(e) => setForm({ ...form, paymentNote: e.target.value })}
+                    />
+                  </div>
+                </Section>
+
+                <Section title="Zugriffsbeschränkung">
+                  <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                      <input
+                        type="checkbox"
+                        checked={form.earlyAccessEnabled}
+                        onChange={(e) => setForm({ ...form, earlyAccessEnabled: e.target.checked })}
+                      />
+                      🔒 Vorabzugang, nur mit Passwort anmeldbar
+                    </label>
+                    {form.earlyAccessEnabled && (
+                      <div>
                         <input
                           required
-                          placeholder="Name (z.B. Slot 1)"
-                          className={`flex-1 min-w-[140px] ${inputClass}`}
-                          value={bus.name}
-                          onChange={(e) => updateBus(i, "name", e.target.value)}
+                          placeholder="Passwort für den Vorabzugang"
+                          className={`${inputClass} text-sm`}
+                          value={form.earlyAccessPassword}
+                          onChange={(e) => setForm({ ...form, earlyAccessPassword: e.target.value })}
                         />
-                        <input
-                          type="number"
-                          min="1"
-                          placeholder="Plätze (optional)"
-                          className={`w-32 ${inputClass}`}
-                          value={bus.capacity}
-                          onChange={(e) => updateBus(i, "capacity", e.target.value)}
-                        />
-                        <label className="flex items-center gap-1 text-xs text-gray-400 whitespace-nowrap">
-                          <input
-                            type="checkbox"
-                            checked={bus.enabled !== false}
-                            onChange={(e) => updateBus(i, "enabled", e.target.checked)}
-                          />
-                          buchbar
-                        </label>
-                        {buses.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => setBuses(buses.filter((_, idx) => idx !== i))}
-                            className="text-red-400 px-2"
-                          >
-                            ✕
-                          </button>
-                        )}
+                        <p className="text-xs text-gray-500 mt-1">
+                          Auf der Startseite wird "🔒 Vorabzugang" angezeigt, Details/Anmeldung nur mit diesem
+                          Passwort sichtbar. Haken entfernen, sobald es für alle offen sein soll.
+                        </p>
                       </div>
-                    ))}
+                    )}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Plätze sind optional, ohne Angabe ist der Slot unbegrenzt buchbar.
-                  </p>
-                </div>
+
+                  <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                      <input
+                        type="checkbox"
+                        checked={form.isPrivate}
+                        onChange={(e) => setForm({ ...form, isPrivate: e.target.checked })}
+                      />
+                      🔒 Privat, nur mit Passwort anmeldbar
+                    </label>
+                    {form.isPrivate && (
+                      <div>
+                        <input
+                          required
+                          placeholder="Passwort für den privaten Zugang"
+                          className={`${inputClass} text-sm`}
+                          value={form.privatePassword}
+                          onChange={(e) => setForm({ ...form, privatePassword: e.target.value })}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Auf der Startseite wird "🔒 Privat" angezeigt, Details/Anmeldung nur mit diesem
+                          Passwort sichtbar. Haken entfernen, sobald es für alle offen sein soll.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </Section>
+
+                <Section title="Slots">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-medium text-gray-300">Slots</label>
+                      <button
+                        type="button"
+                        onClick={() => setBuses([...buses, emptyBus()])}
+                        className="text-sm text-teal-400 hover:underline"
+                      >
+                        + Slot hinzufügen
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {buses.map((bus, i) => (
+                        <div
+                          key={bus.id || i}
+                          className="flex flex-wrap items-center gap-2 border border-gray-700 rounded-lg p-2 sm:border-0 sm:p-0"
+                        >
+                          <input
+                            required
+                            placeholder="Name (z.B. Slot 1)"
+                            className={`flex-1 min-w-[140px] ${inputClass}`}
+                            value={bus.name}
+                            onChange={(e) => updateBus(i, "name", e.target.value)}
+                          />
+                          <input
+                            type="number"
+                            min="1"
+                            placeholder="Plätze (optional)"
+                            className={`w-32 ${inputClass}`}
+                            value={bus.capacity}
+                            onChange={(e) => updateBus(i, "capacity", e.target.value)}
+                          />
+                          <label className="flex items-center gap-1 text-xs text-gray-400 whitespace-nowrap">
+                            <input
+                              type="checkbox"
+                              checked={bus.enabled !== false}
+                              onChange={(e) => updateBus(i, "enabled", e.target.checked)}
+                            />
+                            buchbar
+                          </label>
+                          {buses.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => setBuses(buses.filter((_, idx) => idx !== i))}
+                              className="text-red-400 px-2"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Plätze sind optional, ohne Angabe ist der Slot unbegrenzt buchbar.
+                    </p>
+                  </div>
+                </Section>
               </>
             )}
           </>
         )}
 
         {!isNew && (
-          <label className="flex items-center gap-2 text-sm text-gray-300">
-            <input
-              type="checkbox"
-              checked={form.isOpen}
-              onChange={(e) => setForm({ ...form, isOpen: e.target.checked })}
-            />
-            Veranstaltung ist öffentlich sichtbar
-          </label>
+          <Section title="Sichtbarkeit">
+            <label className="flex items-center gap-2 text-sm text-gray-300">
+              <input
+                type="checkbox"
+                checked={form.isOpen}
+                onChange={(e) => setForm({ ...form, isOpen: e.target.checked })}
+              />
+              Veranstaltung ist öffentlich sichtbar
+            </label>
+          </Section>
         )}
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        <div className="pt-6 border-t border-gray-800 space-y-4">
+          {error && <p className="text-sm text-red-400">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="bg-teal-600 hover:bg-teal-500 text-white rounded px-4 py-2 font-medium disabled:opacity-50 transition-colors"
-        >
-          {submitting ? "Speichern…" : "Speichern"}
-        </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="bg-teal-600 hover:bg-teal-500 text-white rounded px-4 py-2 font-medium disabled:opacity-50 transition-colors"
+          >
+            {submitting ? "Speichern…" : "Speichern"}
+          </button>
+        </div>
       </form>
     </div>
   );
