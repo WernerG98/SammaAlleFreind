@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import HomePage from "./pages/HomePage.jsx";
 import EventPage from "./pages/EventPage.jsx";
 import PaymentPage from "./pages/PaymentPage.jsx";
@@ -19,28 +20,31 @@ import BannerPage from "./pages/admin/BannerPage.jsx";
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<PublicLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/veranstaltung/:slug" element={<EventPage />} />
-        <Route path="/anmeldung/:id/zahlung" element={<PaymentPage />} />
-        <Route path="/newsletter/abmelden" element={<UnsubscribePage />} />
-        <Route path="/anmeldung/stornieren" element={<CancelConfirmPage />} />
-        <Route path="/impressum" element={<ImpressumPage />} />
-        <Route path="/datenschutz" element={<DatenschutzPage />} />
-      </Route>
+    <>
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/veranstaltung/:slug" element={<EventPage />} />
+          <Route path="/anmeldung/:id/zahlung" element={<PaymentPage />} />
+          <Route path="/newsletter/abmelden" element={<UnsubscribePage />} />
+          <Route path="/anmeldung/stornieren" element={<CancelConfirmPage />} />
+          <Route path="/impressum" element={<ImpressumPage />} />
+          <Route path="/datenschutz" element={<DatenschutzPage />} />
+        </Route>
 
-      <Route path="/admin/login" element={<LoginPage />} />
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="statistik" element={<StatsPage />} />
-        <Route path="veranstaltungen/neu" element={<EventFormPage />} />
-        <Route path="veranstaltungen/:id" element={<EventFormPage />} />
-        <Route path="veranstaltungen/:id/anmeldungen" element={<RegistrationsPage />} />
-        <Route path="newsletter" element={<NewsletterPage />} />
-        <Route path="newsletter/abonnenten" element={<NewsletterSubscribersPage />} />
-        <Route path="banner" element={<BannerPage />} />
-      </Route>
-    </Routes>
+        <Route path="/admin/login" element={<LoginPage />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="statistik" element={<StatsPage />} />
+          <Route path="veranstaltungen/neu" element={<EventFormPage />} />
+          <Route path="veranstaltungen/:id" element={<EventFormPage />} />
+          <Route path="veranstaltungen/:id/anmeldungen" element={<RegistrationsPage />} />
+          <Route path="newsletter" element={<NewsletterPage />} />
+          <Route path="newsletter/abonnenten" element={<NewsletterSubscribersPage />} />
+          <Route path="banner" element={<BannerPage />} />
+        </Route>
+      </Routes>
+      <Analytics />
+    </>
   );
 }
