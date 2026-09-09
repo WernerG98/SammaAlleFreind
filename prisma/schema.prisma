@@ -19,6 +19,9 @@ model Event {
   pricePerPerson Decimal? @db.Decimal(10, 2)
   paypalLink     String?
   paymentNote    String?
+  iban           String?
+  bic            String?
+  accountHolder  String?
   isOpen         Boolean  @default(true)
   noRegistrationRequired Boolean @default(false)
   isExternal          Boolean @default(false)

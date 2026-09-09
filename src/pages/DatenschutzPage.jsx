@@ -68,9 +68,11 @@ export default function DatenschutzPage() {
 
         <h3 className="font-medium text-gray-100 mt-3 mb-1">Zahlung</h3>
         <p>
-          Die Bezahlung erfolgt direkt über PayPal (bzw. PayPal.me) einer Privatperson. Wir erhalten und
-          speichern dabei keine Zahlungsdaten (z. B. Kontoinformationen); es gelten die
-          Datenschutzbestimmungen von PayPal.
+          Je nach Veranstaltung erfolgt die Bezahlung direkt über PayPal (bzw. PayPal.me) oder per Überweisung
+          an eine Privatperson. Bei PayPal erhalten und speichern wir selbst keine Zahlungsdaten (z. B.
+          Kontoinformationen); es gelten die Datenschutzbestimmungen von PayPal. Bei Überweisung veröffentlichen
+          wir lediglich die Kontoverbindung des Empfängers/der Empfängerin (Kontoinhaber, IBAN, BIC), damit du
+          selbst über deine eigene Bank überweisen kannst.
         </p>
 
         <h3 className="font-medium text-gray-100 mt-3 mb-1">Server-Logfiles</h3>

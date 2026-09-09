@@ -32,6 +32,9 @@ export default async function handler(req, res) {
         pricePerPerson: registration.event.pricePerPerson,
         paypalLink: registration.event.paypalLink,
         paymentNote: registration.event.paymentNote,
+        iban: registration.event.iban,
+        bic: registration.event.bic,
+        accountHolder: registration.event.accountHolder,
       },
     });
   }

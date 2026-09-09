@@ -18,6 +18,13 @@ export function parseCapacity(value) {
   return value !== undefined && value !== null && value !== "" ? Number(value) : null;
 }
 
+export function normalizeIbanOrBic(value) {
+  // Keeps the admin's own spacing (e.g. "DE89 3704 ...") since it's shown
+  // as-is to payers - only trims stray whitespace and normalizes case.
+  const cleaned = value?.trim().toUpperCase();
+  return cleaned || null;
+}
+
 export const EVENT_RETENTION_DAYS = 7;
 
 export async function cleanupExpiredEvents() {
@@ -79,6 +86,9 @@ export function withRemainingSeats(event, { password } = {}) {
     pricePerPerson: event.pricePerPerson,
     paypalLink: event.paypalLink,
     paymentNote: event.paymentNote,
+    iban: event.iban,
+    bic: event.bic,
+    accountHolder: event.accountHolder,
     isOpen: event.isOpen,
     earlyAccessEnabled: event.earlyAccessEnabled,
     isPrivate: event.isPrivate,

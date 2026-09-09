@@ -1,11 +1,11 @@
 # Vereins-Events
 
-Anmeldeportal für Veranstaltungen mit Bus-Platzverwaltung, PayPal-Zahlung (an eine Privatperson) und Newsletter.
+Anmeldeportal für Veranstaltungen mit Bus-Platzverwaltung, Zahlung per PayPal und/oder Überweisung (an eine Privatperson) und Newsletter.
 
 ## Ablauf
 
 1. Gäste melden sich ohne Account für eine Veranstaltung an (Name, E-Mail, Bus-Wahl mit Live-Platzanzeige).
-2. Sie werden auf eine Zahlungsseite mit PayPal.me-Link weitergeleitet.
+2. Sie werden auf eine Zahlungsseite mit PayPal.me-Link und/oder Überweisungsdaten (IBAN/BIC) weitergeleitet.
 3. Der Admin markiert eingegangene Zahlungen im Admin-Bereich als "bezahlt".
 4. Erst dann sinkt die freie Platzanzahl, es geht automatisch eine Bestätigungsmail raus, und bei Newsletter-Opt-in wird die E-Mail-Adresse in den Verteiler aufgenommen.
 5. Der Admin kann jederzeit einen Newsletter an alle Abonnenten verschicken.

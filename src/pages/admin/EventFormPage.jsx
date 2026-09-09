@@ -33,6 +33,9 @@ export default function EventFormPage() {
     pricePerPerson: "",
     paypalLink: "",
     paymentNote: "",
+    iban: "",
+    bic: "",
+    accountHolder: "",
     noRegistrationRequired: false,
     commentsEnabled: false,
     earlyAccessEnabled: false,
@@ -92,6 +95,9 @@ export default function EventFormPage() {
           pricePerPerson: event.pricePerPerson || "",
           paypalLink: event.paypalLink || "",
           paymentNote: event.paymentNote || "",
+          iban: event.iban || "",
+          bic: event.bic || "",
+          accountHolder: event.accountHolder || "",
           earlyAccessEnabled: event.earlyAccessEnabled || false,
           earlyAccessPassword: event.earlyAccessPassword || "",
           isPrivate: event.isPrivate || false,
@@ -353,8 +359,44 @@ export default function EventFormPage() {
                     onChange={(e) => setForm({ ...form, paypalLink: e.target.value })}
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Solange kein Link hinterlegt ist, steht auf der Zahlungsseite "Link folgt bald".
+                    Solange weder PayPal-Link noch Überweisungsdaten hinterlegt sind, steht auf der
+                    Zahlungsseite "Zahlungsinfos folgen bald".
                   </p>
+                </div>
+
+                <div className="border border-gray-700 rounded-lg p-3 space-y-3 bg-gray-800">
+                  <p className="text-sm font-medium text-gray-300">
+                    Überweisung (optional, zusätzlich oder statt PayPal)
+                  </p>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Kontoinhaber</label>
+                    <input
+                      placeholder="Vorname Nachname"
+                      className={`${inputClass} text-sm`}
+                      value={form.accountHolder}
+                      onChange={(e) => setForm({ ...form, accountHolder: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">IBAN</label>
+                      <input
+                        placeholder="DE12 3456 7890 1234 5678 90"
+                        className={`${inputClass} text-sm`}
+                        value={form.iban}
+                        onChange={(e) => setForm({ ...form, iban: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">BIC</label>
+                      <input
+                        placeholder="XXXXDEXXXXX"
+                        className={`${inputClass} text-sm`}
+                        value={form.bic}
+                        onChange={(e) => setForm({ ...form, bic: e.target.value })}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div>

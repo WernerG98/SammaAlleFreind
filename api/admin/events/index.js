@@ -1,4 +1,4 @@
-import { prisma, parseCapacity, cleanupExpiredEvents } from "../../_lib/db.js";
+import { prisma, parseCapacity, normalizeIbanOrBic, cleanupExpiredEvents } from "../../_lib/db.js";
 import { requireAdmin } from "../../_lib/auth.js";
 import { sendEmail } from "../../_lib/email.js";
 
@@ -182,6 +182,9 @@ export default async function handler(req, res) {
       pricePerPerson,
       paypalLink,
       paymentNote,
+      iban,
+      bic,
+      accountHolder,
       earlyAccessEnabled,
       earlyAccessPassword,
       isPrivate,
@@ -243,6 +246,9 @@ export default async function handler(req, res) {
         pricePerPerson: pricePerPerson ? Number(pricePerPerson) : null,
         paypalLink: paypalLink?.trim() || null,
         paymentNote: paymentNote?.trim() || null,
+        iban: normalizeIbanOrBic(iban),
+        bic: normalizeIbanOrBic(bic),
+        accountHolder: accountHolder?.trim() || null,
         earlyAccessEnabled: isEarlyAccess,
         earlyAccessPassword: isEarlyAccess ? earlyAccessPassword.trim() : null,
         isPrivate: isPrivateAccess,

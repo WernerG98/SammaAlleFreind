@@ -38,6 +38,9 @@ export default function PaymentPage() {
 
   const { event, bus, firstName, paid } = registration;
   const reference = `${firstName} ${registration.lastName}, ${event.title}`;
+  const hasPayPal = Boolean(event.paypalLink);
+  const hasBankTransfer = Boolean(event.iban);
+  const hasAnyPaymentMethod = hasPayPal || hasBankTransfer;
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
@@ -54,7 +57,7 @@ export default function PaymentPage() {
         </div>
       ) : (
         <div className="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4 shadow-sm">
-          <h2 className="font-semibold text-gray-100">Bezahlung per PayPal</h2>
+          <h2 className="font-semibold text-gray-100">Bezahlung</h2>
           {event.pricePerPerson && (
             <p className="text-gray-300">
               Bitte überweise <strong>{Number(event.pricePerPerson).toFixed(2)} €</strong> pro Person.
@@ -66,24 +69,56 @@ export default function PaymentPage() {
               {event.paymentNote ? event.paymentNote.replace("{name}", reference) : reference}
             </strong>
           </p>
-          {event.paypalLink ? (
-            <a
-              href={event.paypalLink}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-block bg-[#0070ba] text-white rounded px-4 py-2 font-medium"
-            >
-              Jetzt per PayPal bezahlen
-            </a>
+
+          {hasAnyPaymentMethod ? (
+            <div className="space-y-4">
+              {hasPayPal && (
+                <div>
+                  <p className="text-sm font-medium text-gray-300 mb-2">Per PayPal</p>
+                  <a
+                    href={event.paypalLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-block bg-[#0070ba] text-white rounded px-4 py-2 font-medium"
+                  >
+                    Jetzt per PayPal bezahlen
+                  </a>
+                </div>
+              )}
+              {hasBankTransfer && (
+                <div className={hasPayPal ? "pt-4 border-t border-gray-800" : ""}>
+                  <p className="text-sm font-medium text-gray-300 mb-2">Per Überweisung</p>
+                  <dl className="text-sm text-gray-300 space-y-1">
+                    {event.accountHolder && (
+                      <div className="flex gap-2">
+                        <dt className="text-gray-500 w-24 shrink-0">Empfänger:</dt>
+                        <dd>{event.accountHolder}</dd>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <dt className="text-gray-500 w-24 shrink-0">IBAN:</dt>
+                      <dd className="font-mono">{event.iban}</dd>
+                    </div>
+                    {event.bic && (
+                      <div className="flex gap-2">
+                        <dt className="text-gray-500 w-24 shrink-0">BIC:</dt>
+                        <dd className="font-mono">{event.bic}</dd>
+                      </div>
+                    )}
+                  </dl>
+                </div>
+              )}
+            </div>
           ) : (
             <p className="inline-block bg-amber-950/40 border border-amber-800 text-amber-300 rounded px-4 py-2 font-medium">
-              Link folgt bald
+              Zahlungsinfos folgen bald
             </p>
           )}
+
           <p className="text-sm text-gray-400">
-            {event.paypalLink
-              ? "Sobald deine Zahlung bei uns erfasst wurde, bekommst du automatisch eine Bestätigungsmail und dein Platz ist reserviert. Das kann etwas dauern, da wir jede Person manuell bestätigen."
-              : "Der Zahlungslink wird in Kürze ergänzt. Du bist schon vorgemerkt — wir informieren dich, sobald du bezahlen kannst."}
+            {hasAnyPaymentMethod
+              ? "Sobald deine Zahlung bei uns erfasst wurde, bekommst du automatisch eine Bestätigungsmail und dein Platz ist reserviert. Das kann etwas dauern, da wir jede Zahlung manuell bestätigen."
+              : "Die Zahlungsinformationen werden in Kürze ergänzt. Du bist schon vorgemerkt — wir informieren dich, sobald du bezahlen kannst."}
           </p>
         </div>
       )}
