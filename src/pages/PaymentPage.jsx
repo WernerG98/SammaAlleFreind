@@ -9,6 +9,7 @@ export default function PaymentPage() {
   const [requestingCancel, setRequestingCancel] = useState(false);
   const [cancelRequested, setCancelRequested] = useState(false);
   const [selectedCancelIds, setSelectedCancelIds] = useState(() => new Set([id]));
+  const [showCancelOptions, setShowCancelOptions] = useState(false);
 
   useEffect(() => {
     api
@@ -172,7 +173,7 @@ export default function PaymentPage() {
             ? "Wir haben dir E-Mails mit Stornierungslinks geschickt. Erst wenn du auf einen Link klickst, wird die jeweilige Anmeldung storniert. Bitte prüfe auch deinen Spam-Ordner."
             : "Wir haben dir eine E-Mail mit einem Stornierungslink geschickt. Erst wenn du auf diesen Link klickst, wird die Anmeldung storniert. Bitte prüfe auch deinen Spam-Ordner."}
         </p>
-      ) : (
+      ) : showCancelOptions ? (
         <div className="mt-6">
           {isGroup && (
             <div className="mb-2 space-y-1.5">
@@ -200,6 +201,16 @@ export default function PaymentPage() {
               : isGroup
                 ? `Ausgewählte stornieren (${selectedCancelIds.size})`
                 : "Anmeldung stornieren"}
+          </button>
+        </div>
+      ) : (
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={() => setShowCancelOptions(true)}
+            className="text-sm text-red-400 hover:text-red-300 underline"
+          >
+            Anmeldung stornieren
           </button>
         </div>
       )}
