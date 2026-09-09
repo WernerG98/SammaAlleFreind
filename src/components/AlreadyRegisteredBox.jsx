@@ -2,13 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api.js";
 
-function FoundRegistrationCard({ registration, commentsEnabled }) {
+function FoundRegistrationCard({ registration, commentsEnabled, selected, onToggleSelect }) {
   const navigate = useNavigate();
   const [comment, setComment] = useState(registration.comment || "");
   const [savingComment, setSavingComment] = useState(false);
   const [commentSaved, setCommentSaved] = useState(false);
-  const [requestingCancel, setRequestingCancel] = useState(false);
-  const [cancelRequested, setCancelRequested] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSaveComment() {
@@ -25,53 +23,24 @@ function FoundRegistrationCard({ registration, commentsEnabled }) {
     }
   }
 
-  async function handleRequestCancel() {
-    setError("");
-    setRequestingCancel(true);
-    try {
-      await api.post(`/registrations/${registration.registrationId}`);
-      setCancelRequested(true);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setRequestingCancel(false);
-    }
-  }
-
   return (
     <div className="border border-gray-800 rounded-lg p-3 space-y-2">
-      <p className="text-sm text-gray-200">
+      <label className="flex items-center gap-2 text-sm text-gray-200 cursor-pointer">
+        <input type="checkbox" checked={selected} onChange={onToggleSelect} />
         <span className="font-medium">
           {registration.firstName} {registration.lastName}
-        </span>{" "}
+        </span>
         <span className="text-gray-500">({registration.busName})</span>
-        {registration.paid && <span className="ml-2 text-xs text-emerald-400 font-medium">bezahlt</span>}
-      </p>
+        {registration.paid && <span className="ml-1 text-xs text-emerald-400 font-medium">bezahlt</span>}
+      </label>
 
-      {cancelRequested ? (
-        <p className="text-xs text-gray-400">
-          Stornierungslink per E-Mail verschickt. Erst nach Klick auf den Link ist die Anmeldung wirklich
-          storniert.
-        </p>
-      ) : (
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={handleRequestCancel}
-            disabled={requestingCancel}
-            className="bg-red-600 hover:bg-red-500 text-white rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50 transition-colors"
-          >
-            {requestingCancel ? "Wird gesendet…" : "Stornieren"}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate(`/anmeldung/${registration.registrationId}/zahlung`)}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
-          >
-            Zahlungslink
-          </button>
-        </div>
-      )}
+      <button
+        type="button"
+        onClick={() => navigate(`/anmeldung/${registration.registrationId}/zahlung`)}
+        className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+      >
+        Zahlungslink
+      </button>
 
       {commentsEnabled && (
         <div className="border border-teal-800/60 bg-teal-950/20 rounded-lg p-2">
@@ -109,6 +78,9 @@ export default function AlreadyRegisteredBox({ slug }) {
   const [email, setEmail] = useState("");
   const [registrations, setRegistrations] = useState(null);
   const [commentsEnabled, setCommentsEnabled] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [requestingCancel, setRequestingCancel] = useState(false);
+  const [cancelRequested, setCancelRequested] = useState(false);
   const [error, setError] = useState("");
   const [searching, setSearching] = useState(false);
 
@@ -116,6 +88,7 @@ export default function AlreadyRegisteredBox({ slug }) {
     e.preventDefault();
     setError("");
     setRegistrations(null);
+    setSelectedIds(new Set());
     setSearching(true);
     try {
       const result = await api.post(`/events/${slug}`, { email });
@@ -125,6 +98,31 @@ export default function AlreadyRegisteredBox({ slug }) {
       setError(err.message);
     } finally {
       setSearching(false);
+    }
+  }
+
+  function toggleSelect(registrationId) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(registrationId)) {
+        next.delete(registrationId);
+      } else {
+        next.add(registrationId);
+      }
+      return next;
+    });
+  }
+
+  async function handleRequestCancel() {
+    setError("");
+    setRequestingCancel(true);
+    try {
+      await Promise.all([...selectedIds].map((registrationId) => api.post(`/registrations/${registrationId}`)));
+      setCancelRequested(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRequestingCancel(false);
     }
   }
 
@@ -152,14 +150,42 @@ export default function AlreadyRegisteredBox({ slug }) {
 
       {registrations ? (
         <div className="space-y-3">
-          <p className="text-sm text-gray-300">
-            {registrations.length > 1
-              ? `Wir haben ${registrations.length} Anmeldungen für diese E-Mail-Adresse gefunden.`
-              : "Wir haben deine Anmeldung gefunden."}
-          </p>
-          {registrations.map((r) => (
-            <FoundRegistrationCard key={r.registrationId} registration={r} commentsEnabled={commentsEnabled} />
-          ))}
+          {cancelRequested ? (
+            <p className="text-sm text-gray-300">
+              {selectedIds.size > 1
+                ? "Wir haben E-Mails mit Stornierungslinks verschickt. Erst wenn du auf einen Link klickst, wird die jeweilige Anmeldung storniert. Bitte prüfe auch deinen Spam-Ordner."
+                : "Wir haben eine E-Mail mit einem Stornierungslink verschickt. Erst wenn du auf diesen Link klickst, wird die Anmeldung storniert. Bitte prüfe auch deinen Spam-Ordner."}
+            </p>
+          ) : (
+            <>
+              <p className="text-sm text-gray-300">
+                {registrations.length > 1
+                  ? `Wir haben ${registrations.length} Anmeldungen für diese E-Mail-Adresse gefunden. Zum Stornieren die gewünschten Personen ankreuzen.`
+                  : "Wir haben deine Anmeldung gefunden."}
+              </p>
+              {registrations.map((r) => (
+                <FoundRegistrationCard
+                  key={r.registrationId}
+                  registration={r}
+                  commentsEnabled={commentsEnabled}
+                  selected={selectedIds.has(r.registrationId)}
+                  onToggleSelect={() => toggleSelect(r.registrationId)}
+                />
+              ))}
+              <button
+                type="button"
+                onClick={handleRequestCancel}
+                disabled={requestingCancel || selectedIds.size === 0}
+                className="bg-red-600 hover:bg-red-500 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
+              >
+                {requestingCancel
+                  ? "Wird gesendet…"
+                  : registrations.length > 1
+                    ? `Ausgewählte stornieren (${selectedIds.size})`
+                    : "Anmeldung stornieren"}
+              </button>
+            </>
+          )}
         </div>
       ) : (
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">

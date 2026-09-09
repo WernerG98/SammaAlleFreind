@@ -8,6 +8,7 @@ export default function PaymentPage() {
   const [error, setError] = useState("");
   const [requestingCancel, setRequestingCancel] = useState(false);
   const [cancelRequested, setCancelRequested] = useState(false);
+  const [selectedCancelIds, setSelectedCancelIds] = useState(() => new Set([id]));
 
   useEffect(() => {
     api
@@ -16,11 +17,23 @@ export default function PaymentPage() {
       .catch((err) => setError(err.message));
   }, [id]);
 
+  function toggleCancelSelection(personId) {
+    setSelectedCancelIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(personId)) {
+        next.delete(personId);
+      } else {
+        next.add(personId);
+      }
+      return next;
+    });
+  }
+
   async function handleRequestCancel() {
     setError("");
     setRequestingCancel(true);
     try {
-      await api.post(`/registrations/${id}`);
+      await Promise.all([...selectedCancelIds].map((personId) => api.post(`/registrations/${personId}`)));
       setCancelRequested(true);
     } catch (err) {
       setError(err.message);
@@ -38,8 +51,8 @@ export default function PaymentPage() {
 
   const { event, bus, firstName, paid, groupMembers } = registration;
   const allPeople = [
-    { name: `${firstName} ${registration.lastName}`, paid },
-    ...(groupMembers || []).map((m) => ({ name: `${m.firstName} ${m.lastName}`, paid: m.paid })),
+    { id: registration.id, name: `${firstName} ${registration.lastName}`, paid },
+    ...(groupMembers || []).map((m) => ({ id: m.id, name: `${m.firstName} ${m.lastName}`, paid: m.paid })),
   ];
   const allNames = allPeople.map((p) => p.name);
   const isGroup = allNames.length > 1;
@@ -155,18 +168,40 @@ export default function PaymentPage() {
 
       {cancelRequested ? (
         <p className="mt-6 text-sm text-gray-300">
-          Wir haben dir eine E-Mail mit einem Stornierungslink geschickt. Erst wenn du auf diesen Link klickst,
-          wird deine Anmeldung storniert. Bitte prüfe auch deinen Spam-Ordner.
+          {selectedCancelIds.size > 1
+            ? "Wir haben dir E-Mails mit Stornierungslinks geschickt. Erst wenn du auf einen Link klickst, wird die jeweilige Anmeldung storniert. Bitte prüfe auch deinen Spam-Ordner."
+            : "Wir haben dir eine E-Mail mit einem Stornierungslink geschickt. Erst wenn du auf diesen Link klickst, wird die Anmeldung storniert. Bitte prüfe auch deinen Spam-Ordner."}
         </p>
       ) : (
-        <button
-          type="button"
-          onClick={handleRequestCancel}
-          disabled={requestingCancel}
-          className="mt-6 text-sm text-red-400 hover:text-red-300 underline disabled:opacity-50"
-        >
-          {requestingCancel ? "Wird gesendet…" : "Anmeldung stornieren"}
-        </button>
+        <div className="mt-6">
+          {isGroup && (
+            <div className="mb-2 space-y-1.5">
+              <p className="text-sm text-gray-400">Wen möchtest du stornieren?</p>
+              {allPeople.map((p) => (
+                <label key={p.id} className="flex items-center gap-2 text-sm text-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={selectedCancelIds.has(p.id)}
+                    onChange={() => toggleCancelSelection(p.id)}
+                  />
+                  {p.name}
+                </label>
+              ))}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleRequestCancel}
+            disabled={requestingCancel || selectedCancelIds.size === 0}
+            className="text-sm text-red-400 hover:text-red-300 underline disabled:opacity-50"
+          >
+            {requestingCancel
+              ? "Wird gesendet…"
+              : isGroup
+                ? `Ausgewählte stornieren (${selectedCancelIds.size})`
+                : "Anmeldung stornieren"}
+          </button>
+        </div>
       )}
 
       {error && <p className="text-sm text-red-400 mt-2">{error}</p>}

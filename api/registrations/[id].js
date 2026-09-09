@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     const groupMembers = registration.groupId
       ? await prisma.registration.findMany({
           where: { groupId: registration.groupId, id: { not: registration.id } },
-          select: { firstName: true, lastName: true, paid: true },
+          select: { id: true, firstName: true, lastName: true, paid: true },
           orderBy: { createdAt: "asc" },
         })
       : [];
