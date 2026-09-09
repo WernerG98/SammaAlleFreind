@@ -15,7 +15,7 @@ export default function NewsletterSignup() {
     setMessage("");
     try {
       await api.post("/newsletter", { email, website });
-      setMessage("Fast geschafft! Wir haben dir eine Bestätigungsmail geschickt — bitte prüfe auch deinen Spam-Ordner.");
+      setMessage("Fast geschafft! Wir haben dir eine Bestätigungsmail geschickt. Bitte prüfe auch deinen Spam-Ordner.");
       setStatus("done");
       setEmail("");
     } catch (err) {

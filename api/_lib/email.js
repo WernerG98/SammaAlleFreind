@@ -32,7 +32,11 @@ function externalOrganizerNote(event) {
   `;
 }
 
-export function buildConfirmationEmailHtml({ firstName, event, busName, isFree }) {
+export function buildConfirmationEmailHtml({ firstName, names, event, busName, isFree }) {
+  const allNames = names && names.length > 0 ? names : [firstName];
+  const isGroup = allNames.length > 1;
+  const namesList = isGroup ? `<ul>${allNames.map((n) => `<li>${n}</li>`).join("")}</ul>` : "";
+
   return `
     <h2>${isFree ? "Deine Anmeldung wurde bestätigt" : "Deine Zahlung wurde bestätigt"}</h2>
     <p>Hallo ${firstName},</p>
@@ -42,9 +46,14 @@ export function buildConfirmationEmailHtml({ firstName, event, busName, isFree }
           ? `wir haben deine Anmeldung für <strong>${event.title}</strong> erhalten.`
           : `wir haben deine Zahlung für <strong>${event.title}</strong> erhalten.`
       }
-      Du bist fest für <strong>${busName}</strong> eingeplant.
+      ${
+        isGroup
+          ? `Folgende Personen sind fest für <strong>${busName}</strong> eingeplant:`
+          : `Du bist fest für <strong>${busName}</strong> eingeplant.`
+      }
     </p>
-    <p>Wir freuen uns auf dich!</p>
+    ${namesList}
+    <p>${isGroup ? "Wir freuen uns auf euch!" : "Wir freuen uns auf dich!"}</p>
     <hr />
     <p><strong>Veranstaltung:</strong> ${event.title}<br/>
     <strong>Datum:</strong> ${new Date(event.eventDate).toLocaleDateString("de-DE", {
@@ -96,7 +105,7 @@ export function buildWaitlistConfirmationHtml({ firstName, event, busName }) {
     <p>
       ${
         busName
-          ? `du hast dein Interesse an <strong>${busName}</strong> bei <strong>${event.title}</strong> hinterlegt. Dieser Slot ist aktuell noch nicht bestätigt — wir melden uns, sobald es losgeht und du dich verbindlich anmelden kannst.`
+          ? `du hast dein Interesse an <strong>${busName}</strong> bei <strong>${event.title}</strong> hinterlegt. Dieser Slot ist aktuell noch nicht bestätigt, wir melden uns, sobald es losgeht und du dich verbindlich anmelden kannst.`
           : `aktuell sind bei <strong>${event.title}</strong> leider alle Plätze vergeben. Wir haben dich auf die Warteliste gesetzt und melden uns, sobald wieder ein Platz frei wird.`
       }
     </p>
@@ -165,7 +174,7 @@ export function buildCancelRequestHtml({ firstName, event, cancelUrl }) {
     </p>
     <p><a href="${cancelUrl}">${cancelUrl}</a></p>
     <p style="font-size: 12px; color: #666;">
-      Falls du das nicht angefragt hast, kannst du diese E-Mail einfach ignorieren — es passiert nichts, solange
+      Falls du das nicht angefragt hast, kannst du diese E-Mail einfach ignorieren. Es passiert nichts, solange
       du nicht auf den Link klickst.
     </p>
   `;

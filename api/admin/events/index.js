@@ -154,21 +154,37 @@ export default async function handler(req, res) {
             })
           : await prisma.registration.findMany({
               where: { eventId, paid: target === "paid" },
-              select: { email: true },
+              select: { email: true, firstName: true, lastName: true, bus: { select: { name: true } } },
             });
+
+      // Several registrations can now share one email (group signups) - group
+      // by email so each recipient gets a single mail that lists every name
+      // and slot it covers, instead of one mail per registration.
+      const namesByEmail = new Map();
+      for (const r of recipients) {
+        if (!namesByEmail.has(r.email)) namesByEmail.set(r.email, []);
+        if (r.bus) namesByEmail.get(r.email).push(`${r.firstName} ${r.lastName} (${r.bus.name})`);
+      }
 
       let sent = 0;
       const failed = [];
-      for (const r of recipients) {
+      for (const [recipientEmail, names] of namesByEmail) {
+        const namesList = names.join(", ");
+        let html = bodyHtml;
+        if (namesList) {
+          html = html.includes("{names}")
+            ? html.replace(/\{names\}/g, namesList)
+            : `${html}<p><strong>Betrifft:</strong> ${namesList}</p>`;
+        }
         try {
-          await sendEmail({ to: r.email, subject: subject.trim(), html: bodyHtml });
+          await sendEmail({ to: recipientEmail, subject: subject.trim(), html });
           sent += 1;
         } catch {
-          failed.push(r.email);
+          failed.push(recipientEmail);
         }
       }
 
-      return res.status(200).json({ sent, total: recipients.length, failed });
+      return res.status(200).json({ sent, total: namesByEmail.size, failed });
     }
 
     const {

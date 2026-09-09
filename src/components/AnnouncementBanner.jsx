@@ -7,7 +7,7 @@ const FADE_DURATION_MS = 300;
 
 const DEFAULT_MESSAGES = [
   "🐞 Die neue Seite für unsere Veranstaltungen! Schwierigkeiten und Bugs bitte direkt melden, das würde uns sehr helfen. :)",
-  "🤝 Wir stellen die Seite gerne auch lokalen Arnstorfer Vereinen und Personen zur Eventplanung zur Verfügung — einfach Kontakt aufnehmen!",
+  "🤝 Wir stellen die Seite gerne auch lokalen Arnstorfer Vereinen und Personen zur Eventplanung zur Verfügung, einfach Kontakt aufnehmen!",
 ];
 
 export default function AnnouncementBanner() {

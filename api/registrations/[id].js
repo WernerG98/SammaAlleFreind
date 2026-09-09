@@ -21,12 +21,21 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "Anmeldung nicht gefunden." });
     }
 
+    const groupMembers = registration.groupId
+      ? await prisma.registration.findMany({
+          where: { groupId: registration.groupId, id: { not: registration.id } },
+          select: { firstName: true, lastName: true, paid: true },
+          orderBy: { createdAt: "asc" },
+        })
+      : [];
+
     return res.status(200).json({
       id: registration.id,
       firstName: registration.firstName,
       lastName: registration.lastName,
       paid: registration.paid,
       bus: { name: registration.bus.name },
+      groupMembers,
       event: {
         title: registration.event.title,
         pricePerPerson: registration.event.pricePerPerson,

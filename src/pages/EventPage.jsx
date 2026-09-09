@@ -99,6 +99,15 @@ export default function EventPage() {
     comment: "",
     website: "",
   });
+  const [additionalPeople, setAdditionalPeople] = useState([]);
+
+  function updateAdditionalPerson(index, field, value) {
+    setAdditionalPeople((prev) => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)));
+  }
+
+  function removeAdditionalPerson(index) {
+    setAdditionalPeople((prev) => prev.filter((_, i) => i !== index));
+  }
 
   useEffect(() => {
     api
@@ -131,7 +140,12 @@ export default function EventPage() {
     setError("");
     setSubmitting(true);
     try {
-      const result = await api.post("/register", { eventId: event.id, ...form, password: accessPassword });
+      const result = await api.post("/register", {
+        eventId: event.id,
+        ...form,
+        additionalPeople,
+        password: accessPassword,
+      });
       navigate(`/anmeldung/${result.id}/zahlung`);
     } catch (err) {
       if (err.data?.registrationId) {
@@ -195,7 +209,7 @@ export default function EventPage() {
       <div className="max-w-lg mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
         <p className="mt-2 text-amber-400 font-semibold">
-          {event.isPrivate ? "🔒 Privat" : "🔒 Vorabzugang"} — nur mit Passwort sichtbar.
+          {event.isPrivate ? "🔒 Privat" : "🔒 Vorabzugang"}, nur mit Passwort sichtbar.
         </p>
         {event.registrationDeadline && (
           <p className="mt-1 text-sm text-gray-400">
@@ -269,7 +283,7 @@ export default function EventPage() {
             {event.externalContactEmail && (
               <>
                 {" "}
-                — Kontakt:{" "}
+                · Kontakt:{" "}
                 <a href={`mailto:${event.externalContactEmail}`} className="underline">
                   {event.externalContactEmail}
                 </a>
@@ -296,7 +310,7 @@ export default function EventPage() {
           </p>
         )}
         {event.eventDate && <AddToCalendarButton event={event} />}
-        <p className="mt-2 text-teal-400 font-semibold">✨ Coming Soon — Details folgen in Kürze.</p>
+        <p className="mt-2 text-teal-400 font-semibold">✨ Coming Soon. Details folgen in Kürze.</p>
         {event.description && (
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
         )}
@@ -322,7 +336,7 @@ export default function EventPage() {
             {event.externalContactEmail && (
               <>
                 {" "}
-                — Kontakt:{" "}
+                · Kontakt:{" "}
                 <a href={`mailto:${event.externalContactEmail}`} className="underline">
                   {event.externalContactEmail}
                 </a>
@@ -354,7 +368,7 @@ export default function EventPage() {
         )}
 
         <div className="mt-8 bg-teal-950/40 border border-teal-800 rounded-xl p-5 text-teal-300">
-          🎉 Diese Veranstaltung ist öffentlich zugänglich — eine Anmeldung ist nicht nötig, komm einfach vorbei!
+          🎉 Diese Veranstaltung ist öffentlich zugänglich, eine Anmeldung ist nicht nötig, komm einfach vorbei!
         </div>
       </div>
     );
@@ -381,7 +395,7 @@ export default function EventPage() {
           {event.externalContactEmail && (
             <>
               {" "}
-              — Kontakt:{" "}
+              · Kontakt:{" "}
               <a href={`mailto:${event.externalContactEmail}`} className="underline">
                 {event.externalContactEmail}
               </a>
@@ -461,6 +475,52 @@ export default function EventPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Gilt auch für weitere Personen unten, sie dürfen dieselbe E-Mail-Adresse haben.
+            </p>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-300">Weitere Personen (optional)</label>
+              <button
+                type="button"
+                onClick={() => setAdditionalPeople([...additionalPeople, { firstName: "", lastName: "" }])}
+                className="text-sm text-teal-400 hover:underline"
+              >
+                + Person hinzufügen
+              </button>
+            </div>
+            {additionalPeople.length > 0 && (
+              <div className="space-y-2">
+                {additionalPeople.map((person, i) => (
+                  <div key={i} className="flex gap-2">
+                    <input
+                      required
+                      placeholder="Vorname"
+                      className="flex-1 min-w-0 border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+                      value={person.firstName}
+                      onChange={(e) => updateAdditionalPerson(i, "firstName", e.target.value)}
+                    />
+                    <input
+                      required
+                      placeholder="Nachname"
+                      className="flex-1 min-w-0 border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+                      value={person.lastName}
+                      onChange={(e) => updateAdditionalPerson(i, "lastName", e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeAdditionalPerson(i)}
+                      aria-label="Person entfernen"
+                      className="text-red-400 px-2"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
@@ -552,7 +612,7 @@ export default function EventPage() {
             </label>
             {form.newsletterOptIn && (
               <p className="text-xs text-gray-500 mt-1 ml-6">
-                Die automatische Bestätigungsmail landet manchmal im Spam-Ordner — bitte dort auch kurz
+                Die automatische Bestätigungsmail landet manchmal im Spam-Ordner, bitte dort auch kurz
                 nachschauen.
               </p>
             )}
@@ -565,7 +625,7 @@ export default function EventPage() {
                 Rückerstattung nicht mehr möglich.
               </p>
               <p>
-                Dein Platz ist erst reserviert, sobald deine Zahlung bei uns eingegangen und bestätigt ist — bis
+                Dein Platz ist erst reserviert, sobald deine Zahlung bei uns eingegangen und bestätigt ist. Bis
                 dahin ist noch kein Platz für dich fest eingeplant.
               </p>
               <label className="flex items-center gap-2 font-medium pt-1">
@@ -579,7 +639,7 @@ export default function EventPage() {
             </div>
           ) : (
             <div className="bg-emerald-950/40 border border-emerald-800 rounded-lg p-3 text-xs text-emerald-300">
-              Diese Veranstaltung ist kostenlos — dein Platz ist direkt nach der Anmeldung fest für dich
+              Diese Veranstaltung ist kostenlos, dein Platz ist direkt nach der Anmeldung fest für dich
               reserviert.
             </div>
           )}
@@ -606,7 +666,11 @@ export default function EventPage() {
             }
             className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
           >
-            {submitting ? "Wird gesendet…" : "Anmelden"}
+            {submitting
+              ? "Wird gesendet…"
+              : additionalPeople.length > 0
+                ? `Anmelden (${additionalPeople.length + 1} Personen)`
+                : "Anmelden"}
           </button>
         </form>
       )}
@@ -615,7 +679,7 @@ export default function EventPage() {
         <>
           {waitlistDone ? (
             <div className="mt-4 bg-emerald-950/40 border border-emerald-800 rounded-xl p-5 text-emerald-300">
-              Danke! Du stehst jetzt auf der Warteliste — wir melden uns, sobald ein Platz frei wird.
+              Danke! Du stehst jetzt auf der Warteliste, wir melden uns, sobald ein Platz frei wird.
             </div>
           ) : !showWaitlistForm ? (
             <button

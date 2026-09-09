@@ -19,9 +19,9 @@ npm run prisma:migrate
 vercel dev
 ```
 
-Für die volle Anwendung (Frontend **und** die Serverless-Functions unter `api/`) `vercel dev` direkt ausführen, nicht über `npm run dev` (das startet aus historischen Gründen nur `vite` für reine Frontend-Iteration ohne API — `vercel dev` darf laut Vercel nicht selbst als `dev`-Script in der `package.json` stehen, sonst gibt es einen "recursive invocation"-Fehler).
+Für die volle Anwendung (Frontend **und** die Serverless-Functions unter `api/`) `vercel dev` direkt ausführen, nicht über `npm run dev` (das startet aus historischen Gründen nur `vite` für reine Frontend-Iteration ohne API, da `vercel dev` laut Vercel nicht selbst als `dev`-Script in der `package.json` stehen darf, sonst gibt es einen "recursive invocation"-Fehler).
 
-Ohne gesetzten `RESEND_API_KEY` werden E-Mails nicht wirklich verschickt, sondern nur in die Konsole geloggt — so lässt sich alles lokal testen, ohne einen Resend-Account zu brauchen.
+Ohne gesetzten `RESEND_API_KEY` werden E-Mails nicht wirklich verschickt, sondern nur in die Konsole geloggt. So lässt sich alles lokal testen, ohne einen Resend-Account zu brauchen.
 
 ## Erstmaliges Setup
 

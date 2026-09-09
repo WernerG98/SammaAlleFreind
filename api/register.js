@@ -17,6 +17,7 @@ export default async function handler(req, res) {
     firstName,
     lastName,
     email,
+    additionalPeople,
     newsletterOptIn,
     comment,
     waitlist,
@@ -94,51 +95,99 @@ export default async function handler(req, res) {
     return res.status(404).json({ error: "Slot nicht gefunden." });
   }
 
-  const existing = await prisma.registration.findUnique({
-    where: { eventId_email: { eventId, email: email.toLowerCase().trim() } },
+  const normalizedEmail = email.toLowerCase().trim();
+
+  const peopleInput = [
+    { firstName: firstName.trim(), lastName: lastName.trim() },
+    ...(Array.isArray(additionalPeople) ? additionalPeople : []),
+  ];
+  for (const p of peopleInput) {
+    if (!p?.firstName?.trim() || !p?.lastName?.trim()) {
+      return res.status(400).json({ error: "Bitte für jede Person Vorname und Nachname angeben." });
+    }
+  }
+  const people = peopleInput.map((p) => ({ firstName: p.firstName.trim(), lastName: p.lastName.trim() }));
+
+  // Skip people who already have an identical (name + email) registration for
+  // this event - avoids duplicates on accidental resubmission while still
+  // letting a shared email register several different people.
+  const existingForEvent = await prisma.registration.findMany({
+    where: { eventId, email: normalizedEmail },
+    select: { id: true, firstName: true, lastName: true },
   });
-  if (existing) {
+  const existingKey = (r) => `${r.firstName.toLowerCase()}|${r.lastName.toLowerCase()}`;
+  const alreadyRegistered = new Set(existingForEvent.map(existingKey));
+  const newPeople = people.filter((p) => !alreadyRegistered.has(existingKey(p)));
+
+  if (newPeople.length === 0) {
+    const primaryExisting = existingForEvent.find((r) => existingKey(r) === existingKey(people[0]));
     return res.status(409).json({
-      error: "Diese E-Mail-Adresse ist für diese Veranstaltung bereits angemeldet.",
-      registrationId: existing.id,
+      error: "Diese Person ist für diese Veranstaltung bereits angemeldet.",
+      registrationId: primaryExisting?.id,
     });
   }
 
-  if (bus.capacity !== null && bus.registrations.length >= bus.capacity) {
-    return res.status(409).json({ error: "Dieser Slot ist bereits ausgebucht." });
+  if (bus.capacity !== null) {
+    const remaining = bus.capacity - bus.registrations.length;
+    if (newPeople.length > remaining) {
+      return res.status(409).json({
+        error:
+          remaining <= 0
+            ? "Dieser Slot ist bereits ausgebucht."
+            : `Für ${newPeople.length} Personen sind nicht mehr genug Plätze frei (noch ${remaining} frei).`,
+      });
+    }
   }
 
   const isFree = !event.pricePerPerson;
+  const groupId = crypto.randomUUID();
 
-  const registration = await prisma.registration.create({
-    data: {
-      eventId,
-      busId,
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.toLowerCase().trim(),
-      newsletterOptIn: Boolean(newsletterOptIn),
-      comment: event.commentsEnabled ? comment?.trim() || null : null,
-      paid: isFree,
-      paidAt: isFree ? new Date() : null,
-    },
-  });
+  const createdRegistrations = await prisma.$transaction(
+    newPeople.map((p) =>
+      prisma.registration.create({
+        data: {
+          eventId,
+          busId,
+          groupId,
+          firstName: p.firstName,
+          lastName: p.lastName,
+          email: normalizedEmail,
+          newsletterOptIn: Boolean(newsletterOptIn),
+          comment: event.commentsEnabled ? comment?.trim() || null : null,
+          paid: isFree,
+          paidAt: isFree ? new Date() : null,
+        },
+      })
+    )
+  );
 
   if (isFree) {
     if (newsletterOptIn) {
       await prisma.newsletterSubscriber.upsert({
-        where: { email: registration.email },
+        where: { email: normalizedEmail },
         update: {},
-        create: { email: registration.email, unsubscribeToken: crypto.randomBytes(24).toString("hex") },
+        create: { email: normalizedEmail, unsubscribeToken: crypto.randomBytes(24).toString("hex") },
       });
     }
 
     await sendEmail({
-      to: registration.email,
+      to: normalizedEmail,
       subject: `Bestätigung: ${event.title}`,
-      html: buildConfirmationEmailHtml({ firstName: registration.firstName, event, busName: bus.name, isFree: true }),
+      html: buildConfirmationEmailHtml({
+        firstName: createdRegistrations[0].firstName,
+        names: createdRegistrations.map((r) => `${r.firstName} ${r.lastName}`),
+        event,
+        busName: bus.name,
+        isFree: true,
+      }),
     });
   }
 
-  return res.status(201).json({ id: registration.id });
+  let primaryRegistration = createdRegistrations.find((r) => existingKey(r) === existingKey(people[0]));
+  if (!primaryRegistration) {
+    const existingPrimary = existingForEvent.find((r) => existingKey(r) === existingKey(people[0]));
+    primaryRegistration = existingPrimary || createdRegistrations[0];
+  }
+
+  return res.status(201).json({ id: primaryRegistration.id, groupSize: createdRegistrations.length });
 }

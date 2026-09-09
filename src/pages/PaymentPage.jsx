@@ -36,8 +36,17 @@ export default function PaymentPage() {
     return <p className="max-w-lg mx-auto px-4 py-12 text-gray-500">Lade...</p>;
   }
 
-  const { event, bus, firstName, paid } = registration;
-  const reference = `${firstName} ${registration.lastName}, ${event.title}`;
+  const { event, bus, firstName, paid, groupMembers } = registration;
+  const allPeople = [
+    { name: `${firstName} ${registration.lastName}`, paid },
+    ...(groupMembers || []).map((m) => ({ name: `${m.firstName} ${m.lastName}`, paid: m.paid })),
+  ];
+  const allNames = allPeople.map((p) => p.name);
+  const isGroup = allNames.length > 1;
+  const unpaidPeople = allPeople.filter((p) => !p.paid);
+  const allPaid = unpaidPeople.length === 0;
+  const reference = `${allNames.join(" & ")}, ${event.title}`;
+  const paymentReference = event.paymentNote ? event.paymentNote.replace("{name}", reference) : reference;
   const hasPayPal = Boolean(event.paypalLink);
   const hasBankTransfer = Boolean(event.iban);
   const hasAnyPaymentMethod = hasPayPal || hasBankTransfer;
@@ -46,29 +55,50 @@ export default function PaymentPage() {
     <div className="max-w-lg mx-auto px-4 py-12">
       <h1 className="text-2xl font-bold text-gray-100">🎉 Fast geschafft!</h1>
       <p className="mt-2 text-gray-300">
-        Deine Anmeldung für <strong>{event.title}</strong> ({bus.name}) ist eingegangen.
+        {isGroup ? (
+          <>
+            Eure Anmeldung für <strong>{event.title}</strong> ({bus.name}) ist eingegangen: {allNames.join(", ")}.
+          </>
+        ) : (
+          <>
+            Deine Anmeldung für <strong>{event.title}</strong> ({bus.name}) ist eingegangen.
+          </>
+        )}
       </p>
 
-      {paid ? (
+      {allPaid ? (
         <div className="mt-6 bg-emerald-950/40 border border-emerald-800 rounded-xl p-5 text-emerald-300">
           {event.pricePerPerson
-            ? "Deine Zahlung wurde bereits bestätigt. Du bist fest dabei — wir haben dir eine Bestätigungsmail geschickt."
-            : "Diese Veranstaltung ist kostenlos — du bist fest dabei! Wir haben dir eine Bestätigungsmail geschickt."}
+            ? isGroup
+              ? "Die Zahlung wurde bereits bestätigt. Ihr seid fest dabei. Wir haben eine Bestätigungsmail geschickt."
+              : "Deine Zahlung wurde bereits bestätigt. Du bist fest dabei. Wir haben dir eine Bestätigungsmail geschickt."
+            : "Diese Veranstaltung ist kostenlos, du bist fest dabei! Wir haben dir eine Bestätigungsmail geschickt."}
         </div>
       ) : (
         <div className="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4 shadow-sm">
           <h2 className="font-semibold text-gray-100">Bezahlung</h2>
           {event.pricePerPerson && (
             <p className="text-gray-300">
-              Bitte überweise <strong>{Number(event.pricePerPerson).toFixed(2)} €</strong> pro Person.
+              Bitte überweise <strong>{Number(event.pricePerPerson).toFixed(2)} €</strong> pro Person
+              {isGroup ? ` für ${unpaidPeople.length} von ${allPeople.length} Personen (${unpaidPeople.map((p) => p.name).join(", ")}).` : "."}
             </p>
           )}
-          <p className="text-gray-300">
-            Verwendungszweck:{" "}
-            <strong>
-              {event.paymentNote ? event.paymentNote.replace("{name}", reference) : reference}
-            </strong>
-          </p>
+
+          {event.pricePerPerson && (
+            <div className="bg-amber-950/40 border-2 border-amber-700 rounded-lg p-4">
+              <p className="text-amber-300 font-semibold flex items-center gap-2">
+                <span aria-hidden="true">⚠️</span> Wichtig bei der Zahlung
+              </p>
+              <p className="text-amber-200 text-sm mt-1">
+                Bitte gib bei der Überweisung bzw. bei PayPal genau den folgenden Text als
+                Verwendungszweck/Kommentar an, damit wir {isGroup ? "alle Namen" : "deinen Namen"} zuordnen
+                können:
+              </p>
+              <p className="mt-2 bg-gray-900 border border-amber-800 rounded px-3 py-2 font-mono text-amber-100 text-sm break-words">
+                {paymentReference}
+              </p>
+            </div>
+          )}
 
           {hasAnyPaymentMethod ? (
             <div className="space-y-4">
@@ -118,7 +148,7 @@ export default function PaymentPage() {
           <p className="text-sm text-gray-400">
             {hasAnyPaymentMethod
               ? "Sobald deine Zahlung bei uns erfasst wurde, bekommst du automatisch eine Bestätigungsmail und dein Platz ist reserviert. Das kann etwas dauern, da wir jede Zahlung manuell bestätigen."
-              : "Die Zahlungsinformationen werden in Kürze ergänzt. Du bist schon vorgemerkt — wir informieren dich, sobald du bezahlen kannst."}
+              : "Die Zahlungsinformationen werden in Kürze ergänzt. Du bist schon vorgemerkt, wir informieren dich, sobald du bezahlen kannst."}
           </p>
         </div>
       )}
@@ -126,7 +156,7 @@ export default function PaymentPage() {
       {cancelRequested ? (
         <p className="mt-6 text-sm text-gray-300">
           Wir haben dir eine E-Mail mit einem Stornierungslink geschickt. Erst wenn du auf diesen Link klickst,
-          wird deine Anmeldung storniert — bitte prüfe auch deinen Spam-Ordner.
+          wird deine Anmeldung storniert. Bitte prüfe auch deinen Spam-Ordner.
         </p>
       ) : (
         <button

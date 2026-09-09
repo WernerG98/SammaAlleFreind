@@ -142,6 +142,11 @@ function BulkEmailForm({ eventId }) {
           value={bodyHtml}
           onChange={(e) => setBodyHtml(e.target.value)}
         />
+        <p className="text-xs text-gray-500 -mt-1">
+          Optional <code>{"{names}"}</code> im Text verwenden, um die betreffenden Namen und Slots an genau
+          dieser Stelle einzufügen. Wenn eine E-Mail-Adresse mehrere Anmeldungen abdeckt, werden alle
+          zugehörigen Namen automatisch aufgelistet (ohne <code>{"{names}"}</code> am Ende der Mail).
+        </p>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
         {result && (

@@ -5,7 +5,7 @@ const SETTING_KEY = "announcement";
 
 const DEFAULT_MESSAGES = [
   "🐞 Die neue Seite für unsere Veranstaltungen! Schwierigkeiten und Bugs bitte direkt melden, das würde uns sehr helfen. :)",
-  "🤝 Wir stellen die Seite gerne auch lokalen Arnstorfer Vereinen und Personen zur Eventplanung zur Verfügung — einfach Kontakt aufnehmen!",
+  "🤝 Wir stellen die Seite gerne auch lokalen Arnstorfer Vereinen und Personen zur Eventplanung zur Verfügung, einfach Kontakt aufnehmen!",
 ];
 
 export default async function handler(req, res) {

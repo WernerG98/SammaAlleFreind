@@ -209,7 +209,7 @@ export default function EventFormPage() {
             checked={form.comingSoon}
             onChange={(e) => setForm({ ...form, comingSoon: e.target.checked })}
           />
-          Nur Ankündigung ("Coming Soon") — Datum, Preis und Slots stehen noch nicht fest
+          Nur Ankündigung ("Coming Soon"), Datum, Preis und Slots stehen noch nicht fest
         </label>
 
         {form.comingSoon && (
@@ -306,7 +306,7 @@ export default function EventFormPage() {
                 checked={form.noRegistrationRequired}
                 onChange={(e) => setForm({ ...form, noRegistrationRequired: e.target.checked })}
               />
-              🎉 Öffentliche Veranstaltung — keine Anmeldung nötig
+              🎉 Öffentliche Veranstaltung, keine Anmeldung nötig
             </label>
 
             <div className="grid grid-cols-2 gap-4">
@@ -417,7 +417,7 @@ export default function EventFormPage() {
                     checked={form.commentsEnabled}
                     onChange={(e) => setForm({ ...form, commentsEnabled: e.target.checked })}
                   />
-                  💬 Kommentare zulassen — Teilnehmer können bei der Anmeldung eine Nachricht hinterlassen
+                  💬 Kommentare zulassen, Teilnehmer können bei der Anmeldung eine Nachricht hinterlassen
                 </label>
 
                 <div className="border border-gray-700 rounded-lg p-3 space-y-2 bg-gray-800">
@@ -427,7 +427,7 @@ export default function EventFormPage() {
                       checked={form.earlyAccessEnabled}
                       onChange={(e) => setForm({ ...form, earlyAccessEnabled: e.target.checked })}
                     />
-                    🔒 Vorabzugang — nur mit Passwort anmeldbar
+                    🔒 Vorabzugang, nur mit Passwort anmeldbar
                   </label>
                   {form.earlyAccessEnabled && (
                     <div>
@@ -453,7 +453,7 @@ export default function EventFormPage() {
                       checked={form.isPrivate}
                       onChange={(e) => setForm({ ...form, isPrivate: e.target.checked })}
                     />
-                    🔒 Privat — nur mit Passwort anmeldbar
+                    🔒 Privat, nur mit Passwort anmeldbar
                   </label>
                   {form.isPrivate && (
                     <div>
@@ -525,7 +525,7 @@ export default function EventFormPage() {
                     ))}
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    Plätze sind optional — ohne Angabe ist der Slot unbegrenzt buchbar.
+                    Plätze sind optional, ohne Angabe ist der Slot unbegrenzt buchbar.
                   </p>
                 </div>
               </>

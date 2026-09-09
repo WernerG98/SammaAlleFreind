@@ -2,43 +2,21 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api.js";
 
-export default function AlreadyRegisteredBox({ slug }) {
+function FoundRegistrationCard({ registration, commentsEnabled }) {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [registrationId, setRegistrationId] = useState(null);
-  const [commentsEnabled, setCommentsEnabled] = useState(false);
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState(registration.comment || "");
   const [savingComment, setSavingComment] = useState(false);
   const [commentSaved, setCommentSaved] = useState(false);
-  const [error, setError] = useState("");
-  const [searching, setSearching] = useState(false);
   const [requestingCancel, setRequestingCancel] = useState(false);
   const [cancelRequested, setCancelRequested] = useState(false);
-
-  async function handleSearch(e) {
-    e.preventDefault();
-    setError("");
-    setRegistrationId(null);
-    setSearching(true);
-    try {
-      const result = await api.post(`/events/${slug}`, { email });
-      setRegistrationId(result.registrationId);
-      setCommentsEnabled(result.commentsEnabled);
-      setComment(result.comment || "");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSearching(false);
-    }
-  }
+  const [error, setError] = useState("");
 
   async function handleSaveComment() {
     setError("");
     setSavingComment(true);
     setCommentSaved(false);
     try {
-      await api.patch(`/registrations/${registrationId}`, { comment });
+      await api.patch(`/registrations/${registration.registrationId}`, { comment });
       setCommentSaved(true);
     } catch (err) {
       setError(err.message);
@@ -51,12 +29,102 @@ export default function AlreadyRegisteredBox({ slug }) {
     setError("");
     setRequestingCancel(true);
     try {
-      await api.post(`/registrations/${registrationId}`);
+      await api.post(`/registrations/${registration.registrationId}`);
       setCancelRequested(true);
     } catch (err) {
       setError(err.message);
     } finally {
       setRequestingCancel(false);
+    }
+  }
+
+  return (
+    <div className="border border-gray-800 rounded-lg p-3 space-y-2">
+      <p className="text-sm text-gray-200">
+        <span className="font-medium">
+          {registration.firstName} {registration.lastName}
+        </span>{" "}
+        <span className="text-gray-500">({registration.busName})</span>
+        {registration.paid && <span className="ml-2 text-xs text-emerald-400 font-medium">bezahlt</span>}
+      </p>
+
+      {cancelRequested ? (
+        <p className="text-xs text-gray-400">
+          Stornierungslink per E-Mail verschickt. Erst nach Klick auf den Link ist die Anmeldung wirklich
+          storniert.
+        </p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={handleRequestCancel}
+            disabled={requestingCancel}
+            className="bg-red-600 hover:bg-red-500 text-white rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50 transition-colors"
+          >
+            {requestingCancel ? "Wird gesendet…" : "Stornieren"}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate(`/anmeldung/${registration.registrationId}/zahlung`)}
+            className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+          >
+            Zahlungslink
+          </button>
+        </div>
+      )}
+
+      {commentsEnabled && (
+        <div className="border border-teal-800/60 bg-teal-950/20 rounded-lg p-2">
+          <label className="block text-xs font-medium mb-1 text-teal-200">✏️ Kommentar</label>
+          <textarea
+            rows={2}
+            className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-teal-500"
+            value={comment}
+            onChange={(e) => {
+              setComment(e.target.value);
+              setCommentSaved(false);
+            }}
+          />
+          <div className="flex items-center gap-2 mt-1.5">
+            <button
+              type="button"
+              onClick={handleSaveComment}
+              disabled={savingComment}
+              className="bg-teal-600 hover:bg-teal-500 text-white rounded px-3 py-1 text-xs font-medium disabled:opacity-50 transition-colors"
+            >
+              {savingComment ? "Wird gespeichert…" : "Speichern"}
+            </button>
+            {commentSaved && <span className="text-xs text-emerald-400">Gespeichert!</span>}
+          </div>
+        </div>
+      )}
+
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
+  );
+}
+
+export default function AlreadyRegisteredBox({ slug }) {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [registrations, setRegistrations] = useState(null);
+  const [commentsEnabled, setCommentsEnabled] = useState(false);
+  const [error, setError] = useState("");
+  const [searching, setSearching] = useState(false);
+
+  async function handleSearch(e) {
+    e.preventDefault();
+    setError("");
+    setRegistrations(null);
+    setSearching(true);
+    try {
+      const result = await api.post(`/events/${slug}`, { email });
+      setRegistrations(result.registrations);
+      setCommentsEnabled(result.commentsEnabled);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSearching(false);
     }
   }
 
@@ -82,57 +150,16 @@ export default function AlreadyRegisteredBox({ slug }) {
     <div className="mt-4 bg-gray-900 border border-gray-800 rounded-xl p-5 shadow-sm">
       <h2 className="font-semibold text-gray-100 mb-2">Bereits angemeldet?</h2>
 
-      {cancelRequested ? (
-        <p className="text-sm text-gray-300">
-          Wir haben dir eine E-Mail mit einem Stornierungslink geschickt. Erst wenn du auf diesen Link klickst,
-          wird deine Anmeldung storniert — bitte prüfe auch deinen Spam-Ordner.
-        </p>
-      ) : registrationId ? (
+      {registrations ? (
         <div className="space-y-3">
-          <p className="text-sm text-gray-300">Wir haben deine Anmeldung gefunden.</p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={handleRequestCancel}
-              disabled={requestingCancel}
-              className="bg-red-600 hover:bg-red-500 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
-            >
-              {requestingCancel ? "Wird gesendet…" : "Anmeldung stornieren"}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(`/anmeldung/${registrationId}/zahlung`)}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors"
-            >
-              Zahlungslink
-            </button>
-          </div>
-
-          {commentsEnabled && (
-            <div className="border border-teal-800/60 bg-teal-950/20 rounded-lg p-3">
-              <label className="block text-sm font-medium mb-1 text-teal-200">✏️ Dein Kommentar</label>
-              <textarea
-                rows={3}
-                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
-                value={comment}
-                onChange={(e) => {
-                  setComment(e.target.value);
-                  setCommentSaved(false);
-                }}
-              />
-              <div className="flex items-center gap-3 mt-2">
-                <button
-                  type="button"
-                  onClick={handleSaveComment}
-                  disabled={savingComment}
-                  className="bg-teal-600 hover:bg-teal-500 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
-                >
-                  {savingComment ? "Wird gespeichert…" : "Kommentar speichern"}
-                </button>
-                {commentSaved && <span className="text-sm text-emerald-400">Gespeichert!</span>}
-              </div>
-            </div>
-          )}
+          <p className="text-sm text-gray-300">
+            {registrations.length > 1
+              ? `Wir haben ${registrations.length} Anmeldungen für diese E-Mail-Adresse gefunden.`
+              : "Wir haben deine Anmeldung gefunden."}
+          </p>
+          {registrations.map((r) => (
+            <FoundRegistrationCard key={r.registrationId} registration={r} commentsEnabled={commentsEnabled} />
+          ))}
         </div>
       ) : (
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">

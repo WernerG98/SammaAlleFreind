@@ -55,6 +55,7 @@ model Registration {
   id              String    @id @default(cuid())
   eventId         String
   busId           String
+  groupId         String?
   firstName       String
   lastName        String
   email           String
@@ -68,7 +69,8 @@ model Registration {
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   bus   Bus   @relation(fields: [busId], references: [id], onDelete: Cascade)
 
-  @@unique([eventId, email])
+  @@index([eventId, email])
+  @@index([groupId])
 }
 
 model EventInterest {

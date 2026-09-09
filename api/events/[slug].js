@@ -14,17 +14,25 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "Veranstaltung nicht gefunden." });
     }
 
-    const registration = await prisma.registration.findUnique({
-      where: { eventId_email: { eventId: event.id, email: email.toLowerCase().trim() } },
+    const registrations = await prisma.registration.findMany({
+      where: { eventId: event.id, email: email.toLowerCase().trim() },
+      include: { bus: true },
+      orderBy: { createdAt: "asc" },
     });
-    if (!registration) {
+    if (registrations.length === 0) {
       return res.status(404).json({ error: "Keine Anmeldung mit dieser E-Mail-Adresse gefunden." });
     }
 
     return res.status(200).json({
-      registrationId: registration.id,
       commentsEnabled: event.commentsEnabled,
-      comment: registration.comment,
+      registrations: registrations.map((r) => ({
+        registrationId: r.id,
+        firstName: r.firstName,
+        lastName: r.lastName,
+        busName: r.bus.name,
+        paid: r.paid,
+        comment: r.comment,
+      })),
     });
   }
 

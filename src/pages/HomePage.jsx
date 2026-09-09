@@ -78,7 +78,7 @@ export default function HomePage() {
     <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-2xl font-bold mb-2 text-white">🎉 Info zu Veranstaltungen</h1>
       <p className="text-sm text-gray-400 mb-6 text-justify">
-        Je nach Veranstaltung kannst du per PayPal oder per Überweisung bezahlen — die jeweils verfügbaren
+        Je nach Veranstaltung kannst du per PayPal oder per Überweisung bezahlen, die jeweils verfügbaren
         Optionen siehst du nach der Anmeldung auf der Zahlungsseite. Bei anderen Zahlungsmethoden melde dich
         bitte ganz normal wie gewohnt an und schreib uns anschließend über das Kontaktformular weiter unten.
         Bitte beachte: Damit wir deine Zahlung zuordnen können, gib beim Bezahlen als Kommentar/Verwendungszweck
@@ -296,7 +296,7 @@ export default function HomePage() {
                 <div className="flex items-start gap-3">
                   <div className="min-w-0 flex-1">
                     <span className="inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-1 text-teal-300 bg-teal-950/60">
-                      🎉 Öffentlich — keine Anmeldung nötig
+                      🎉 Öffentlich, keine Anmeldung nötig
                     </span>
                     <h2 className="text-lg font-semibold text-teal-100">{event.title}</h2>
                     {event.isExternal && (
