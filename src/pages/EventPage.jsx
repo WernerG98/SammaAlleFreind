@@ -29,10 +29,11 @@ function ShareButton({ event }) {
     if (navigator.share) {
       try {
         await navigator.share({ title: event.title, text: `Schau dir "${event.title}" an!`, url });
-      } catch {
-        // user cancelled the share sheet, nothing to do
+        return;
+      } catch (err) {
+        if (err?.name === "AbortError") return; // user cancelled the share sheet
+        // any other failure (e.g. share not permitted here): fall back to copying the link
       }
-      return;
     }
     try {
       await navigator.clipboard.writeText(url);
