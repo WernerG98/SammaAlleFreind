@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import HomePage from "./pages/HomePage.jsx";
 import EventPage from "./pages/EventPage.jsx";
 import PaymentPage from "./pages/PaymentPage.jsx";
@@ -45,6 +46,7 @@ export default function App() {
         </Route>
       </Routes>
       <Analytics />
+      <SpeedInsights />
     </>
   );
 }
