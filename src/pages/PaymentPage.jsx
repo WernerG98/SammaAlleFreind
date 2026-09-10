@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { api } from "../lib/api.js";
 import Skeleton from "../components/Skeleton.jsx";
 import Confetti from "../components/Confetti.jsx";
+import CopyButton from "../components/CopyButton.jsx";
 
 export default function PaymentPage() {
   const { id } = useParams();
@@ -122,9 +123,10 @@ export default function PaymentPage() {
                 Verwendungszweck/Kommentar an, damit wir {isGroup ? "alle Namen" : "deinen Namen"} zuordnen
                 können:
               </p>
-              <p className="mt-2 bg-gray-900 border border-amber-800 rounded px-3 py-2 font-mono text-amber-100 text-sm break-words">
-                {paymentReference}
-              </p>
+              <div className="mt-2 flex items-center gap-2 bg-gray-900 border border-amber-800 rounded px-3 py-2">
+                <p className="font-mono text-amber-100 text-sm break-words flex-1">{paymentReference}</p>
+                <CopyButton text={paymentReference} className="shrink-0" />
+              </div>
             </div>
           )}
 
@@ -153,9 +155,10 @@ export default function PaymentPage() {
                         <dd>{event.accountHolder}</dd>
                       </div>
                     )}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                       <dt className="text-gray-500 w-24 shrink-0">IBAN:</dt>
                       <dd className="font-mono">{event.iban}</dd>
+                      <CopyButton text={event.iban} />
                     </div>
                     {event.bic && (
                       <div className="flex gap-2">

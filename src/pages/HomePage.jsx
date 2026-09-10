@@ -67,6 +67,13 @@ export default function HomePage() {
       .catch((err) => setError(err.message));
   }, []);
 
+  const hasActiveFilters = Boolean(search.trim()) || statusFilter !== "all";
+
+  function resetFilters() {
+    setSearch("");
+    setStatusFilter("all");
+  }
+
   const visibleEvents = (events || [])
     .filter((event) => Boolean(event.isExternal) === (tab === "external"))
     .map((event) => ({ ...event, meta: getEventMeta(event) }))
@@ -159,13 +166,27 @@ export default function HomePage() {
         </div>
       )}
       {events && visibleEvents.length === 0 && (
-        <p className="text-gray-500">
-          {events.filter((e) => Boolean(e.isExternal) === (tab === "external")).length === 0
-            ? tab === "external"
-              ? "Aktuell keine externen Veranstaltungen gelistet."
-              : "Aktuell sind keine Veranstaltungen geplant."
-            : "Keine Treffer für diese Filter."}
-        </p>
+        <div className="text-center py-10 px-4 bg-gray-900/50 border border-dashed border-gray-800 rounded-xl">
+          <p className="text-3xl mb-2" aria-hidden="true">
+            {hasActiveFilters ? "🔍" : "🗓️"}
+          </p>
+          <p className="text-gray-400 font-medium">
+            {events.filter((e) => Boolean(e.isExternal) === (tab === "external")).length === 0
+              ? tab === "external"
+                ? "Aktuell keine externen Veranstaltungen gelistet."
+                : "Aktuell sind keine Veranstaltungen geplant."
+              : "Keine Treffer für diese Filter."}
+          </p>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="mt-3 text-sm text-teal-400 hover:text-teal-300 underline active:scale-95 transition-all"
+            >
+              Filter zurücksetzen
+            </button>
+          )}
+        </div>
       )}
 
       <div className="space-y-4">
