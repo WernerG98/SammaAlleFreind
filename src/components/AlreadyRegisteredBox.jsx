@@ -37,7 +37,7 @@ function FoundRegistrationCard({ registration, commentsEnabled, selected, onTogg
       <button
         type="button"
         onClick={() => navigate(`/anmeldung/${registration.registrationId}/zahlung`)}
-        className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+        className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white rounded-lg px-3 py-1.5 text-xs font-medium shadow-sm shadow-emerald-950/30 active:scale-95 transition-all"
       >
         Zahlungslink
       </button>
@@ -59,7 +59,7 @@ function FoundRegistrationCard({ registration, commentsEnabled, selected, onTogg
               type="button"
               onClick={handleSaveComment}
               disabled={savingComment}
-              className="bg-teal-600 hover:bg-teal-500 text-white rounded px-3 py-1 text-xs font-medium disabled:opacity-50 transition-colors"
+              className="bg-teal-600 hover:bg-teal-500 text-white rounded px-3 py-1 text-xs font-medium disabled:opacity-50 active:scale-95 transition-all"
             >
               {savingComment ? "Wird gespeichert…" : "Speichern"}
             </button>
@@ -131,7 +131,7 @@ export default function AlreadyRegisteredBox({ slug }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-4 w-full flex items-center gap-3 text-left bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 rounded-lg px-4 py-3 transition-colors"
+        className="mt-4 w-full flex items-center gap-3 text-left bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 rounded-lg px-4 py-3 active:scale-[0.99] transition-all"
       >
         <span className="text-xl shrink-0" aria-hidden="true">
           ✏️
@@ -176,7 +176,7 @@ export default function AlreadyRegisteredBox({ slug }) {
                 type="button"
                 onClick={handleRequestCancel}
                 disabled={requestingCancel || selectedIds.size === 0}
-                className="bg-red-600 hover:bg-red-500 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
+                className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500 text-white rounded-lg px-4 py-2 text-sm font-medium shadow-sm shadow-red-950/30 disabled:opacity-50 active:scale-[0.98] transition-all"
               >
                 {requestingCancel
                   ? "Wird gesendet…"
@@ -200,7 +200,7 @@ export default function AlreadyRegisteredBox({ slug }) {
           <button
             type="submit"
             disabled={searching}
-            className="bg-teal-600 hover:bg-teal-500 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 whitespace-nowrap transition-colors"
+            className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded-lg px-4 py-2 text-sm font-medium shadow-sm shadow-teal-950/30 disabled:opacity-50 whitespace-nowrap active:scale-[0.98] transition-all"
           >
             {searching ? "Suche…" : "Anmeldung finden"}
           </button>

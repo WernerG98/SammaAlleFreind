@@ -85,7 +85,7 @@ export default function DashboardPage() {
         </h1>
         <Link
           to="/admin/veranstaltungen/neu"
-          className="bg-teal-600 hover:bg-teal-500 text-white rounded px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors"
+          className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded px-4 py-2 text-sm font-medium whitespace-nowrap shadow-sm shadow-teal-950/30 active:scale-[0.98] transition-all"
         >
           + Neue Veranstaltung
         </Link>

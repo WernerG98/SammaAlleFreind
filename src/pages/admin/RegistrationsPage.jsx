@@ -81,7 +81,7 @@ function InterestEmailForm({ eventId, buses }) {
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="bg-teal-600 hover:bg-teal-500 text-white rounded px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
+          className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded px-4 py-2 text-sm font-medium shadow-sm shadow-teal-950/30 disabled:opacity-50 active:scale-[0.98] transition-all"
         >
           {status === "submitting" ? "Wird gesendet…" : "Senden"}
         </button>
@@ -159,7 +159,7 @@ function BulkEmailForm({ eventId }) {
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="bg-teal-600 hover:bg-teal-500 text-white rounded px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
+          className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded px-4 py-2 text-sm font-medium shadow-sm shadow-teal-950/30 disabled:opacity-50 active:scale-[0.98] transition-all"
         >
           {status === "submitting" ? "Wird gesendet…" : "Senden"}
         </button>

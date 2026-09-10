@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { api } from "../lib/api.js";
+import Skeleton from "./Skeleton.jsx";
 
 const FULL_NAV_LINKS = [
   { to: "/admin", label: "Veranstaltungen" },
@@ -42,7 +43,14 @@ export default function AdminLayout() {
   }
 
   if (status !== "ok") {
-    return <div className="min-h-screen bg-gray-950 p-8 text-center text-gray-500">Lade...</div>;
+    return (
+      <div className="min-h-screen bg-gray-950 p-8">
+        <div className="max-w-5xl mx-auto">
+          <Skeleton className="h-8 w-48 mb-6" />
+          <Skeleton className="h-32 w-full rounded-lg" />
+        </div>
+      </div>
+    );
   }
 
   const navLinks = role === "external" ? EXTERNAL_NAV_LINKS : FULL_NAV_LINKS;
@@ -68,7 +76,7 @@ export default function AdminLayout() {
             <button
               type="button"
               onClick={handleLogout}
-              className="bg-red-950/60 text-red-300 hover:bg-red-900 rounded-full px-3 py-1.5 font-semibold transition-colors"
+              className="bg-red-950/60 text-red-300 hover:bg-red-900 rounded-full px-3 py-1.5 font-semibold active:scale-95 transition-all"
             >
               Abmelden
             </button>

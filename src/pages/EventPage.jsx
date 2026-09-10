@@ -5,13 +5,14 @@ import { downloadEventIcs } from "../lib/ics.js";
 import Honeypot from "../components/Honeypot.jsx";
 import AlreadyRegisteredBox from "../components/AlreadyRegisteredBox.jsx";
 import CapacityBar from "../components/CapacityBar.jsx";
+import Skeleton from "../components/Skeleton.jsx";
 
 function AddToCalendarButton({ event }) {
   return (
     <button
       type="button"
       onClick={() => downloadEventIcs(event)}
-      className="mt-2 inline-flex items-center gap-1.5 bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 text-teal-300 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
+      className="mt-2 inline-flex items-center gap-1.5 bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 text-teal-300 rounded-lg px-3 py-1.5 text-sm font-medium active:scale-95 transition-all"
     >
       <span aria-hidden="true">📅</span>
       Zum Kalender hinzufügen
@@ -202,7 +203,15 @@ export default function EventPage() {
     return <p className="max-w-lg mx-auto px-4 py-12 text-red-400">{error}</p>;
   }
   if (!event) {
-    return <p className="max-w-lg mx-auto px-4 py-12 text-gray-500">Lade...</p>;
+    return (
+      <div className="max-w-lg mx-auto px-4 py-12">
+        <Skeleton className="h-48 w-full rounded-xl mb-6" />
+        <Skeleton className="h-7 w-2/3 mb-3" />
+        <Skeleton className="h-4 w-1/2 mb-2" />
+        <Skeleton className="h-4 w-1/3 mb-6" />
+        <Skeleton className="h-40 w-full rounded-xl" />
+      </div>
+    );
   }
   if (event.locked) {
     return (
@@ -258,7 +267,7 @@ export default function EventPage() {
           <button
             type="submit"
             disabled={unlocking}
-            className="w-full bg-amber-600 hover:bg-amber-500 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+            className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white rounded-lg py-2 font-medium shadow-md shadow-amber-950/30 disabled:opacity-50 active:scale-[0.98] transition-all"
           >
             {unlocking ? "Wird geprüft…" : "Freischalten"}
           </button>
@@ -664,7 +673,7 @@ export default function EventPage() {
               !form.busId ||
               (Boolean(event.pricePerPerson) && !acceptedTerms)
             }
-            className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+            className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded-lg py-2 font-medium shadow-md shadow-teal-950/30 disabled:opacity-50 disabled:shadow-none active:scale-[0.98] transition-all"
           >
             {submitting
               ? "Wird gesendet…"
@@ -731,7 +740,7 @@ export default function EventPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-teal-600 hover:bg-teal-500 text-white rounded-lg py-2 font-medium disabled:opacity-50 transition-colors"
+                className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded-lg py-2 font-medium shadow-md shadow-teal-950/30 disabled:opacity-50 active:scale-[0.98] transition-all"
               >
                 {submitting ? "Wird gesendet…" : "Auf die Warteliste setzen"}
               </button>
@@ -748,7 +757,7 @@ export default function EventPage() {
               <button
                 type="button"
                 onClick={handleVollgas}
-                className="w-full bg-red-600 hover:bg-red-500 text-white rounded-lg py-3 font-bold text-lg transition-colors"
+                className="w-full bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500 text-white rounded-lg py-3 font-bold text-lg shadow-md shadow-red-950/30 active:scale-[0.98] transition-all"
               >
                 Vollgas
               </button>

@@ -4,6 +4,7 @@ import { api } from "../lib/api.js";
 import ContactForm from "../components/ContactForm.jsx";
 import NewsletterSignup from "../components/NewsletterSignup.jsx";
 import CapacityBar from "../components/CapacityBar.jsx";
+import { EventCardSkeleton } from "../components/Skeleton.jsx";
 
 const COUNTDOWN_THRESHOLD_DAYS = 14;
 
@@ -146,7 +147,13 @@ export default function HomePage() {
       </div>
 
       {error && <p className="text-red-400">{error}</p>}
-      {!events && !error && <p className="text-gray-500">Lade...</p>}
+      {!events && !error && (
+        <div className="space-y-4">
+          <EventCardSkeleton />
+          <EventCardSkeleton />
+          <EventCardSkeleton />
+        </div>
+      )}
       {events && visibleEvents.length === 0 && (
         <p className="text-gray-500">
           {events.filter((e) => Boolean(e.isExternal) === (tab === "external")).length === 0
@@ -166,12 +173,12 @@ export default function HomePage() {
               <Link
                 key={event.id}
                 to={`/veranstaltung/${event.slug}`}
-                className="relative block bg-gradient-to-br from-amber-950/30 to-gray-900 border-2 border-amber-800/60 rounded-xl pl-6 pr-5 py-5 shadow-md hover:shadow-xl hover:border-amber-600 hover:-translate-y-0.5 transition-all overflow-hidden"
+                className="relative block bg-gradient-to-br from-amber-950/30 to-gray-900 border-2 border-amber-800/60 rounded-xl pl-6 pr-5 py-5 shadow-md hover:shadow-xl hover:shadow-amber-950/40 hover:border-amber-600 hover:-translate-y-1 active:scale-[0.99] transition-all overflow-hidden"
               >
-                <span className="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-500" aria-hidden="true" />
+                <span className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-amber-400 to-orange-600" aria-hidden="true" />
                 <div className="flex items-start gap-3">
                   <div className="min-w-0 flex-1">
-                    <span className="inline-block text-[11px] font-bold uppercase tracking-wide text-amber-300 bg-amber-950/60 rounded-full px-2 py-0.5 mb-1">
+                    <span className="inline-block text-[11px] font-bold uppercase tracking-wide text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-sm shadow-amber-950/50 rounded-full px-2 py-0.5 mb-1">
                       {event.isPrivate ? "🔒 Privat" : "🔒 Vorabzugang"}
                     </span>
                     <h2 className="text-lg font-semibold text-amber-100">{event.title}</h2>
@@ -239,7 +246,7 @@ export default function HomePage() {
               <Link
                 key={event.id}
                 to={`/veranstaltung/${event.slug}`}
-                className="block bg-gray-900 border-2 border-dashed border-gray-700 rounded-xl p-5 opacity-90 hover:opacity-100 hover:border-gray-500 hover:shadow-sm transition-all"
+                className="block bg-gray-900 border-2 border-dashed border-gray-700 rounded-xl p-5 opacity-90 hover:opacity-100 hover:border-gray-500 hover:shadow-sm hover:-translate-y-0.5 active:scale-[0.99] transition-all"
               >
                 <div className="flex items-start gap-3">
                   <div className="min-w-0 flex-1">
@@ -290,12 +297,12 @@ export default function HomePage() {
               <Link
                 key={event.id}
                 to={`/veranstaltung/${event.slug}`}
-                className="relative block bg-gradient-to-br from-teal-950/30 to-gray-900 border-2 border-teal-800/60 rounded-xl pl-6 pr-5 py-5 shadow-md hover:shadow-xl hover:border-teal-500 hover:-translate-y-0.5 transition-all overflow-hidden"
+                className="relative block bg-gradient-to-br from-teal-950/30 to-gray-900 border-2 border-teal-800/60 rounded-xl pl-6 pr-5 py-5 shadow-md hover:shadow-xl hover:shadow-teal-950/40 hover:border-teal-500 hover:-translate-y-1 active:scale-[0.99] transition-all overflow-hidden"
               >
-                <span className="absolute left-0 top-0 bottom-0 w-1.5 bg-teal-500" aria-hidden="true" />
+                <span className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-teal-400 to-emerald-600" aria-hidden="true" />
                 <div className="flex items-start gap-3">
                   <div className="min-w-0 flex-1">
-                    <span className="inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-1 text-teal-300 bg-teal-950/60">
+                    <span className="inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-1 text-white bg-gradient-to-r from-teal-500 to-emerald-600 shadow-sm shadow-teal-950/50">
                       🎉 Öffentlich, keine Anmeldung nötig
                     </span>
                     <h2 className="text-lg font-semibold text-teal-100">{event.title}</h2>
@@ -345,21 +352,23 @@ export default function HomePage() {
             <Link
               key={event.id}
               to={`/veranstaltung/${event.slug}`}
-              className={`relative block rounded-xl pl-6 pr-5 py-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all overflow-hidden border-2 ${
+              className={`relative block rounded-xl pl-6 pr-5 py-5 shadow-md hover:shadow-xl hover:-translate-y-1 active:scale-[0.99] transition-all overflow-hidden border-2 ${
                 closed
-                  ? "bg-gradient-to-br from-red-950/30 to-gray-900 border-red-800/60 hover:border-red-600"
-                  : "bg-gradient-to-br from-teal-950/30 to-gray-900 border-teal-800/60 hover:border-teal-500"
+                  ? "bg-gradient-to-br from-red-950/30 to-gray-900 border-red-800/60 hover:border-red-600 hover:shadow-red-950/40"
+                  : "bg-gradient-to-br from-teal-950/30 to-gray-900 border-teal-800/60 hover:border-teal-500 hover:shadow-teal-950/40"
               }`}
             >
               <span
-                className={`absolute left-0 top-0 bottom-0 w-1.5 ${closed ? "bg-red-500" : "bg-teal-500"}`}
+                className={`absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b ${closed ? "from-red-400 to-rose-700" : "from-teal-400 to-emerald-600"}`}
                 aria-hidden="true"
               />
               <div className="flex items-start gap-3">
                 <div className="min-w-0 flex-1">
                   <span
-                    className={`inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-1 ${
-                      closed ? "text-red-300 bg-red-950/60" : "text-teal-300 bg-teal-950/60"
+                    className={`inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-1 text-white shadow-sm ${
+                      closed
+                        ? "bg-gradient-to-r from-red-500 to-rose-700 shadow-red-950/50"
+                        : "bg-gradient-to-r from-teal-500 to-emerald-600 shadow-teal-950/50"
                     }`}
                   >
                     {!event.registrationOpen

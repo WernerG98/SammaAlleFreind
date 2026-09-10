@@ -30,7 +30,7 @@ export default function NewsletterSignup() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Newsletter öffnen"
-        className="fixed bottom-20 right-4 z-40 h-14 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white shadow-lg flex items-center gap-2 px-4 transition-colors"
+        className="fixed bottom-20 right-4 z-40 h-14 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white shadow-lg flex items-center gap-2 px-4 active:scale-95 transition-all"
       >
         <span className="text-2xl">📬</span>
         <span className="font-semibold text-sm">Newsletter</span>
@@ -70,7 +70,7 @@ export default function NewsletterSignup() {
           type="button"
           onClick={handleSubscribe}
           disabled={status === "submitting" || !email.trim()}
-          className="bg-teal-600 hover:bg-teal-500 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 whitespace-nowrap transition-colors"
+          className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded-lg px-4 py-2 text-sm font-medium shadow-sm shadow-teal-950/30 disabled:opacity-50 whitespace-nowrap active:scale-[0.98] transition-all"
         >
           Anmelden
         </button>

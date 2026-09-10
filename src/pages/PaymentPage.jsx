@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../lib/api.js";
+import Skeleton from "../components/Skeleton.jsx";
+import Confetti from "../components/Confetti.jsx";
 
 export default function PaymentPage() {
   const { id } = useParams();
@@ -10,11 +12,15 @@ export default function PaymentPage() {
   const [cancelRequested, setCancelRequested] = useState(false);
   const [selectedCancelIds, setSelectedCancelIds] = useState(() => new Set([id]));
   const [showCancelOptions, setShowCancelOptions] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     api
       .get(`/registrations/${id}`)
-      .then(setRegistration)
+      .then((data) => {
+        setRegistration(data);
+        setShowConfetti(true);
+      })
       .catch((err) => setError(err.message));
   }, [id]);
 
@@ -47,7 +53,14 @@ export default function PaymentPage() {
     return <p className="max-w-lg mx-auto px-4 py-12 text-red-400">{error}</p>;
   }
   if (!registration) {
-    return <p className="max-w-lg mx-auto px-4 py-12 text-gray-500">Lade...</p>;
+    return (
+      <div className="max-w-lg mx-auto px-4 py-12">
+        <Skeleton className="h-7 w-2/3 mb-3" />
+        <Skeleton className="h-4 w-full mb-1.5" />
+        <Skeleton className="h-4 w-1/2 mb-6" />
+        <Skeleton className="h-56 w-full rounded-xl" />
+      </div>
+    );
   }
 
   const { event, bus, firstName, paid, groupMembers } = registration;
@@ -67,6 +80,7 @@ export default function PaymentPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12">
+      {showConfetti && <Confetti />}
       <h1 className="text-2xl font-bold text-gray-100">🎉 Fast geschafft!</h1>
       <p className="mt-2 text-gray-300">
         {isGroup ? (
@@ -81,7 +95,7 @@ export default function PaymentPage() {
       </p>
 
       {allPaid ? (
-        <div className="mt-6 bg-emerald-950/40 border border-emerald-800 rounded-xl p-5 text-emerald-300">
+        <div className="mt-6 bg-gradient-to-br from-emerald-950/60 to-emerald-900/20 border border-emerald-800 rounded-xl p-5 text-emerald-300 shadow-md shadow-emerald-950/30">
           {event.pricePerPerson
             ? isGroup
               ? "Die Zahlung wurde bereits bestätigt. Ihr seid fest dabei. Wir haben eine Bestätigungsmail geschickt."
@@ -123,7 +137,7 @@ export default function PaymentPage() {
                     href={event.paypalLink}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-block bg-[#0070ba] text-white rounded px-4 py-2 font-medium"
+                    className="inline-block bg-gradient-to-r from-[#0091e6] to-[#0070ba] hover:from-[#1aa0f0] hover:to-[#0080d0] text-white rounded px-4 py-2 font-medium shadow-md shadow-blue-950/40 active:scale-[0.98] transition-all"
                   >
                     Jetzt per PayPal bezahlen
                   </a>

@@ -31,7 +31,7 @@ export default function ContactForm({
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Kontakt öffnen"
-        className="fixed bottom-4 right-4 z-40 h-14 rounded-full bg-teal-600 hover:bg-teal-500 text-white shadow-lg flex items-center gap-2 px-4 transition-colors"
+        className="fixed bottom-4 right-4 z-40 h-14 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white shadow-lg shadow-teal-950/40 flex items-center gap-2 px-4 active:scale-95 transition-all"
       >
         <span className="text-2xl">💌</span>
         <span className="font-semibold text-sm">Kontakt</span>
@@ -97,7 +97,7 @@ export default function ContactForm({
           <button
             type="submit"
             disabled={status === "submitting"}
-            className="bg-teal-600 hover:bg-teal-500 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
+            className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded-lg px-4 py-2 text-sm font-medium shadow-sm shadow-teal-950/30 disabled:opacity-50 active:scale-[0.98] transition-all"
           >
             {status === "submitting" ? "Wird gesendet…" : "Nachricht senden"}
           </button>

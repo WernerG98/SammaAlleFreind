@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../lib/api.js";
+import Skeleton from "../../components/Skeleton.jsx";
 
 function StatTile({ label, value, sub, accent = "text-gray-100" }) {
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 hover:border-gray-700 hover:-translate-y-0.5 transition-all">
       <p className="text-xs text-gray-500 mb-1">{label}</p>
       <p className={`text-2xl font-bold ${accent}`}>{value}</p>
       {sub && <p className="text-xs text-gray-500 mt-1">{sub}</p>}
@@ -24,7 +25,20 @@ export default function StatsPage() {
   }, []);
 
   if (error) return <p className="text-red-400">{error}</p>;
-  if (!stats) return <p className="text-gray-500">Lade...</p>;
+  if (!stats) {
+    return (
+      <div>
+        <Skeleton className="h-7 w-32 mb-6" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-lg" />
+          ))}
+        </div>
+        <Skeleton className="h-40 w-full rounded-lg mb-8" />
+        <Skeleton className="h-32 w-full rounded-lg" />
+      </div>
+    );
+  }
 
   const maxMonthly = Math.max(1, ...stats.monthlyRegistrations.map((m) => m.count));
   const maxTopEvent = Math.max(1, ...stats.topEvents.map((e) => e.registrations));
