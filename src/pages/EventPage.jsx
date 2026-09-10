@@ -208,6 +208,10 @@ export default function EventPage() {
     setShowVollgasImage(true);
   }
 
+  function handleKeinGas() {
+    new Audio("/keingas.mp3").play().catch(() => {});
+  }
+
   useEffect(() => {
     if (!showVollgasImage) return;
     if (vollgasCountdown <= 0) {
@@ -806,9 +810,8 @@ export default function EventPage() {
               </button>
               <button
                 type="button"
-                disabled
-                title="Nicht auswählbar."
-                className="w-full bg-gray-800 text-gray-500 rounded-lg py-3 font-medium cursor-not-allowed"
+                onClick={handleKeinGas}
+                className="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg py-3 font-medium active:scale-[0.98] transition-all"
               >
                 Kein Gas
               </button>
