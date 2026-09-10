@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../lib/api.js";
 import RichTextEditor from "../../components/RichTextEditor.jsx";
 import Skeleton from "../../components/Skeleton.jsx";
+import { useToast } from "../../components/Toast.jsx";
 
 const emptyBus = () => ({ name: "", capacity: "", enabled: true });
 
@@ -32,6 +33,7 @@ export default function EventFormPage() {
   const { id } = useParams();
   const isNew = id === undefined;
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [form, setForm] = useState({
     title: "",
@@ -143,9 +145,11 @@ export default function EventFormPage() {
       };
       if (isNew) {
         await api.post("/admin/events", payload);
+        toast("Veranstaltung erstellt!");
         navigate("/admin");
       } else {
         await api.put(`/admin/events/${id}`, payload);
+        toast("Gespeichert!");
         navigate("/admin");
       }
     } catch (err) {

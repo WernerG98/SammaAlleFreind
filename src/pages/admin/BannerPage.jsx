@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { api } from "../../lib/api.js";
 import Skeleton from "../../components/Skeleton.jsx";
+import { useToast } from "../../components/Toast.jsx";
 
 export default function BannerPage() {
+  const toast = useToast();
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     api
@@ -20,12 +21,11 @@ export default function BannerPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
-    setSaved(false);
     setSubmitting(true);
     try {
       const messages = text.split("\n");
       await api.put("/announcement", { messages });
-      setSaved(true);
+      toast("Banner gespeichert!");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -64,7 +64,6 @@ export default function BannerPage() {
         </div>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
-        {saved && <p className="text-sm text-emerald-400">Gespeichert!</p>}
 
         <button
           type="submit"

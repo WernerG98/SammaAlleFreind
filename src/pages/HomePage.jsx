@@ -23,6 +23,10 @@ function formatCountdown(eventDate) {
   return "gleich";
 }
 
+function isUrgentCountdown(countdown) {
+  return Boolean(countdown) && !countdown.includes("Tag");
+}
+
 function getEventMeta(event) {
   if (event.locked) return { status: event.isPrivate ? "private" : "locked" };
   if (event.comingSoon) return { status: "comingSoon" };
@@ -205,7 +209,9 @@ export default function HomePage() {
                         })}{" "}
                         Uhr
                         {countdown && (
-                          <span className="ml-2 text-xs font-semibold text-amber-300">⏳ {countdown}</span>
+                          <span className={`ml-2 text-xs font-semibold text-amber-300 ${isUrgentCountdown(countdown) ? "animate-pulse" : ""}`}>
+                            ⏳ {countdown}
+                          </span>
                         )}
                       </p>
                     )}
@@ -274,7 +280,9 @@ export default function HomePage() {
                         })}{" "}
                         Uhr
                         {countdown && (
-                          <span className="ml-2 text-xs font-semibold text-gray-500">⏳ {countdown}</span>
+                          <span className={`ml-2 text-xs font-semibold text-gray-500 ${isUrgentCountdown(countdown) ? "animate-pulse" : ""}`}>
+                            ⏳ {countdown}
+                          </span>
                         )}
                       </p>
                     )}
@@ -329,7 +337,9 @@ export default function HomePage() {
                         })}{" "}
                         Uhr
                         {countdown && (
-                          <span className="ml-2 text-xs font-semibold text-teal-300">⏳ {countdown}</span>
+                          <span className={`ml-2 text-xs font-semibold text-teal-300 ${isUrgentCountdown(countdown) ? "animate-pulse" : ""}`}>
+                            ⏳ {countdown}
+                          </span>
                         )}
                       </p>
                     )}
@@ -402,7 +412,9 @@ export default function HomePage() {
                     })}{" "}
                     Uhr
                     {countdown && (
-                      <span className={`ml-2 text-xs font-semibold ${closed ? "text-red-300" : "text-teal-300"}`}>
+                      <span
+                        className={`ml-2 text-xs font-semibold ${closed ? "text-red-300" : "text-teal-300"} ${isUrgentCountdown(countdown) ? "animate-pulse" : ""}`}
+                      >
                         ⏳ {countdown}
                       </span>
                     )}

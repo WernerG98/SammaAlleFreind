@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
+import { ToastProvider } from "./components/Toast.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import EventPage from "./pages/EventPage.jsx";
 import PaymentPage from "./pages/PaymentPage.jsx";
@@ -20,7 +21,7 @@ import BannerPage from "./pages/admin/BannerPage.jsx";
 
 export default function App() {
   return (
-    <>
+    <ToastProvider>
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
@@ -45,6 +46,6 @@ export default function App() {
         </Route>
       </Routes>
       <Analytics />
-    </>
+    </ToastProvider>
   );
 }

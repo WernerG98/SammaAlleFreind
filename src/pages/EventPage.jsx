@@ -6,6 +6,7 @@ import Honeypot from "../components/Honeypot.jsx";
 import AlreadyRegisteredBox from "../components/AlreadyRegisteredBox.jsx";
 import CapacityBar from "../components/CapacityBar.jsx";
 import Skeleton from "../components/Skeleton.jsx";
+import { useToast } from "../components/Toast.jsx";
 
 function AddToCalendarButton({ event }) {
   return (
@@ -16,6 +17,39 @@ function AddToCalendarButton({ event }) {
     >
       <span aria-hidden="true">📅</span>
       Zum Kalender hinzufügen
+    </button>
+  );
+}
+
+function ShareButton({ event }) {
+  const toast = useToast();
+
+  async function handleShare() {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: event.title, text: `Schau dir "${event.title}" an!`, url });
+      } catch {
+        // user cancelled the share sheet, nothing to do
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast("Link kopiert!");
+    } catch {
+      toast("Kopieren fehlgeschlagen.", "error");
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleShare}
+      className="mt-2 inline-flex items-center gap-1.5 bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 text-teal-300 rounded-lg px-3 py-1.5 text-sm font-medium active:scale-95 transition-all"
+    >
+      <span aria-hidden="true">🔗</span>
+      Teilen
     </button>
   );
 }
@@ -318,7 +352,10 @@ export default function EventPage() {
             Uhr
           </p>
         )}
-        {event.eventDate && <AddToCalendarButton event={event} />}
+        <div className="flex flex-wrap gap-2">
+          {event.eventDate && <AddToCalendarButton event={event} />}
+          <ShareButton event={event} />
+        </div>
         <p className="mt-2 text-teal-400 font-semibold">✨ Coming Soon. Details folgen in Kürze.</p>
         {event.description && (
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
@@ -371,7 +408,10 @@ export default function EventPage() {
             Uhr
           </p>
         )}
-        {event.eventDate && <AddToCalendarButton event={event} />}
+        <div className="flex flex-wrap gap-2">
+          {event.eventDate && <AddToCalendarButton event={event} />}
+          <ShareButton event={event} />
+        </div>
         {event.description && (
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
         )}
@@ -428,7 +468,10 @@ export default function EventPage() {
         })}{" "}
         Uhr
       </p>
-      <AddToCalendarButton event={event} />
+      <div className="flex flex-wrap gap-2">
+        <AddToCalendarButton event={event} />
+        <ShareButton event={event} />
+      </div>
       {event.registrationDeadline && !deadlinePassed && (
         <p className="text-sm text-gray-400">
           Anmeldeschluss:{" "}

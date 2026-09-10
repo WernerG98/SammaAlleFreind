@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../../lib/api.js";
 import ConfirmDialog from "../../components/ConfirmDialog.jsx";
+import { useToast } from "../../components/Toast.jsx";
 
 function InterestEmailForm({ eventId, buses }) {
   const [busId, setBusId] = useState("all");
@@ -170,6 +171,7 @@ function BulkEmailForm({ eventId }) {
 
 export default function RegistrationsPage() {
   const { id } = useParams();
+  const toast = useToast();
   const [data, setData] = useState(null);
   const [buses, setBuses] = useState([]);
   const [event, setEvent] = useState(null);
@@ -325,6 +327,7 @@ export default function RegistrationsPage() {
     setPendingId(reg.id);
     try {
       await api.post(`/admin/registrations/${reg.id}`, { paid: !reg.paid });
+      toast(reg.paid ? "Als unbezahlt markiert." : "Als bezahlt markiert!");
       load();
     } catch (err) {
       setError(err.message);
@@ -387,6 +390,7 @@ export default function RegistrationsPage() {
     setPendingId(toRemove.id);
     try {
       await api.delete(`/admin/registrations/${toRemove.id}`);
+      toast(`${toRemove.label} entfernt.`);
       setToRemove(null);
       load();
     } catch (err) {
@@ -402,6 +406,7 @@ export default function RegistrationsPage() {
     try {
       const query = bulkRemoveMode === "unpaid" ? `eventId=${id}&unpaidOnly=1` : `eventId=${id}`;
       await api.delete(`/admin/registrations?${query}`);
+      toast(bulkRemoveMode === "unpaid" ? "Unbezahlte Anmeldungen entfernt." : "Alle Anmeldungen entfernt.");
       setBulkRemoveStep(0);
       load();
     } catch (err) {

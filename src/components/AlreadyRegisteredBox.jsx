@@ -1,21 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api.js";
+import { useToast } from "./Toast.jsx";
 
 function FoundRegistrationCard({ registration, commentsEnabled, selected, onToggleSelect }) {
   const navigate = useNavigate();
+  const toast = useToast();
   const [comment, setComment] = useState(registration.comment || "");
   const [savingComment, setSavingComment] = useState(false);
-  const [commentSaved, setCommentSaved] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSaveComment() {
     setError("");
     setSavingComment(true);
-    setCommentSaved(false);
     try {
       await api.patch(`/registrations/${registration.registrationId}`, { comment });
-      setCommentSaved(true);
+      toast("Kommentar gespeichert!");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -49,10 +49,7 @@ function FoundRegistrationCard({ registration, commentsEnabled, selected, onTogg
             rows={2}
             className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-teal-500"
             value={comment}
-            onChange={(e) => {
-              setComment(e.target.value);
-              setCommentSaved(false);
-            }}
+            onChange={(e) => setComment(e.target.value)}
           />
           <div className="flex items-center gap-2 mt-1.5">
             <button
@@ -63,7 +60,6 @@ function FoundRegistrationCard({ registration, commentsEnabled, selected, onTogg
             >
               {savingComment ? "Wird gespeichert…" : "Speichern"}
             </button>
-            {commentSaved && <span className="text-xs text-emerald-400">Gespeichert!</span>}
           </div>
         </div>
       )}
