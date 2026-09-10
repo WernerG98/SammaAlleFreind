@@ -209,7 +209,10 @@ export default function EventPage() {
   }
 
   function handleKeinGas() {
-    new Audio("/keingas.mp3").play().catch(() => {});
+    const audio = new Audio("/keingas.mp3");
+    audio.volume = 0.75;
+    audio.play().catch(() => {});
+    setTimeout(() => audio.pause(), 3000);
   }
 
   useEffect(() => {
