@@ -28,7 +28,7 @@ export default function PublicLayout() {
 
       <div
         className={`sticky top-0 z-30 w-full px-3 sm:px-4 transition-all duration-300 ${
-          scrolled ? "py-2 bg-gray-950/90 backdrop-blur border-b border-gray-800/60 shadow-lg" : "pt-6 sm:pt-8"
+          scrolled ? "py-2 bg-gray-950/90 backdrop-blur border-b border-gray-800/60" : "pt-6 sm:pt-8"
         }`}
       >
         <Link to="/" className="max-w-3xl mx-auto flex items-center gap-3 sm:gap-4 text-gray-100 group">
