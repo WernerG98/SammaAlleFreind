@@ -27,7 +27,7 @@ export default function PublicLayout() {
       <AnnouncementBanner />
 
       <div
-        className={`sticky top-0 z-30 w-full px-3 sm:px-4 transition-all duration-300 ${
+        className={`sticky top-0 z-30 w-full px-3 sm:px-4 transition-[padding] duration-300 ${
           scrolled ? "py-2 bg-gray-950 border-b border-gray-800/60" : "pt-6 sm:pt-8"
         }`}
       >
@@ -47,11 +47,13 @@ export default function PublicLayout() {
             >
               SammaAlleFreind
             </span>
-            {!scrolled && (
-              <span className="text-sm sm:text-base font-medium text-teal-400/90">
-                Kampf gegen Langeweile in Arnstorf und Umgebung 😉
-              </span>
-            )}
+            <span
+              className={`text-sm sm:text-base font-medium text-teal-400/90 overflow-hidden transition-all duration-300 ${
+                scrolled ? "max-h-0 opacity-0" : "max-h-8 opacity-100"
+              }`}
+            >
+              Kampf gegen Langeweile in Arnstorf und Umgebung 😉
+            </span>
           </span>
         </Link>
       </div>
