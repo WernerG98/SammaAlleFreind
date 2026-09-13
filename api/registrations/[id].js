@@ -5,6 +5,7 @@ import {
   buildCancelRequestHtml,
   buildSelfCancelConfirmationHtml,
   buildOrganizerRefundNoticeHtml,
+  buildBusChangedHtml,
   getOrganizerEmail,
 } from "../_lib/email.js";
 
@@ -48,28 +49,66 @@ export default async function handler(req, res) {
     });
   }
 
-  // Lets a registrant update their own comment later - guarded the same way as
-  // the GET/POST above: knowledge of the (hard-to-guess) registration id.
+  // Lets a registrant update their own comment or slot later - guarded the
+  // same way as the GET/POST above: knowledge of the (hard-to-guess)
+  // registration id.
   if (req.method === "PATCH") {
-    const { comment } = req.body || {};
+    const { comment, busId } = req.body || {};
     const registration = await prisma.registration.findUnique({
       where: { id },
-      include: { event: true },
+      include: { event: true, bus: true },
     });
 
     if (!registration) {
       return res.status(404).json({ error: "Anmeldung nicht gefunden." });
     }
-    if (!registration.event.commentsEnabled) {
-      return res.status(400).json({ error: "Kommentare sind für diese Veranstaltung nicht aktiviert." });
+
+    const data = {};
+
+    if (comment !== undefined) {
+      if (!registration.event.commentsEnabled) {
+        return res.status(400).json({ error: "Kommentare sind für diese Veranstaltung nicht aktiviert." });
+      }
+      data.comment = comment?.trim() || null;
     }
 
-    const updated = await prisma.registration.update({
-      where: { id },
-      data: { comment: comment?.trim() || null },
-    });
+    let targetBus = null;
+    if (busId !== undefined && busId !== registration.busId) {
+      targetBus = await prisma.bus.findUnique({
+        where: { id: busId },
+        include: { registrations: { select: { id: true } } },
+      });
+      if (!targetBus || targetBus.eventId !== registration.eventId) {
+        return res.status(404).json({ error: "Slot nicht gefunden." });
+      }
+      if (!targetBus.enabled) {
+        return res.status(409).json({ error: "Dieser Slot ist aktuell nicht buchbar." });
+      }
+      if (targetBus.capacity !== null && targetBus.registrations.length >= targetBus.capacity) {
+        return res.status(409).json({ error: "Dieser Slot hat keine freien Plätze mehr." });
+      }
+      data.busId = busId;
+    }
 
-    return res.status(200).json({ comment: updated.comment });
+    const updated = await prisma.registration.update({ where: { id }, data });
+
+    if (targetBus) {
+      await sendEmail({
+        to: registration.email,
+        subject: `Slot geändert: ${registration.event.title}`,
+        html: buildBusChangedHtml({
+          firstName: registration.firstName,
+          event: registration.event,
+          busName: targetBus.name,
+        }),
+      });
+    }
+
+    return res.status(200).json({
+      comment: updated.comment,
+      busId: updated.busId,
+      busName: targetBus ? targetBus.name : registration.bus.name,
+    });
   }
 
   // Requests a cancellation e-mail: proves nothing about the caller, but the

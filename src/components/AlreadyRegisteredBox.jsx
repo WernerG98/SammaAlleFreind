@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api.js";
 import { useToast } from "./Toast.jsx";
 
-function FoundRegistrationCard({ registration, commentsEnabled, selected, onToggleSelect }) {
+function FoundRegistrationCard({ registration, commentsEnabled, buses, selected, onToggleSelect, onBusChanged }) {
   const navigate = useNavigate();
   const toast = useToast();
   const [comment, setComment] = useState(registration.comment || "");
   const [savingComment, setSavingComment] = useState(false);
+  const [changingBus, setChangingBus] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSaveComment() {
@@ -22,6 +23,26 @@ function FoundRegistrationCard({ registration, commentsEnabled, selected, onTogg
       setSavingComment(false);
     }
   }
+
+  async function handleBusChange(e) {
+    const newBusId = e.target.value;
+    if (!newBusId || newBusId === registration.busId) return;
+    setError("");
+    setChangingBus(true);
+    try {
+      await api.patch(`/registrations/${registration.registrationId}`, { busId: newBusId });
+      toast("Slot geändert!");
+      await onBusChanged();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setChangingBus(false);
+    }
+  }
+
+  const selectableBuses = (buses || []).filter(
+    (b) => b.id === registration.busId || (b.enabled && (b.remaining === null || b.remaining > 0))
+  );
 
   return (
     <div className="border border-gray-800 rounded-lg p-3 space-y-2">
@@ -41,6 +62,25 @@ function FoundRegistrationCard({ registration, commentsEnabled, selected, onTogg
       >
         Zahlungslink
       </button>
+
+      {selectableBuses.length > 1 && (
+        <div className="flex items-center gap-2">
+          <label className="text-xs text-gray-400 shrink-0">Slot ändern</label>
+          <select
+            value={registration.busId}
+            disabled={changingBus}
+            onChange={handleBusChange}
+            className="flex-1 min-w-0 border border-gray-700 bg-gray-800 text-gray-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-teal-500 disabled:opacity-50"
+          >
+            {selectableBuses.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+                {b.id !== registration.busId ? ` (${b.remaining === null ? "unbegrenzt" : `${b.remaining} frei`})` : ""}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {commentsEnabled && (
         <div className="border border-teal-800/60 bg-teal-950/20 rounded-lg p-2">
@@ -74,6 +114,7 @@ export default function AlreadyRegisteredBox({ slug }) {
   const [email, setEmail] = useState("");
   const [registrations, setRegistrations] = useState(null);
   const [commentsEnabled, setCommentsEnabled] = useState(false);
+  const [buses, setBuses] = useState([]);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [requestingCancel, setRequestingCancel] = useState(false);
   const [cancelRequested, setCancelRequested] = useState(false);
@@ -90,10 +131,21 @@ export default function AlreadyRegisteredBox({ slug }) {
       const result = await api.post(`/events/${slug}`, { email });
       setRegistrations(result.registrations);
       setCommentsEnabled(result.commentsEnabled);
+      setBuses(result.buses || []);
     } catch (err) {
       setError(err.message);
     } finally {
       setSearching(false);
+    }
+  }
+
+  async function refetch() {
+    try {
+      const result = await api.post(`/events/${slug}`, { email });
+      setRegistrations(result.registrations);
+      setBuses(result.buses || []);
+    } catch (err) {
+      setError(err.message);
     }
   }
 
@@ -164,8 +216,10 @@ export default function AlreadyRegisteredBox({ slug }) {
                   key={r.registrationId}
                   registration={r}
                   commentsEnabled={commentsEnabled}
+                  buses={buses}
                   selected={selectedIds.has(r.registrationId)}
                   onToggleSelect={() => toggleSelect(r.registrationId)}
+                  onBusChanged={refetch}
                 />
               ))}
               <button
