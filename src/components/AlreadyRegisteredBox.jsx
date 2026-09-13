@@ -185,8 +185,8 @@ export default function AlreadyRegisteredBox({ slug }) {
           ✏️
         </span>
         <span className="text-sm text-teal-300">
-          <strong className="font-semibold text-teal-200">Bereits angemeldet?</strong> Hier Anmeldung stornieren,
-          Kommentar bearbeiten oder nochmal zum Bezahlungslink.
+          <strong className="font-semibold text-teal-200">Bereits angemeldet?</strong> Hier deine Anmeldung
+          bearbeiten, stornieren oder nochmal zum Bezahlungslink.
         </span>
       </button>
     );
