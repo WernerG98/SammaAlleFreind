@@ -49,7 +49,7 @@ export default function PublicLayout() {
             </span>
             <span
               className={`text-sm sm:text-base font-medium text-teal-400/90 overflow-hidden transition-all duration-300 ${
-                scrolled ? "max-h-0 opacity-0" : "max-h-8 opacity-100"
+                scrolled ? "max-h-0 opacity-0" : "max-h-16 opacity-100"
               }`}
             >
               Kampf gegen Langeweile in Arnstorf und Umgebung 😉
