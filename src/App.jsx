@@ -16,7 +16,6 @@ import StatsPage from "./pages/admin/StatsPage.jsx";
 import EventFormPage from "./pages/admin/EventFormPage.jsx";
 import RegistrationsPage from "./pages/admin/RegistrationsPage.jsx";
 import NewsletterPage from "./pages/admin/NewsletterPage.jsx";
-import NewsletterSubscribersPage from "./pages/admin/NewsletterSubscribersPage.jsx";
 
 export default function App() {
   return (
@@ -40,7 +39,6 @@ export default function App() {
           <Route path="veranstaltungen/:id" element={<EventFormPage />} />
           <Route path="veranstaltungen/:id/anmeldungen" element={<RegistrationsPage />} />
           <Route path="newsletter" element={<NewsletterPage />} />
-          <Route path="newsletter/abonnenten" element={<NewsletterSubscribersPage />} />
         </Route>
       </Routes>
       <Analytics />

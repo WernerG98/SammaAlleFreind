@@ -7,7 +7,6 @@ const FULL_NAV_LINKS = [
   { to: "/admin", label: "Veranstaltungen" },
   { to: "/admin/statistik", label: "Statistik" },
   { to: "/admin/newsletter", label: "Newsletter" },
-  { to: "/admin/newsletter/abonnenten", label: "Abonnenten" },
 ];
 
 const EXTERNAL_NAV_LINKS = [{ to: "/admin", label: "Externe Veranstaltungen" }];
@@ -38,7 +37,7 @@ export default function AdminLayout() {
 
   async function handleLogout() {
     await api.delete("/admin/session");
-    navigate("/admin/login");
+    navigate("/");
   }
 
   if (status !== "ok") {
@@ -64,9 +63,6 @@ export default function AdminLayout() {
           </Link>
 
           <nav className="hidden sm:flex items-center gap-4 text-sm font-medium">
-            <Link to="/" className="text-gray-500 hover:text-gray-200">
-              ← Startseite
-            </Link>
             {navLinks.map((link) => (
               <Link key={link.to} to={link.to} className="text-gray-300 hover:text-white">
                 {link.label}
@@ -93,9 +89,6 @@ export default function AdminLayout() {
 
         {menuOpen && (
           <nav className="sm:hidden border-t border-gray-800 bg-gray-900 px-4 py-3 flex flex-col gap-3 text-sm font-medium">
-            <Link to="/" className="text-gray-500">
-              ← Startseite
-            </Link>
             {navLinks.map((link) => (
               <Link key={link.to} to={link.to} className="text-gray-300">
                 {link.label}
