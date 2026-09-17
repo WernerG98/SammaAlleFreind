@@ -108,8 +108,8 @@ export default function PaymentPage() {
           <h2 className="font-semibold text-gray-100">Bezahlung</h2>
           {event.pricePerPerson && (
             <p className="text-gray-300">
-              Bitte überweise <strong>{Number(event.pricePerPerson).toFixed(2)} €</strong>{" "}
-              <strong className="text-amber-300 underline decoration-amber-500 underline-offset-2">pro Person</strong>
+              Bitte überweise{" "}
+              <strong className="text-amber-300">{Number(event.pricePerPerson).toFixed(2)} € pro Person</strong>
               {isGroup ? ` für ${unpaidPeople.length} von ${allPeople.length} Personen (${unpaidPeople.map((p) => p.name).join(", ")}).` : "."}
             </p>
           )}
