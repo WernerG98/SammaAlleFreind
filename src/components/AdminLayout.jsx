@@ -8,7 +8,6 @@ const FULL_NAV_LINKS = [
   { to: "/admin/statistik", label: "Statistik" },
   { to: "/admin/newsletter", label: "Newsletter" },
   { to: "/admin/newsletter/abonnenten", label: "Abonnenten" },
-  { to: "/admin/banner", label: "Banner" },
 ];
 
 const EXTERNAL_NAV_LINKS = [{ to: "/admin", label: "Externe Veranstaltungen" }];

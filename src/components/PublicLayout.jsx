@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import Footer from "./Footer.jsx";
-import AnnouncementBanner from "./AnnouncementBanner.jsx";
 
 export default function PublicLayout() {
   const location = useLocation();
@@ -23,8 +22,6 @@ export default function PublicLayout() {
         aria-hidden="true"
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[90vw] max-w-[640px] h-[320px] bg-teal-500/10 blur-3xl rounded-full"
       />
-
-      <AnnouncementBanner />
 
       <div
         className={`sticky top-0 z-30 w-full px-3 sm:px-4 transition-[padding] duration-300 ${

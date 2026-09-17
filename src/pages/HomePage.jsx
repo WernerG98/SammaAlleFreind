@@ -125,6 +125,8 @@ export default function HomePage() {
       {tab === "external" && (
         <p className="text-xs text-amber-300 bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2 mb-6">
           Für die Inhalte der externen Veranstaltungen sind die jeweiligen Ansprechpersonen verantwortlich.
+          Möchtet ihr als Verein oder Gruppe eure Veranstaltung auch hier eintragen? Nehmt gerne über das
+          Kontaktformular weiter unten Kontakt mit uns auf.
         </p>
       )}
 
