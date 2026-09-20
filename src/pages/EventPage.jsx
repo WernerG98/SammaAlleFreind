@@ -55,60 +55,6 @@ function ShareButton({ event }) {
   );
 }
 
-function BusInterestForm({ eventId, busId, busName, password, firstName, lastName, email, website }) {
-  const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState(false);
-  const [error, setError] = useState("");
-
-  async function handleClick(e) {
-    e.stopPropagation();
-    if (!firstName.trim() || !lastName.trim() || !email.trim()) {
-      setError("Bitte oben Vorname, Name und E-Mail-Adresse eintragen.");
-      return;
-    }
-    setError("");
-    setSubmitting(true);
-    try {
-      await api.post("/register", {
-        eventId,
-        firstName,
-        lastName,
-        email,
-        website,
-        waitlist: true,
-        interestedBusId: busId,
-        password,
-      });
-      setDone(true);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  if (done) {
-    return (
-      <p className="text-xs text-emerald-400 mt-1.5">Danke! Wir melden uns, sobald {busName} bestätigt ist.</p>
-    );
-  }
-
-  return (
-    <div onClick={(e) => e.stopPropagation()}>
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={submitting}
-        className="mt-1.5 inline-flex items-center gap-1 bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 text-teal-300 rounded px-2 py-1 text-xs font-medium transition-colors disabled:opacity-50"
-      >
-        <span aria-hidden="true">✋</span>
-        {submitting ? "Wird gesendet…" : "Interesse anmelden"}
-      </button>
-      {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
-    </div>
-  );
-}
-
 export default function EventPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -631,18 +577,6 @@ export default function EventPage() {
                             : `noch ${bus.remaining} Plätze frei`}
                     </span>
                     {!comingSoonBus && <CapacityBar capacity={bus.capacity} remaining={bus.remaining} className="mt-1.5" />}
-                    {comingSoonBus && (
-                      <BusInterestForm
-                        eventId={event.id}
-                        busId={bus.id}
-                        busName={bus.name}
-                        password={accessPassword}
-                        firstName={form.firstName}
-                        lastName={form.lastName}
-                        email={form.email}
-                        website={form.website}
-                      />
-                    )}
                   </div>
                   );
                 })}
@@ -742,13 +676,16 @@ export default function EventPage() {
               Danke! Du stehst jetzt auf der Warteliste, wir melden uns, sobald ein Platz frei wird.
             </div>
           ) : !showWaitlistForm ? (
-            <button
-              type="button"
-              onClick={() => setShowWaitlistForm(true)}
-              className="mt-4 w-full text-center text-sm text-teal-400 hover:text-teal-300 underline"
-            >
-              Alle Plätze vergeben? Jetzt auf die Warteliste setzen
-            </button>
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => setShowWaitlistForm(true)}
+                className="inline-flex items-center gap-1 bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 text-teal-300 rounded px-2 py-1 text-xs font-medium transition-colors"
+              >
+                <span aria-hidden="true">✋</span>
+                Alle Plätze vergeben? Jetzt auf die Warteliste setzen
+              </button>
+            </div>
           ) : (
             <form onSubmit={handleWaitlistSubmit} className="mt-4 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
               <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
