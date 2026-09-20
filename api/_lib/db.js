@@ -81,6 +81,7 @@ export function withRemainingSeats(event, { password } = {}) {
     imageUrl: event.imageUrl,
     eventDate: event.eventDate,
     comingSoon: event.comingSoon,
+    collectInterest: event.comingSoon && event.collectInterest,
     noRegistrationRequired: event.noRegistrationRequired,
     registrationDeadline: event.registrationDeadline,
     pricePerPerson: event.pricePerPerson,

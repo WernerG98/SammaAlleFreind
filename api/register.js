@@ -1,6 +1,11 @@
 import crypto from "node:crypto";
 import { prisma, isRegistrationOpen, isAccessUnlocked } from "./_lib/db.js";
-import { sendEmail, buildWaitlistConfirmationHtml, buildConfirmationEmailHtml } from "./_lib/email.js";
+import {
+  sendEmail,
+  buildWaitlistConfirmationHtml,
+  buildInterestListConfirmationHtml,
+  buildConfirmationEmailHtml,
+} from "./_lib/email.js";
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -48,12 +53,20 @@ export default async function handler(req, res) {
   }
 
   if (waitlist) {
+    if (event.comingSoon && !event.collectInterest) {
+      return res.status(400).json({ error: "Für diese Veranstaltung ist noch keine Vormerkung möglich." });
+    }
+
     const normalizedEmail = email.toLowerCase().trim();
     const existingInterest = await prisma.eventInterest.findUnique({
       where: { eventId_email: { eventId, email: normalizedEmail } },
     });
     if (existingInterest) {
-      return res.status(409).json({ error: "Du stehst bereits auf der Warteliste für diese Veranstaltung." });
+      return res.status(409).json({
+        error: event.collectInterest
+          ? "Du bist für diese Veranstaltung bereits vorgemerkt."
+          : "Du stehst bereits auf der Warteliste für diese Veranstaltung.",
+      });
     }
 
     let interestBus = null;
@@ -74,11 +87,19 @@ export default async function handler(req, res) {
       },
     });
 
-    await sendEmail({
-      to: normalizedEmail,
-      subject: interestBus ? `Interesse vermerkt: ${event.title}` : `Warteliste: ${event.title}`,
-      html: buildWaitlistConfirmationHtml({ firstName: firstName.trim(), event, busName: interestBus?.name }),
-    });
+    if (event.collectInterest) {
+      await sendEmail({
+        to: normalizedEmail,
+        subject: `Vorgemerkt: ${event.title}`,
+        html: buildInterestListConfirmationHtml({ firstName: firstName.trim(), event }),
+      });
+    } else {
+      await sendEmail({
+        to: normalizedEmail,
+        subject: interestBus ? `Interesse vermerkt: ${event.title}` : `Warteliste: ${event.title}`,
+        html: buildWaitlistConfirmationHtml({ firstName: firstName.trim(), event, busName: interestBus?.name }),
+      });
+    }
 
     return res.status(201).json({ interest: true, id: interest.id });
   }

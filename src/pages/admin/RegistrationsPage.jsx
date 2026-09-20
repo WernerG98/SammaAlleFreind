@@ -4,7 +4,7 @@ import { api } from "../../lib/api.js";
 import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 import { useToast } from "../../components/Toast.jsx";
 
-function InterestEmailForm({ eventId, buses }) {
+function InterestEmailForm({ eventId, buses, collectInterest }) {
   const [busId, setBusId] = useState("all");
   const [subject, setSubject] = useState("");
   const [bodyHtml, setBodyHtml] = useState("");
@@ -36,7 +36,7 @@ function InterestEmailForm({ eventId, buses }) {
 
   return (
     <div className="mt-8 bg-gray-900 border border-gray-800 rounded-lg p-5">
-      <h2 className="font-semibold mb-3 text-gray-100">Rundmail an alle auf der Warteliste senden</h2>
+      <h2 className="font-semibold mb-3 text-gray-100">{collectInterest ? "Rundmail an alle, die dabei wären" : "Rundmail an alle auf der Warteliste senden"}</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
         {buses.length > 0 && (
           <div>
@@ -46,7 +46,7 @@ function InterestEmailForm({ eventId, buses }) {
               onChange={(e) => setBusId(e.target.value)}
               className="w-full sm:w-64 border border-gray-700 bg-gray-800 text-gray-100 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
             >
-              <option value="all">Alle auf der Warteliste</option>
+              <option value="all">{collectInterest ? "Alle Vorgemerkten" : "Alle auf der Warteliste"}</option>
               {buses.map((bus) => (
                 <option key={bus.id} value={bus.id}>
                   Nur "{bus.name}"
@@ -74,7 +74,7 @@ function InterestEmailForm({ eventId, buses }) {
         {error && <p className="text-sm text-red-400">{error}</p>}
         {result && (
           <p className="text-sm text-emerald-400">
-            Versendet an {result.sent} von {result.total} Personen auf der Warteliste.
+            Versendet an {result.sent} von {result.total} {collectInterest ? "vorgemerkten Personen" : "Personen auf der Warteliste"}.
             {result.failed.length > 0 && ` Fehlgeschlagen: ${result.failed.join(", ")}`}
           </p>
         )}
@@ -567,7 +567,7 @@ export default function RegistrationsPage() {
 
       {interests.length > 0 && (
         <div className="mt-8">
-          <h2 className="font-semibold mb-3 text-gray-100">Warteliste ({interests.length})</h2>
+          <h2 className="font-semibold mb-3 text-gray-100">{event?.collectInterest ? "Wer wär dabei" : "Warteliste"} ({interests.length})</h2>
           <input
             type="text"
             placeholder="Suche nach Name oder E-Mail…"
@@ -615,7 +615,7 @@ export default function RegistrationsPage() {
       )}
 
       {registrations.length > 0 && <BulkEmailForm eventId={id} />}
-      {interests.length > 0 && <InterestEmailForm eventId={id} buses={buses} />}
+      {interests.length > 0 && <InterestEmailForm eventId={id} buses={buses} collectInterest={Boolean(event?.collectInterest)} />}
 
       <ConfirmDialog
         open={!!toRemove}

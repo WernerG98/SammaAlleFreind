@@ -314,6 +314,70 @@ export default function EventPage() {
         {event.description && (
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
         )}
+
+        {event.collectInterest &&
+          (waitlistDone ? (
+            <div className="mt-6 bg-gradient-to-br from-emerald-950/60 to-emerald-900/20 border border-emerald-800 rounded-xl p-5 text-emerald-300">
+              🙋 Danke, du bist vorgemerkt! Sobald die Veranstaltung feststeht, melden wir uns per E-Mail bei dir.
+              Angemeldet bist du damit noch nicht.
+            </div>
+          ) : (
+            <form
+              onSubmit={handleWaitlistSubmit}
+              className="mt-6 space-y-4 bg-gray-900 border border-teal-800 rounded-xl p-6 shadow-sm"
+            >
+              <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
+              <div>
+                <h2 className="font-semibold text-gray-100">🙋 Wer wär dabei?</h2>
+                <p className="text-sm text-gray-400 mt-1">
+                  Termin, Preis und Details stehen noch nicht fest. Lass dich unverbindlich vormerken, wir melden
+                  uns per E-Mail, sobald es konkret wird.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">Vorname</label>
+                  <input
+                    required
+                    className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
+                    value={form.firstName}
+                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">Name</label>
+                  <input
+                    required
+                    className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
+                    value={form.lastName}
+                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1 text-gray-300">E-Mail-Adresse</label>
+                <input
+                  required
+                  type="email"
+                  className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </div>
+
+              {error && <p className="text-sm text-red-400">{error}</p>}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded-lg py-2 font-medium shadow-md shadow-teal-950/30 disabled:opacity-50 active:scale-[0.98] transition-all"
+              >
+                {submitting ? "Wird gesendet…" : "Ich wär dabei"}
+              </button>
+            </form>
+          ))}
       </div>
     );
   }

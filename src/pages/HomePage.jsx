@@ -310,6 +310,11 @@ export default function HomePage() {
                       </p>
                     )}
                     <p className="text-sm text-gray-500 mt-2 font-semibold">⏳ Coming Soon</p>
+                    {event.collectInterest && (
+                      <span className="inline-block mt-2 text-[11px] font-bold uppercase tracking-wide text-white bg-gradient-to-r from-teal-500 to-emerald-600 shadow-sm shadow-teal-950/50 rounded-full px-2 py-0.5">
+                        🙋 Wer wär dabei? Jetzt vormerken
+                      </span>
+                    )}
                   </div>
                   {event.imageUrl && (
                     <img

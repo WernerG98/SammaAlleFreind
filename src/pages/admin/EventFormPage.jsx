@@ -40,6 +40,7 @@ export default function EventFormPage() {
     description: "",
     imageUrl: "",
     comingSoon: false,
+    collectInterest: false,
     eventDate: "",
     registrationDeadline: "",
     pricePerPerson: "",
@@ -100,6 +101,7 @@ export default function EventFormPage() {
           description: event.description || "",
           imageUrl: event.imageUrl || "",
           comingSoon: event.comingSoon,
+          collectInterest: event.collectInterest || false,
           noRegistrationRequired: event.noRegistrationRequired || false,
           commentsEnabled: event.commentsEnabled || false,
           eventDate: event.eventDate ? toDateTimeInputValue(event.eventDate) : "",
@@ -235,6 +237,23 @@ export default function EventFormPage() {
             />
             Nur Ankündigung ("Coming Soon"), Datum, Preis und Slots stehen noch nicht fest
           </label>
+
+          {form.comingSoon && (
+            <div className="border border-gray-700 rounded-lg p-3 space-y-1 bg-gray-800">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={form.collectInterest}
+                  onChange={(e) => setForm({ ...form, collectInterest: e.target.checked })}
+                />
+                🙋 "Wer wär dabei?", Interessenten vormerken
+              </label>
+              <p className="text-xs text-gray-500">
+                Gäste können sich mit Name und E-Mail unverbindlich vormerken lassen. Du siehst sie unter
+                "Anmeldungen" und kannst ihnen per Rundmail Bescheid geben, sobald die Veranstaltung feststeht.
+              </p>
+            </div>
+          )}
 
           {form.comingSoon && (
             <div>

@@ -113,6 +113,22 @@ export function buildWaitlistConfirmationHtml({ firstName, event, busName }) {
   `;
 }
 
+export function buildInterestListConfirmationHtml({ firstName, event }) {
+  return `
+    <h2>Du bist vorgemerkt</h2>
+    <p>Hallo ${firstName},</p>
+    <p>
+      danke für dein Interesse an <strong>${event.title}</strong>! Termin, Preis und weitere Infos stehen noch
+      nicht fest. Sobald es konkret wird, melden wir uns per E-Mail bei dir.
+    </p>
+    <p>
+      Wichtig: Mit der Vormerkung bist du noch <strong>nicht angemeldet</strong>. Die verbindliche Anmeldung
+      und Zahlung folgt erst, wenn die Veranstaltung feststeht.
+    </p>
+    ${externalOrganizerNote(event)}
+  `;
+}
+
 export function buildRegistrationRemovedHtml({ firstName, event }) {
   return `
     <h2>Deine Anmeldung wurde entfernt</h2>

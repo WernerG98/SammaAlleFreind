@@ -15,6 +15,7 @@ model Event {
   imageUrl       String?
   eventDate      DateTime?
   comingSoon     Boolean  @default(false)
+  collectInterest Boolean @default(false)
   registrationDeadline DateTime?
   pricePerPerson Decimal? @db.Decimal(10, 2)
   paypalLink     String?
