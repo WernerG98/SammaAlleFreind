@@ -466,6 +466,11 @@ export default function HomePage() {
                       <CapacityBar capacity={totalCapacity} remaining={totalRemaining} className="mt-1.5 max-w-[200px]" />
                     </>
                   )}
+                  {soldOut && event.registrationOpen && (
+                    <span className="inline-block mt-2 text-[11px] font-bold uppercase tracking-wide text-white bg-gradient-to-r from-teal-500 to-emerald-600 shadow-sm shadow-teal-950/50 rounded-full px-2 py-0.5">
+                      ✋ Jetzt auf die Warteliste setzen lassen
+                    </span>
+                  )}
                 </div>
                 {event.imageUrl && (
                   <img
