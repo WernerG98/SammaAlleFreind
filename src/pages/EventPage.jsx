@@ -676,16 +676,19 @@ export default function EventPage() {
               Danke! Du stehst jetzt auf der Warteliste, wir melden uns, sobald ein Platz frei wird.
             </div>
           ) : !showWaitlistForm ? (
-            <div className="mt-4 text-center">
-              <button
-                type="button"
-                onClick={() => setShowWaitlistForm(true)}
-                className="inline-flex items-center gap-1 bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 text-teal-300 rounded px-2 py-1 text-xs font-medium transition-colors"
-              >
-                <span aria-hidden="true">✋</span>
-                Alle Plätze vergeben? Jetzt auf die Warteliste setzen
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setShowWaitlistForm(true)}
+              className="mt-4 w-full flex items-center gap-3 text-left bg-teal-950/40 border border-teal-800 hover:border-teal-600 hover:bg-teal-950/60 rounded-lg px-4 py-3 active:scale-[0.99] transition-all"
+            >
+              <span className="text-xl shrink-0" aria-hidden="true">
+                ✋
+              </span>
+              <span className="text-sm text-teal-300">
+                <strong className="font-semibold text-teal-200">Alle Plätze vergeben?</strong> Jetzt auf die
+                Warteliste setzen.
+              </span>
+            </button>
           ) : (
             <form onSubmit={handleWaitlistSubmit} className="mt-4 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
               <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
