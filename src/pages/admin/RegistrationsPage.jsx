@@ -416,165 +416,75 @@ export default function RegistrationsPage() {
     }
   }
 
+  const waitlistLabel = event?.collectInterest ? "Wer wär dabei" : "Warteliste";
+  const onWaitlist = busFilter === "waitlist";
+
   return (
     <div>
       <Link to="/admin" className="text-sm text-teal-400 hover:underline">
         ← Zurück zur Übersicht
       </Link>
-      <h1 className="text-2xl font-bold mt-2 mb-6 text-gray-100">Anmeldungen ({registrations.length})</h1>
+      <h1 className="text-2xl font-bold mt-2 mb-6 text-gray-100">
+        {onWaitlist ? `${waitlistLabel} (${interests.length})` : `Anmeldungen (${registrations.length})`}
+      </h1>
 
       {error && <p className="text-red-400 mb-4">{error}</p>}
 
-      {buses.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button
+          type="button"
+          onClick={() => setBusFilter("all")}
+          className={`text-xs px-3 py-1.5 rounded-full border ${
+            busFilter === "all"
+              ? "bg-teal-600 text-white border-teal-600"
+              : "bg-gray-900 text-gray-300 border-gray-700"
+          }`}
+        >
+          Alle
+        </button>
+        {busStats.map((bus) => (
           <button
             type="button"
-            onClick={() => setBusFilter("all")}
-            className={`text-xs px-3 py-1.5 rounded-full border ${
-              busFilter === "all"
+            key={bus.id}
+            onClick={() => setBusFilter(bus.id)}
+            className={`text-xs px-3 py-1.5 rounded-full border flex items-center gap-1 ${
+              busFilter === bus.id
                 ? "bg-teal-600 text-white border-teal-600"
-                : "bg-gray-900 text-gray-300 border-gray-700"
+                : bus.full || !bus.enabled
+                  ? "bg-gray-800 text-gray-500 border-gray-700"
+                  : "bg-gray-900 text-gray-300 border-gray-700"
             }`}
           >
-            Alle
+            {(bus.full || !bus.enabled) && <span aria-hidden="true">{bus.enabled ? "🔒" : "⏳"}</span>}
+            {bus.name} ({bus.registeredCount}/{bus.capacity ?? "∞"})
           </button>
-          {busStats.map((bus) => (
-            <button
-              type="button"
-              key={bus.id}
-              onClick={() => setBusFilter(bus.id)}
-              className={`text-xs px-3 py-1.5 rounded-full border flex items-center gap-1 ${
-                busFilter === bus.id
-                  ? "bg-teal-600 text-white border-teal-600"
-                  : bus.full || !bus.enabled
-                    ? "bg-gray-800 text-gray-500 border-gray-700"
-                    : "bg-gray-900 text-gray-300 border-gray-700"
-              }`}
-            >
-              {(bus.full || !bus.enabled) && <span aria-hidden="true">{bus.enabled ? "🔒" : "⏳"}</span>}
-              {bus.name} ({bus.registeredCount}/{bus.capacity ?? "∞"})
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <input
-          type="text"
-          placeholder="Suche nach Name oder E-Mail…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:w-72 border border-gray-700 bg-gray-900 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
-        />
+        ))}
         <button
           type="button"
-          onClick={exportCsv}
-          disabled={filteredRegistrations.length === 0}
-          className="border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50 whitespace-nowrap"
+          onClick={() => setBusFilter("waitlist")}
+          className={`text-xs px-3 py-1.5 rounded-full border flex items-center gap-1 ${
+            onWaitlist
+              ? "bg-teal-600 text-white border-teal-600"
+              : "bg-gray-900 text-gray-300 border-gray-700"
+          }`}
         >
-          ⬇️ CSV exportieren
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setBulkRemoveMode("unpaid");
-            setBulkRemoveStep(1);
-          }}
-          disabled={registrations.filter((r) => !r.paid).length === 0}
-          className="border border-amber-800 rounded px-3 py-2 text-sm text-amber-400 hover:bg-amber-950/40 disabled:opacity-50 whitespace-nowrap"
-        >
-          🗑️ Alle unbezahlten entfernen
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setBulkRemoveMode("all");
-            setBulkRemoveStep(1);
-          }}
-          disabled={registrations.length === 0}
-          className="border border-red-800 rounded px-3 py-2 text-sm text-red-400 hover:bg-red-950/40 disabled:opacity-50 whitespace-nowrap"
-        >
-          🗑️ Alle Anmeldungen entfernen
+          <span aria-hidden="true">✋</span>
+          {waitlistLabel} ({interests.length})
         </button>
       </div>
 
-      <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
-        <table className="w-full text-sm min-w-[640px]">
-          <thead className="bg-gray-800 text-left">
-            <tr>
-              <SortHeader field="name">Name</SortHeader>
-              <SortHeader field="email">E-Mail</SortHeader>
-              <SortHeader field="bus">Slot</SortHeader>
-              <SortHeader field="newsletter">Newsletter</SortHeader>
-              <SortHeader field="paid">Bezahlt</SortHeader>
-              {showComments && <th className="px-4 py-2 text-left font-semibold text-gray-500">Kommentar</th>}
-              <th className="px-4 py-2"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRegistrations.map((reg) => (
-              <tr key={reg.id} className="border-t border-gray-800 text-gray-200">
-                <td className="px-4 py-2">
-                  {reg.firstName} {reg.lastName}
-                </td>
-                <td className="px-4 py-2">{reg.email}</td>
-                <td className="px-4 py-2">
-                  <select
-                    className="border border-gray-700 bg-gray-800 text-gray-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-teal-500"
-                    value={reg.busId}
-                    disabled={pendingId === reg.id}
-                    onChange={(e) => changeBus(reg, e.target.value)}
-                  >
-                    {buses.map((bus) => (
-                      <option key={bus.id} value={bus.id}>
-                        {bus.name}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="px-4 py-2">{reg.newsletterOptIn ? "Ja" : "Nein"}</td>
-                <td className="px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={reg.paid}
-                    disabled={pendingId === reg.id}
-                    onChange={() => togglePaid(reg)}
-                  />
-                </td>
-                {showComments && (
-                  <td className="px-4 py-2 max-w-[220px] whitespace-pre-wrap text-gray-300">
-                    {reg.comment || <span className="text-gray-600">–</span>}
-                  </td>
-                )}
-                <td className="px-4 py-2 text-right">
-                  <button
-                    type="button"
-                    disabled={pendingId === reg.id}
-                    onClick={() => setToRemove({ id: reg.id, label: `${reg.firstName} ${reg.lastName}` })}
-                    className="text-red-400 hover:underline text-xs"
-                  >
-                    Entfernen
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredRegistrations.length === 0 && (
-          <p className="text-gray-500 px-4 py-6">Keine Anmeldungen in dieser Auswahl.</p>
-        )}
-      </div>
+      {onWaitlist ? (
+        <>
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <input
+              type="text"
+              placeholder="Suche nach Name oder E-Mail…"
+              value={interestSearch}
+              onChange={(e) => setInterestSearch(e.target.value)}
+              className="w-full sm:w-72 border border-gray-700 bg-gray-900 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+            />
+          </div>
 
-      {interests.length > 0 && (
-        <div className="mt-8">
-          <h2 className="font-semibold mb-3 text-gray-100">{event?.collectInterest ? "Wer wär dabei" : "Warteliste"} ({interests.length})</h2>
-          <input
-            type="text"
-            placeholder="Suche nach Name oder E-Mail…"
-            value={interestSearch}
-            onChange={(e) => setInterestSearch(e.target.value)}
-            className="w-full sm:w-72 border border-gray-700 bg-gray-900 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm mb-4 focus:outline-none focus:border-teal-500"
-          />
           <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
             <table className="w-full text-sm min-w-[420px]">
               <thead className="bg-gray-800 text-left">
@@ -608,14 +518,128 @@ export default function RegistrationsPage() {
               </tbody>
             </table>
             {filteredInterests.length === 0 && (
-              <p className="text-gray-500 px-4 py-6">Keine Treffer für diese Suche.</p>
+              <p className="text-gray-500 px-4 py-6">
+                {interests.length === 0 ? "Noch niemand auf dieser Liste." : "Keine Treffer für diese Suche."}
+              </p>
             )}
           </div>
-        </div>
-      )}
 
-      {registrations.length > 0 && <BulkEmailForm eventId={id} />}
-      {interests.length > 0 && <InterestEmailForm eventId={id} buses={buses} collectInterest={Boolean(event?.collectInterest)} />}
+          {interests.length > 0 && (
+            <InterestEmailForm eventId={id} buses={buses} collectInterest={Boolean(event?.collectInterest)} />
+          )}
+        </>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <input
+              type="text"
+              placeholder="Suche nach Name oder E-Mail…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full sm:w-72 border border-gray-700 bg-gray-900 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+            />
+            <button
+              type="button"
+              onClick={exportCsv}
+              disabled={filteredRegistrations.length === 0}
+              className="border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50 whitespace-nowrap"
+            >
+              ⬇️ CSV exportieren
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setBulkRemoveMode("unpaid");
+                setBulkRemoveStep(1);
+              }}
+              disabled={registrations.filter((r) => !r.paid).length === 0}
+              className="border border-amber-800 rounded px-3 py-2 text-sm text-amber-400 hover:bg-amber-950/40 disabled:opacity-50 whitespace-nowrap"
+            >
+              🗑️ Alle unbezahlten entfernen
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setBulkRemoveMode("all");
+                setBulkRemoveStep(1);
+              }}
+              disabled={registrations.length === 0}
+              className="border border-red-800 rounded px-3 py-2 text-sm text-red-400 hover:bg-red-950/40 disabled:opacity-50 whitespace-nowrap"
+            >
+              🗑️ Alle Anmeldungen entfernen
+            </button>
+          </div>
+
+          <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
+            <table className="w-full text-sm min-w-[640px]">
+              <thead className="bg-gray-800 text-left">
+                <tr>
+                  <SortHeader field="name">Name</SortHeader>
+                  <SortHeader field="email">E-Mail</SortHeader>
+                  <SortHeader field="bus">Slot</SortHeader>
+                  <SortHeader field="newsletter">Newsletter</SortHeader>
+                  <SortHeader field="paid">Bezahlt</SortHeader>
+                  {showComments && <th className="px-4 py-2 text-left font-semibold text-gray-500">Kommentar</th>}
+                  <th className="px-4 py-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRegistrations.map((reg) => (
+                  <tr key={reg.id} className="border-t border-gray-800 text-gray-200">
+                    <td className="px-4 py-2">
+                      {reg.firstName} {reg.lastName}
+                    </td>
+                    <td className="px-4 py-2">{reg.email}</td>
+                    <td className="px-4 py-2">
+                      <select
+                        className="border border-gray-700 bg-gray-800 text-gray-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-teal-500"
+                        value={reg.busId}
+                        disabled={pendingId === reg.id}
+                        onChange={(e) => changeBus(reg, e.target.value)}
+                      >
+                        {buses.map((bus) => (
+                          <option key={bus.id} value={bus.id}>
+                            {bus.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-2">{reg.newsletterOptIn ? "Ja" : "Nein"}</td>
+                    <td className="px-4 py-2">
+                      <input
+                        type="checkbox"
+                        checked={reg.paid}
+                        disabled={pendingId === reg.id}
+                        onChange={() => togglePaid(reg)}
+                      />
+                    </td>
+                    {showComments && (
+                      <td className="px-4 py-2 max-w-[220px] whitespace-pre-wrap text-gray-300">
+                        {reg.comment || <span className="text-gray-600">–</span>}
+                      </td>
+                    )}
+                    <td className="px-4 py-2 text-right">
+                      <button
+                        type="button"
+                        disabled={pendingId === reg.id}
+                        onClick={() => setToRemove({ id: reg.id, label: `${reg.firstName} ${reg.lastName}` })}
+                        className="text-red-400 hover:underline text-xs"
+                      >
+                        Entfernen
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {filteredRegistrations.length === 0 && (
+              <p className="text-gray-500 px-4 py-6">Keine Anmeldungen in dieser Auswahl.</p>
+            )}
+          </div>
+
+          {registrations.length > 0 && <BulkEmailForm eventId={id} />}
+        </>
+      )}
 
       <ConfirmDialog
         open={!!toRemove}
