@@ -6,7 +6,9 @@ import { useToast } from "../../components/Toast.jsx";
 
 function AssignBusControl({ busStats, assigning, onAssign }) {
   const [selected, setSelected] = useState("");
-  const selectableBuses = busStats.filter((b) => b.enabled && !b.full);
+  // Admin-Zuweisung darf auch in noch nicht öffentlich buchbare Slots gehen,
+  // nur die Kapazität ist hier eine echte Grenze.
+  const selectableBuses = busStats.filter((b) => !b.full);
 
   if (selectableBuses.length === 0) {
     return <span className="text-xs text-gray-600">Kein freier Slot</span>;
@@ -23,6 +25,7 @@ function AssignBusControl({ busStats, assigning, onAssign }) {
         <option value="">Slot wählen…</option>
         {selectableBuses.map((b) => (
           <option key={b.id} value={b.id}>
+            {b.enabled ? "" : "⏳ "}
             {b.name} ({b.capacity === null ? "unbegrenzt" : `${b.capacity - b.registeredCount} frei`})
           </option>
         ))}

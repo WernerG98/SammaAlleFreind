@@ -47,9 +47,6 @@ export default async function handler(req, res) {
       if (!targetBus || targetBus.eventId !== interest.eventId) {
         return res.status(404).json({ error: "Slot nicht gefunden." });
       }
-      if (!targetBus.enabled) {
-        return res.status(409).json({ error: "Dieser Slot ist aktuell nicht buchbar." });
-      }
       if (targetBus.capacity !== null && targetBus.registrations.length >= targetBus.capacity) {
         return res.status(409).json({ error: "Dieser Slot hat keine freien Plätze mehr." });
       }
