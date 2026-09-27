@@ -113,6 +113,27 @@ export function buildWaitlistConfirmationHtml({ firstName, event, busName }) {
   `;
 }
 
+export function buildWaitlistPromotedHtml({ firstName, event, busName, registrationId, isFree }) {
+  const baseUrl = process.env.PUBLIC_BASE_URL || "http://localhost:3000";
+  const paymentUrl = `${baseUrl}/anmeldung/${registrationId}/zahlung`;
+  return `
+    <h2>Ein Platz ist frei geworden!</h2>
+    <p>Hallo ${firstName},</p>
+    <p>
+      gute Nachricht: Du bist jetzt fest für <strong>${busName}</strong> bei <strong>${event.title}</strong>
+      eingeplant.
+    </p>
+    <p>
+      ${
+        isFree
+          ? "Die Veranstaltung ist kostenlos, damit bist du fertig angemeldet."
+          : `Bitte schließe deine Anmeldung noch mit der Zahlung ab: <a href="${paymentUrl}">${paymentUrl}</a>`
+      }
+    </p>
+    ${externalOrganizerNote(event)}
+  `;
+}
+
 export function buildInterestListConfirmationHtml({ firstName, event }) {
   return `
     <h2>Du bist vorgemerkt</h2>

@@ -4,6 +4,41 @@ import { api } from "../../lib/api.js";
 import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 import { useToast } from "../../components/Toast.jsx";
 
+function AssignBusControl({ busStats, assigning, onAssign }) {
+  const [selected, setSelected] = useState("");
+  const selectableBuses = busStats.filter((b) => b.enabled && !b.full);
+
+  if (selectableBuses.length === 0) {
+    return <span className="text-xs text-gray-600">Kein freier Slot</span>;
+  }
+
+  return (
+    <div className="flex items-center gap-1">
+      <select
+        value={selected}
+        onChange={(e) => setSelected(e.target.value)}
+        disabled={assigning}
+        className="border border-gray-700 bg-gray-800 text-gray-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-teal-500 disabled:opacity-50"
+      >
+        <option value="">Slot wählen…</option>
+        {selectableBuses.map((b) => (
+          <option key={b.id} value={b.id}>
+            {b.name} ({b.capacity === null ? "unbegrenzt" : `${b.capacity - b.registeredCount} frei`})
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        disabled={!selected || assigning}
+        onClick={() => onAssign(selected)}
+        className="text-teal-400 hover:underline text-xs disabled:opacity-40 disabled:hover:no-underline whitespace-nowrap"
+      >
+        {assigning ? "…" : "Zuweisen"}
+      </button>
+    </div>
+  );
+}
+
 function InterestEmailForm({ eventId, buses, collectInterest }) {
   const [busId, setBusId] = useState("all");
   const [subject, setSubject] = useState("");
@@ -350,6 +385,20 @@ export default function RegistrationsPage() {
     }
   }
 
+  async function assignBus(interest, busId) {
+    setError("");
+    setPendingId(interest.id);
+    try {
+      await api.post(`/admin/registrations/${interest.id}`, { busId });
+      toast(`${interest.firstName} ${interest.lastName} zugewiesen und per E-Mail benachrichtigt.`);
+      load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setPendingId(null);
+    }
+  }
+
   function exportCsv() {
     const headers = [
       "Vorname",
@@ -492,6 +541,9 @@ export default function RegistrationsPage() {
                   <InterestSortHeader field="name">Name</InterestSortHeader>
                   <InterestSortHeader field="email">E-Mail</InterestSortHeader>
                   <th className="px-4 py-2 text-left font-semibold text-gray-500">Slot</th>
+                  {busStats.length > 0 && (
+                    <th className="px-4 py-2 text-left font-semibold text-gray-500">Bus zuweisen</th>
+                  )}
                   <th className="px-4 py-2"></th>
                 </tr>
               </thead>
@@ -503,6 +555,15 @@ export default function RegistrationsPage() {
                     </td>
                     <td className="px-4 py-2">{int.email}</td>
                     <td className="px-4 py-2 text-gray-400">{int.bus?.name || "Allgemein"}</td>
+                    {busStats.length > 0 && (
+                      <td className="px-4 py-2">
+                        <AssignBusControl
+                          busStats={busStats}
+                          assigning={pendingId === int.id}
+                          onAssign={(busId) => assignBus(int, busId)}
+                        />
+                      </td>
+                    )}
                     <td className="px-4 py-2 text-right">
                       <button
                         type="button"

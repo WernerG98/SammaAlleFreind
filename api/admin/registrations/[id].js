@@ -7,6 +7,7 @@ import {
   buildBusChangedHtml,
   buildRegistrationRemovedHtml,
   buildInterestRemovedHtml,
+  buildWaitlistPromotedHtml,
 } from "../../_lib/email.js";
 
 export default async function handler(req, res) {
@@ -24,7 +25,64 @@ export default async function handler(req, res) {
     });
 
     if (!registration) {
-      return res.status(404).json({ error: "Anmeldung nicht gefunden." });
+      // Not a registration - maybe promoting someone from the waitlist to a real slot.
+      const interest = await prisma.eventInterest.findUnique({
+        where: { id },
+        include: { event: true },
+      });
+      if (!interest) {
+        return res.status(404).json({ error: "Anmeldung nicht gefunden." });
+      }
+      if (session.role === "external" && !interest.event.isExternal) {
+        return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
+      }
+      if (!busId) {
+        return res.status(400).json({ error: "Bitte einen Slot auswählen." });
+      }
+
+      const targetBus = await prisma.bus.findUnique({
+        where: { id: busId },
+        include: { registrations: { select: { id: true } } },
+      });
+      if (!targetBus || targetBus.eventId !== interest.eventId) {
+        return res.status(404).json({ error: "Slot nicht gefunden." });
+      }
+      if (!targetBus.enabled) {
+        return res.status(409).json({ error: "Dieser Slot ist aktuell nicht buchbar." });
+      }
+      if (targetBus.capacity !== null && targetBus.registrations.length >= targetBus.capacity) {
+        return res.status(409).json({ error: "Dieser Slot hat keine freien Plätze mehr." });
+      }
+
+      const isFree = !interest.event.pricePerPerson;
+      const [newRegistration] = await prisma.$transaction([
+        prisma.registration.create({
+          data: {
+            eventId: interest.eventId,
+            busId: targetBus.id,
+            firstName: interest.firstName,
+            lastName: interest.lastName,
+            email: interest.email,
+            paid: isFree,
+            paidAt: isFree ? new Date() : null,
+          },
+        }),
+        prisma.eventInterest.delete({ where: { id: interest.id } }),
+      ]);
+
+      await sendEmail({
+        to: interest.email,
+        subject: `Ein Platz ist frei geworden: ${interest.event.title}`,
+        html: buildWaitlistPromotedHtml({
+          firstName: interest.firstName,
+          event: interest.event,
+          busName: targetBus.name,
+          registrationId: newRegistration.id,
+          isFree,
+        }),
+      });
+
+      return res.status(200).json(newRegistration);
     }
     if (session.role === "external" && !registration.event.isExternal) {
       return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
