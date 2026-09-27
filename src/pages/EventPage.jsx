@@ -693,7 +693,11 @@ export default function EventPage() {
                       <span aria-hidden="true">✋</span>
                       Warteliste
                     </span>
-                    <span className="block text-xs mt-0.5">Wir melden uns, wenn ein Platz frei wird</span>
+                    <span className="block text-xs mt-0.5">
+                      Wir melden uns, wenn ein Platz frei wird
+                      {event.waitlistCount > 0 &&
+                        ` · ${event.waitlistCount} ${event.waitlistCount === 1 ? "wartet" : "warten"} schon`}
+                    </span>
                   </div>
                 )}
               </div>

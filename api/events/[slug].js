@@ -54,7 +54,10 @@ export default async function handler(req, res) {
 
   const event = await prisma.event.findUnique({
     where: { slug },
-    include: { buses: { include: { registrations: { select: { paid: true } } } } },
+    include: {
+      buses: { include: { registrations: { select: { paid: true } } } },
+      _count: { select: { interests: true } },
+    },
   });
 
   if (!event || !event.isOpen) {

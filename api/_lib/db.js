@@ -99,6 +99,7 @@ export function withRemainingSeats(event, { password } = {}) {
     externalContactEmail: event.externalContactEmail,
     locked: false,
     registrationOpen: isRegistrationOpen(event),
+    waitlistCount: event._count?.interests ?? 0,
     buses: event.buses.map((bus) => {
       // A seat is reserved the moment someone registers, not only once an
       // admin confirms payment - otherwise several people could all be told
