@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { deleteImageIfManaged } from "./blob.js";
 
 // Serverless functions can be invoked repeatedly in the same process;
 // reuse a single PrismaClient instance to avoid exhausting DB connections.
@@ -30,7 +31,14 @@ export const EVENT_RETENTION_DAYS = 7;
 export async function cleanupExpiredEvents() {
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - EVENT_RETENTION_DAYS);
-  await prisma.event.deleteMany({ where: { eventDate: { lt: cutoff } } });
+  const expired = await prisma.event.findMany({
+    where: { eventDate: { lt: cutoff } },
+    select: { id: true, imageUrl: true },
+  });
+  if (expired.length === 0) return;
+
+  await prisma.event.deleteMany({ where: { id: { in: expired.map((e) => e.id) } } });
+  await Promise.all(expired.map((e) => deleteImageIfManaged(e.imageUrl)));
 }
 
 export function isRegistrationOpen(event) {
@@ -50,7 +58,7 @@ export function isAccessUnlocked(event, password) {
   return Boolean(password) && passwords.includes(password);
 }
 
-export function withRemainingSeats(event, { password } = {}) {
+export function withRemainingSeats(event, { password, listMode = false } = {}) {
   const locked = event.earlyAccessEnabled || event.isPrivate;
   const unlocked = isAccessUnlocked(event, password);
 
@@ -73,11 +81,23 @@ export function withRemainingSeats(event, { password } = {}) {
     };
   }
 
+  // Auf der Übersichtsseite werden nur die Karten-Felder gebraucht - Beschreibung,
+  // Bankdaten & Co. lädt jedes Event einzeln erst auf der Detailseite nach.
+  const detailFields = listMode
+    ? {}
+    : {
+        description: event.description,
+        paypalLink: event.paypalLink,
+        paymentNote: event.paymentNote,
+        iban: event.iban,
+        bic: event.bic,
+        accountHolder: event.accountHolder,
+      };
+
   return {
     id: event.id,
     slug: event.slug,
     title: event.title,
-    description: event.description,
     imageUrl: event.imageUrl,
     eventDate: event.eventDate,
     comingSoon: event.comingSoon,
@@ -85,11 +105,7 @@ export function withRemainingSeats(event, { password } = {}) {
     noRegistrationRequired: event.noRegistrationRequired,
     registrationDeadline: event.registrationDeadline,
     pricePerPerson: event.pricePerPerson,
-    paypalLink: event.paypalLink,
-    paymentNote: event.paymentNote,
-    iban: event.iban,
-    bic: event.bic,
-    accountHolder: event.accountHolder,
+    ...detailFields,
     isOpen: event.isOpen,
     earlyAccessEnabled: event.earlyAccessEnabled,
     isPrivate: event.isPrivate,

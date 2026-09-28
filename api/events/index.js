@@ -17,5 +17,6 @@ export default async function handler(req, res) {
     include: { buses: { include: { registrations: { select: { paid: true } } } } },
   });
 
-  return res.status(200).json(events.map(withRemainingSeats));
+  res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+  return res.status(200).json(events.map((event) => withRemainingSeats(event, { listMode: true })));
 }

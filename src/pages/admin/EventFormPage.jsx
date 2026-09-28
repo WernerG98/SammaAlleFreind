@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../lib/api.js";
+import { compressImage } from "../../lib/imageCompress.js";
 import RichTextEditor from "../../components/RichTextEditor.jsx";
 import Skeleton from "../../components/Skeleton.jsx";
 import { useToast } from "../../components/Toast.jsx";
@@ -73,22 +74,37 @@ export default function EventFormPage() {
       .catch(() => {});
   }, []);
   const [imageError, setImageError] = useState("");
+  const [imageUploading, setImageUploading] = useState(false);
 
-  function handleImageUpload(e) {
+  async function handleImageUpload(e) {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
 
     setImageError("");
-    if (file.size > 3 * 1024 * 1024) {
-      setImageError("Bild ist zu groß (max. 3 MB).");
+    if (file.size > 10 * 1024 * 1024) {
+      setImageError("Bild ist zu groß (max. 10 MB).");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => setForm((f) => ({ ...f, imageUrl: reader.result }));
-    reader.onerror = () => setImageError("Bild konnte nicht gelesen werden.");
-    reader.readAsDataURL(file);
+    setImageUploading(true);
+    try {
+      const compressed = await compressImage(file);
+      const { url } = await api.post("/admin/upload", { dataUrl: compressed, previousUrl: form.imageUrl || undefined });
+      setForm((f) => ({ ...f, imageUrl: url }));
+    } catch (err) {
+      setImageError(err.message || "Bild konnte nicht hochgeladen werden.");
+    } finally {
+      setImageUploading(false);
+    }
+  }
+
+  async function handleImageRemove() {
+    const previousUrl = form.imageUrl;
+    setForm((f) => ({ ...f, imageUrl: "" }));
+    if (previousUrl) {
+      api.delete("/admin/upload", { url: previousUrl }).catch(() => {});
+    }
   }
 
   useEffect(() => {
@@ -210,20 +226,18 @@ export default function EventFormPage() {
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="block w-full text-sm text-gray-300 border border-gray-700 bg-gray-800 rounded px-3 py-2"
+              disabled={imageUploading}
+              className="block w-full text-sm text-gray-300 border border-gray-700 bg-gray-800 rounded px-3 py-2 disabled:opacity-50"
             />
+            {imageUploading && <p className="text-xs text-gray-400 mt-1">Bild wird hochgeladen…</p>}
             {imageError && <p className="text-xs text-red-400 mt-1">{imageError}</p>}
-            {form.imageUrl && (
-              <button
-                type="button"
-                onClick={() => setForm({ ...form, imageUrl: "" })}
-                className="text-xs text-red-400 hover:underline mt-1"
-              >
+            {form.imageUrl && !imageUploading && (
+              <button type="button" onClick={handleImageRemove} className="text-xs text-red-400 hover:underline mt-1">
                 Bild entfernen
               </button>
             )}
             <p className="text-xs text-gray-500 mt-1">
-              Wird oben auf der Veranstaltungsseite als Flyer angezeigt (max. 3 MB).
+              Wird oben auf der Veranstaltungsseite als Flyer angezeigt (max. 10 MB, wird automatisch verkleinert).
             </p>
           </div>
         </Section>
@@ -605,7 +619,7 @@ export default function EventFormPage() {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || imageUploading}
             className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white rounded px-4 py-2 font-medium shadow-sm shadow-teal-950/30 disabled:opacity-50 active:scale-[0.98] transition-all"
           >
             {submitting ? "Speichern…" : "Speichern"}

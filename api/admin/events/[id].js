@@ -1,5 +1,6 @@
 import { prisma, parseCapacity, normalizeIbanOrBic } from "../../_lib/db.js";
 import { requireAdmin } from "../../_lib/auth.js";
+import { deleteImageIfManaged } from "../../_lib/blob.js";
 
 export default async function handler(req, res) {
   const session = await requireAdmin(req, res);
@@ -156,7 +157,8 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "DELETE") {
-    await prisma.event.delete({ where: { id } });
+    const deleted = await prisma.event.delete({ where: { id }, select: { imageUrl: true } });
+    await deleteImageIfManaged(deleted.imageUrl);
     return res.status(200).json({ success: true });
   }
 
