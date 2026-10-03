@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { deleteImageIfManaged } from "./blob.js";
+import { deleteImageIfManaged, thumbUrlFor } from "./blob.js";
 
 // Serverless functions can be invoked repeatedly in the same process;
 // reuse a single PrismaClient instance to avoid exhausting DB connections.
@@ -68,6 +68,7 @@ export function withRemainingSeats(event, { password, listMode = false } = {}) {
       slug: event.slug,
       title: event.title,
       imageUrl: event.imageUrl,
+      thumbUrl: thumbUrlFor(event.imageUrl),
       eventDate: event.isPrivate ? null : event.eventDate,
       registrationDeadline: event.registrationDeadline,
       pricePerPerson: event.pricePerPerson,
@@ -99,6 +100,7 @@ export function withRemainingSeats(event, { password, listMode = false } = {}) {
     slug: event.slug,
     title: event.title,
     imageUrl: event.imageUrl,
+    thumbUrl: thumbUrlFor(event.imageUrl),
     eventDate: event.eventDate,
     comingSoon: event.comingSoon,
     collectInterest: event.comingSoon && event.collectInterest,
@@ -120,7 +122,7 @@ export function withRemainingSeats(event, { password, listMode = false } = {}) {
       // A seat is reserved the moment someone registers, not only once an
       // admin confirms payment - otherwise several people could all be told
       // "1 Platz frei" for the same last seat while payments are pending.
-      const registeredCount = bus.registrations.length;
+      const registeredCount = bus._count.registrations;
       return {
         id: bus.id,
         name: bus.name,

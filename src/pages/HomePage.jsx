@@ -8,6 +8,20 @@ import { EventCardSkeleton } from "../components/Skeleton.jsx";
 
 const COUNTDOWN_THRESHOLD_DAYS = 14;
 
+function EventThumb({ event, className }) {
+  const [src, setSrc] = useState(event.thumbUrl || event.imageUrl);
+  return (
+    <img
+      src={src}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      onError={() => src !== event.imageUrl && setSrc(event.imageUrl)}
+      className={className}
+    />
+  );
+}
+
 function formatCountdown(eventDate) {
   if (!eventDate) return null;
   const diffMs = new Date(eventDate).getTime() - Date.now();
@@ -259,11 +273,7 @@ export default function HomePage() {
                     <p className="text-sm text-amber-400 mt-2 font-medium">Nur mit Passwort sichtbar</p>
                   </div>
                   {event.imageUrl && (
-                    <img
-                      src={event.imageUrl}
-                      alt=""
-                      className="w-14 h-14 shrink-0 rounded-lg object-cover border border-amber-800/60"
-                    />
+                    <EventThumb event={event} className="w-14 h-14 shrink-0 rounded-lg object-cover border border-amber-800/60" />
                   )}
                 </div>
               </Link>
@@ -317,11 +327,7 @@ export default function HomePage() {
                     )}
                   </div>
                   {event.imageUrl && (
-                    <img
-                      src={event.imageUrl}
-                      alt=""
-                      className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-700"
-                    />
+                    <EventThumb event={event} className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-700" />
                   )}
                 </div>
               </Link>
@@ -373,11 +379,7 @@ export default function HomePage() {
                     )}
                   </div>
                   {event.imageUrl && (
-                    <img
-                      src={event.imageUrl}
-                      alt=""
-                      className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-700"
-                    />
+                    <EventThumb event={event} className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-700" />
                   )}
                 </div>
               </Link>
@@ -473,11 +475,7 @@ export default function HomePage() {
                   )}
                 </div>
                 {event.imageUrl && (
-                  <img
-                    src={event.imageUrl}
-                    alt=""
-                    className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-700"
-                  />
+                  <EventThumb event={event} className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-700" />
                 )}
               </div>
             </Link>

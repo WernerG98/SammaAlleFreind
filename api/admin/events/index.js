@@ -1,4 +1,4 @@
-import { prisma, parseCapacity, normalizeIbanOrBic, cleanupExpiredEvents } from "../../_lib/db.js";
+import { prisma, parseCapacity, normalizeIbanOrBic } from "../../_lib/db.js";
 import { requireAdmin } from "../../_lib/auth.js";
 import { sendEmail } from "../../_lib/email.js";
 
@@ -114,12 +114,6 @@ export default async function handler(req, res) {
         return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
       }
       return res.status(200).json(await buildStats());
-    }
-
-    try {
-      await cleanupExpiredEvents();
-    } catch {
-      // Aufräumen soll das Laden der Veranstaltungen nicht blockieren.
     }
 
     const events = await prisma.event.findMany({

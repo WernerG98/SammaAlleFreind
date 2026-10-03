@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
     const event = await prisma.event.findUnique({
       where: { slug },
-      include: { buses: { include: { registrations: { select: { id: true } } } } },
+      include: { buses: { include: { _count: { select: { registrations: true } } } } },
     });
     if (!event) {
       return res.status(404).json({ error: "Veranstaltung nicht gefunden." });
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
         id: bus.id,
         name: bus.name,
         enabled: bus.enabled,
-        remaining: bus.capacity === null ? null : Math.max(0, bus.capacity - bus.registrations.length),
+        remaining: bus.capacity === null ? null : Math.max(0, bus.capacity - bus._count.registrations),
       })),
       registrations: registrations.map((r) => ({
         registrationId: r.id,
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
   const event = await prisma.event.findUnique({
     where: { slug },
     include: {
-      buses: { include: { registrations: { select: { paid: true } } } },
+      buses: { include: { _count: { select: { registrations: true } } } },
       _count: { select: { interests: true } },
     },
   });

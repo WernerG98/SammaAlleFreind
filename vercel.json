@@ -1,5 +1,6 @@
 {
   "framework": "vite",
+  "regions": ["fra1"],
   "rewrites": [
     {
       "source": "/((?!api/|@vite|@react-refresh|src/|node_modules/).*)",
@@ -8,7 +9,7 @@
   ],
   "crons": [
     {
-      "path": "/api/events",
+      "path": "/api/events?cleanup=1",
       "schedule": "0 3 * * *"
     }
   ]

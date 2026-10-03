@@ -6,13 +6,13 @@ export default async function handler(req, res) {
   if (!session) return;
 
   if (req.method === "POST") {
-    const { dataUrl, previousUrl } = req.body || {};
+    const { dataUrl, thumbDataUrl, previousUrl } = req.body || {};
     if (!dataUrl) {
       return res.status(400).json({ error: "Kein Bild übermittelt." });
     }
 
     try {
-      const url = await uploadImageDataUrl(dataUrl);
+      const url = await uploadImageDataUrl(dataUrl, { thumbDataUrl });
       if (previousUrl && previousUrl !== url) {
         await deleteImageIfManaged(previousUrl);
       }

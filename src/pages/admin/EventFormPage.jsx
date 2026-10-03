@@ -89,8 +89,15 @@ export default function EventFormPage() {
 
     setImageUploading(true);
     try {
-      const compressed = await compressImage(file);
-      const { url } = await api.post("/admin/upload", { dataUrl: compressed, previousUrl: form.imageUrl || undefined });
+      const [compressed, thumb] = await Promise.all([
+        compressImage(file),
+        compressImage(file, { maxDimension: 240, quality: 0.8 }),
+      ]);
+      const { url } = await api.post("/admin/upload", {
+        dataUrl: compressed,
+        thumbDataUrl: thumb,
+        previousUrl: form.imageUrl || undefined,
+      });
       setForm((f) => ({ ...f, imageUrl: url }));
     } catch (err) {
       setImageError(err.message || "Bild konnte nicht hochgeladen werden.");
