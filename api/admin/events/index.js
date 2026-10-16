@@ -119,7 +119,7 @@ export default async function handler(req, res) {
     const events = await prisma.event.findMany({
       where: isExternalRole ? { isExternal: true } : undefined,
       orderBy: { eventDate: "asc" },
-      include: { buses: true, _count: { select: { registrations: true } } },
+      include: { buses: true, _count: { select: { registrations: true, interests: true } } },
     });
     return res.status(200).json(events);
   }

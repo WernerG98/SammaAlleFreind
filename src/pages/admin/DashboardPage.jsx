@@ -157,6 +157,19 @@ export default function DashboardPage() {
                   : "Datum offen"}{" "}
                 ·{" "}
                 {event._count.registrations} Anmeldungen · {event.buses.length} Slot(s)
+                {event._count.interests > 0 && (
+                  <>
+                    {" "}
+                    ·{" "}
+                    <Link
+                      to={`/admin/veranstaltungen/${event.id}/anmeldungen`}
+                      className="text-xs font-semibold text-amber-300 bg-amber-950/50 rounded-full px-2 py-0.5 hover:bg-amber-900/60"
+                    >
+                      {event.collectInterest ? "🙋" : "✋"} {event._count.interests}{" "}
+                      {event.collectInterest ? "dabei" : "auf der Warteliste"}
+                    </Link>
+                  </>
+                )}
               </p>
               {daysUntilDeletion !== null && (
                 <p className="text-xs text-red-400 mt-1">
