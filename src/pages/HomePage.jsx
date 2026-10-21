@@ -111,14 +111,14 @@ function FeaturedEvent({ event, countdown }) {
       to={`/veranstaltung/${event.slug}`}
       className="group block lg:flex mb-6 overflow-hidden rounded-2xl border-2 border-teal-700/60 bg-gradient-to-br from-teal-950/40 to-gray-900 shadow-lg hover:shadow-xl hover:shadow-teal-950/40 hover:border-teal-500 active:scale-[0.99] transition-all"
     >
-      <div className="relative h-44 sm:h-60 lg:h-auto lg:w-1/2 lg:min-h-[300px] overflow-hidden bg-gray-800">
+      <div className="relative h-44 sm:h-60 lg:h-auto lg:w-2/5 lg:min-h-[320px] overflow-hidden bg-gray-800">
         {src ? (
           <img
             src={src}
             alt=""
             decoding="async"
             onError={() => event.imageUrl && src !== event.imageUrl && setSrc(event.imageUrl)}
-            className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+            className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div
@@ -134,7 +134,7 @@ function FeaturedEvent({ event, countdown }) {
         </span>
       </div>
 
-      <div className="relative -mt-6 lg:mt-0 px-5 pb-5 lg:w-1/2 lg:flex lg:flex-col lg:justify-center lg:p-8">
+      <div className="relative -mt-6 lg:mt-0 px-5 pb-5 lg:w-3/5 lg:flex lg:flex-col lg:justify-center lg:p-8">
         <span
           className={`inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-2 text-white shadow-sm ${
             unavailable ? "bg-gradient-to-r from-red-500 to-rose-700" : "bg-gradient-to-r from-teal-500 to-emerald-600"
