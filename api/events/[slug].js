@@ -1,4 +1,5 @@
 import { prisma, withRemainingSeats } from "../_lib/db.js";
+import { buildEventOgHtml } from "../_lib/ogPage.js";
 
 export default async function handler(req, res) {
   const { slug } = req.query;
@@ -51,6 +52,14 @@ export default async function handler(req, res) {
   }
 
   const { password } = req.query;
+
+  // Link-Vorschau-Crawler werden per vercel.json-Rewrite hierher geleitet.
+  if (req.query.og === "1") {
+    const ogEvent = await prisma.event.findUnique({ where: { slug } });
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
+    return res.status(200).send(buildEventOgHtml(ogEvent, slug));
+  }
 
   const event = await prisma.event.findUnique({
     where: { slug },

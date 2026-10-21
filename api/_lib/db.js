@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { deleteImageIfManaged, thumbUrlFor } from "./blob.js";
+import { deleteImageIfManaged, thumbUrlFor, mediumUrlFor } from "./blob.js";
 
 // Serverless functions can be invoked repeatedly in the same process;
 // reuse a single PrismaClient instance to avoid exhausting DB connections.
@@ -101,6 +101,7 @@ export function withRemainingSeats(event, { password, listMode = false } = {}) {
     title: event.title,
     imageUrl: event.imageUrl,
     thumbUrl: thumbUrlFor(event.imageUrl),
+    mediumUrl: mediumUrlFor(event.imageUrl),
     eventDate: event.eventDate,
     comingSoon: event.comingSoon,
     collectInterest: event.comingSoon && event.collectInterest,

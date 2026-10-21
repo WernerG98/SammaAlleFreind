@@ -3,6 +3,17 @@
   "regions": ["fra1"],
   "rewrites": [
     {
+      "source": "/veranstaltung/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(WhatsApp|facebookexternalhit|Facebot|Twitterbot|TelegramBot|Slackbot|LinkedInBot|Discordbot|Applebot|SkypeUriPreview|Signal).*"
+        }
+      ],
+      "destination": "/api/events/:slug?og=1"
+    },
+    {
       "source": "/((?!api/|@vite|@react-refresh|src/|node_modules/).*)",
       "destination": "/index.html"
     }

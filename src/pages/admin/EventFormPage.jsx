@@ -89,13 +89,15 @@ export default function EventFormPage() {
 
     setImageUploading(true);
     try {
-      const [compressed, thumb] = await Promise.all([
+      const [compressed, thumb, medium] = await Promise.all([
         compressImage(file),
         compressImage(file, { maxDimension: 240, quality: 0.8 }),
+        compressImage(file, { maxDimension: 900, quality: 0.75 }),
       ]);
       const { url } = await api.post("/admin/upload", {
         dataUrl: compressed,
         thumbDataUrl: thumb,
+        mediumDataUrl: medium,
         previousUrl: form.imageUrl || undefined,
       });
       setForm((f) => ({ ...f, imageUrl: url }));

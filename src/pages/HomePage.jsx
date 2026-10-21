@@ -56,6 +56,108 @@ function getEventMeta(event) {
   return { status: closed ? "closed" : "open", totalCapacity, totalRemaining, soldOut, closed };
 }
 
+function FeaturedEvent({ event, countdown }) {
+  const { status, soldOut, totalCapacity, totalRemaining } = event.meta;
+  const [src, setSrc] = useState(event.mediumUrl || event.imageUrl);
+
+  let badge = "🎉 Jetzt anmelden";
+  let cta = "Jetzt anmelden →";
+  if (status === "public") {
+    badge = "🎉 Öffentlich, keine Anmeldung nötig";
+    cta = "Mehr Infos →";
+  } else if (!event.registrationOpen) {
+    badge = "⛔ Anmeldung geschlossen";
+    cta = "Details ansehen →";
+  } else if (soldOut) {
+    badge = "🔴 Ausgebucht";
+    cta = "Auf die Warteliste →";
+  }
+  const unavailable = status !== "public" && (!event.registrationOpen || soldOut);
+
+  return (
+    <Link
+      to={`/veranstaltung/${event.slug}`}
+      className="group block mb-6 overflow-hidden rounded-2xl border-2 border-teal-700/60 bg-gradient-to-br from-teal-950/40 to-gray-900 shadow-lg hover:shadow-xl hover:shadow-teal-950/40 hover:border-teal-500 active:scale-[0.99] transition-all"
+    >
+      <div className="relative h-44 sm:h-60 overflow-hidden bg-gray-800">
+        {src ? (
+          <img
+            src={src}
+            alt=""
+            decoding="async"
+            onError={() => event.imageUrl && src !== event.imageUrl && setSrc(event.imageUrl)}
+            className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div
+            className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-700/40 to-emerald-950/60 text-6xl"
+            aria-hidden="true"
+          >
+            🎉
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/10 to-transparent" />
+        <span className="absolute top-3 left-3 text-[11px] font-bold uppercase tracking-wide text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-md rounded-full px-2.5 py-1">
+          ⭐ Nächste Veranstaltung
+        </span>
+      </div>
+
+      <div className="relative -mt-6 px-5 pb-5">
+        <span
+          className={`inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-2 text-white shadow-sm ${
+            unavailable ? "bg-gradient-to-r from-red-500 to-rose-700" : "bg-gradient-to-r from-teal-500 to-emerald-600"
+          }`}
+        >
+          {badge}
+        </span>
+        <h2 className="text-xl sm:text-2xl font-bold text-white">{event.title}</h2>
+        {event.isExternal && (
+          <p className="text-xs text-gray-400 mt-0.5">{event.externalOrganizer || "Externer Verein"}</p>
+        )}
+        <p className="text-sm text-gray-300 mt-2">
+          {new Date(event.eventDate).toLocaleDateString("de-DE", {
+            timeZone: "Europe/Berlin",
+            weekday: "long",
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })}
+          ,{" "}
+          {new Date(event.eventDate).toLocaleTimeString("de-DE", {
+            timeZone: "Europe/Berlin",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}{" "}
+          Uhr
+          {countdown && (
+            <span
+              className={`ml-2 text-xs font-semibold text-teal-300 ${isUrgentCountdown(countdown) ? "animate-pulse" : ""}`}
+            >
+              ⏳ {countdown}
+            </span>
+          )}
+        </p>
+        <p className="text-sm text-gray-400 mt-1">
+          {event.pricePerPerson
+            ? `${Number(event.pricePerPerson).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })} € pro Person`
+            : "Kostenlos"}
+          {totalCapacity > 0 && ` · ${totalRemaining} von ${totalCapacity} Plätzen frei`}
+        </p>
+        {totalCapacity > 0 && <CapacityBar capacity={totalCapacity} remaining={totalRemaining} className="mt-2 max-w-[260px]" />}
+        {soldOut && event.registrationOpen && event.waitlistCount > 0 && (
+          <p className="text-xs text-amber-300 mt-2">✋ {event.waitlistCount} warten schon auf der Warteliste</p>
+        )}
+        <span className="mt-4 inline-flex items-center rounded-lg bg-gradient-to-r from-teal-500 to-emerald-500 group-hover:from-teal-400 group-hover:to-emerald-400 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-teal-950/30 transition-colors">
+          {cta}
+        </span>
+      </div>
+    </Link>
+  );
+}
+
 const STATUS_OPTIONS = [
   { value: "all", label: "Alle Status" },
   { value: "open", label: "🎉 Anmeldung möglich" },
@@ -100,6 +202,17 @@ export default function HomePage() {
       const db = b.eventDate ? new Date(b.eventDate).getTime() : Infinity;
       return da - db;
     });
+
+  const featured =
+    !hasActiveFilters && sortBy === "date"
+      ? visibleEvents.find(
+          (event) =>
+            ["open", "closed", "public"].includes(event.meta.status) &&
+            event.eventDate &&
+            new Date(event.eventDate).getTime() > Date.now()
+        )
+      : null;
+  const listEvents = featured ? visibleEvents.filter((event) => event.id !== featured.id) : visibleEvents;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
@@ -225,8 +338,10 @@ export default function HomePage() {
         </div>
       )}
 
+      {featured && <FeaturedEvent event={featured} countdown={formatCountdown(featured.eventDate)} />}
+
       <div className="space-y-4">
-        {visibleEvents.map((event) => {
+        {listEvents.map((event) => {
           const countdown = formatCountdown(event.eventDate);
 
           if (event.meta.status === "locked" || event.meta.status === "private") {
@@ -293,7 +408,7 @@ export default function HomePage() {
                     <p className="text-sm text-amber-400 mt-2 font-medium">Nur mit Passwort sichtbar</p>
                   </div>
                   {event.imageUrl && (
-                    <EventThumb event={event} className="w-14 h-14 shrink-0 rounded-lg object-cover border border-amber-800/60" />
+                    <EventThumb event={event} className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg object-cover border border-amber-800/60" />
                   )}
                 </div>
               </Link>
@@ -347,7 +462,7 @@ export default function HomePage() {
                     )}
                   </div>
                   {event.imageUrl && (
-                    <EventThumb event={event} className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-700" />
+                    <EventThumb event={event} className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg object-cover border border-gray-700" />
                   )}
                 </div>
               </Link>
@@ -399,7 +514,7 @@ export default function HomePage() {
                     )}
                   </div>
                   {event.imageUrl && (
-                    <EventThumb event={event} className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-700" />
+                    <EventThumb event={event} className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg object-cover border border-gray-700" />
                   )}
                 </div>
               </Link>
@@ -496,7 +611,7 @@ export default function HomePage() {
                   )}
                 </div>
                 {event.imageUrl && (
-                  <EventThumb event={event} className="w-14 h-14 shrink-0 rounded-lg object-cover border border-gray-700" />
+                  <EventThumb event={event} className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg object-cover border border-gray-700" />
                 )}
               </div>
             </Link>
