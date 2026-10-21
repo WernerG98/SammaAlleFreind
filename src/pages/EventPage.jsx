@@ -555,88 +555,6 @@ export default function EventPage() {
           <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
           <h2 className="font-semibold text-gray-100">Anmeldung</h2>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-300">Vorname</label>
-              <input
-                required
-                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
-                value={form.firstName}
-                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-300">Name</label>
-              <input
-                required
-                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
-                value={form.lastName}
-                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-300">E-Mail-Adresse</label>
-            <input
-              required
-              type="email"
-              className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-            {!isWaitlistSelected && (
-              <p className="text-xs text-gray-400 mt-1">
-                Gilt auch für weitere Personen unten, sie dürfen dieselbe E-Mail-Adresse haben.
-              </p>
-            )}
-          </div>
-
-          {!isWaitlistSelected && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-300">Weitere Personen (optional)</label>
-                <button
-                  type="button"
-                  onClick={() => setAdditionalPeople([...additionalPeople, { firstName: "", lastName: "" }])}
-                  className="text-sm text-teal-400 hover:underline"
-                >
-                  + Person hinzufügen
-                </button>
-              </div>
-              {additionalPeople.length > 0 && (
-                <div className="space-y-2">
-                  {additionalPeople.map((person, i) => (
-                    <div key={i} className="flex gap-2">
-                      <input
-                        required
-                        placeholder="Vorname"
-                        className="flex-1 min-w-0 border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
-                        value={person.firstName}
-                        onChange={(e) => updateAdditionalPerson(i, "firstName", e.target.value)}
-                      />
-                      <input
-                        required
-                        placeholder="Nachname"
-                        className="flex-1 min-w-0 border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
-                        value={person.lastName}
-                        onChange={(e) => updateAdditionalPerson(i, "lastName", e.target.value)}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeAdditionalPerson(i)}
-                        aria-label="Person entfernen"
-                        className="text-red-400 px-2"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-300">Slot</label>
             {allFull && <p className="text-sm text-red-400 mb-2">Alle Slots sind ausgebucht.</p>}
@@ -721,7 +639,95 @@ export default function EventPage() {
                   </div>
                 )}
               </div>
+            {isWaitlistSelected && (
+              <p className="mt-2 text-xs text-teal-300">
+                Die Warteliste gilt nur für Einzelpersonen, damit wir dich per E-Mail erreichen können. Weitere
+                Personen tragen sich bitte jeweils einzeln mit ihrer eigenen E-Mail-Adresse ein.
+              </p>
+            )}
           </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-300">Vorname</label>
+              <input
+                required
+                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
+                value={form.firstName}
+                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-300">Name</label>
+              <input
+                required
+                className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
+                value={form.lastName}
+                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-300">E-Mail-Adresse</label>
+            <input
+              required
+              type="email"
+              className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+            {form.busId && !isWaitlistSelected && (
+              <p className="text-xs text-gray-400 mt-1">
+                Gilt auch für weitere Personen unten, sie dürfen dieselbe E-Mail-Adresse haben.
+              </p>
+            )}
+          </div>
+
+          {form.busId && !isWaitlistSelected && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-300">Weitere Personen (optional)</label>
+                <button
+                  type="button"
+                  onClick={() => setAdditionalPeople([...additionalPeople, { firstName: "", lastName: "" }])}
+                  className="text-sm text-teal-400 hover:underline"
+                >
+                  + Person hinzufügen
+                </button>
+              </div>
+              {additionalPeople.length > 0 && (
+                <div className="space-y-2">
+                  {additionalPeople.map((person, i) => (
+                    <div key={i} className="flex gap-2">
+                      <input
+                        required
+                        placeholder="Vorname"
+                        className="flex-1 min-w-0 border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+                        value={person.firstName}
+                        onChange={(e) => updateAdditionalPerson(i, "firstName", e.target.value)}
+                      />
+                      <input
+                        required
+                        placeholder="Nachname"
+                        className="flex-1 min-w-0 border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+                        value={person.lastName}
+                        onChange={(e) => updateAdditionalPerson(i, "lastName", e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeAdditionalPerson(i)}
+                        aria-label="Person entfernen"
+                        className="text-red-400 px-2"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {event.commentsEnabled && !isWaitlistSelected && (
             <div>
@@ -787,7 +793,7 @@ export default function EventPage() {
 
           {error && <p className="text-sm text-red-400">{error}</p>}
 
-          {!form.busId && <p className="text-sm text-amber-400">Bitte oben einen Slot auswählen.</p>}
+          {!form.busId && <p className="text-sm text-amber-400">Bitte zuerst einen Slot auswählen.</p>}
           {!isWaitlistSelected &&
             form.busId &&
             Boolean(event.pricePerPerson) &&
