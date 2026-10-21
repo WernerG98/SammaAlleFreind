@@ -81,7 +81,7 @@ export default function PublicLayout() {
           <Outlet />
         </div>
       </div>
-      <Footer />
+      <Footer reserveSpaceForFloatingButtons={isHome} />
     </div>
   );
 }

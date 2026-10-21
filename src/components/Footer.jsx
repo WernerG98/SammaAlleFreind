@@ -2,9 +2,13 @@ import { Link } from "react-router-dom";
 
 const linkClass = "inline-block px-2 py-2 hover:text-gray-300";
 
-export default function Footer() {
+export default function Footer({ reserveSpaceForFloatingButtons = false }) {
   return (
-    <footer className="mt-16 border-t border-gray-800 py-4 text-center text-xs text-gray-400">
+    <footer
+      className={`mt-16 border-t border-gray-800 pt-4 text-center text-xs text-gray-400 ${
+        reserveSpaceForFloatingButtons ? "pb-40 md:pb-4" : "pb-4"
+      }`}
+    >
       <div className="flex flex-wrap items-center justify-center gap-x-1">
         <Link to="/impressum" className={linkClass}>
           Impressum
