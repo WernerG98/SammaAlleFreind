@@ -19,7 +19,10 @@ export default async function handler(req, res) {
   const events = await prisma.event.findMany({
     where: { isOpen: true },
     orderBy: { eventDate: "asc" },
-    include: { buses: { include: { _count: { select: { registrations: true } } } } },
+    include: {
+      buses: { include: { _count: { select: { registrations: true } } } },
+      _count: { select: { interests: true } },
+    },
   });
 
   res.setHeader(

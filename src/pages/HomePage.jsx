@@ -73,6 +73,7 @@ export default function HomePage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
+  const [introOpen, setIntroOpen] = useState(false);
 
   useEffect(() => {
     api
@@ -103,15 +104,34 @@ export default function HomePage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-2xl font-bold mb-2 text-white">🎉 Info zu Veranstaltungen</h1>
-      <p className="text-sm text-gray-400 mb-6 text-justify">
-        Je nach Veranstaltung kannst du per PayPal oder per Überweisung bezahlen, die jeweils verfügbaren
-        Optionen siehst du nach der Anmeldung auf der Zahlungsseite. Bei anderen Zahlungsmethoden melde dich
-        bitte ganz normal wie gewohnt an und schreib uns anschließend über das Kontaktformular weiter unten.
-        Bitte beachte: Damit wir deine Zahlung zuordnen können, gib beim Bezahlen als Kommentar/Verwendungszweck
-        deinen Namen an, falls er nicht ohnehin ersichtlich ist. Fix dabei bist du erst, sobald deine Zahlung
-        eingegangen ist und du die Bestätigungsmail erhalten hast. Jede Zahlung wird manuell geprüft, daher
-        kann es etwas dauern, bis die Bestätigungsmail kommt.
-      </p>
+      <div className="text-sm text-gray-400 mb-6 space-y-2">
+        <p>
+          Je nach Veranstaltung kannst du per PayPal oder per Überweisung bezahlen, die jeweils verfügbaren
+          Optionen siehst du nach der Anmeldung auf der Zahlungsseite. Fix dabei bist du erst, sobald deine
+          Zahlung eingegangen ist und du die Bestätigungsmail erhalten hast.
+        </p>
+        {introOpen && (
+          <>
+            <p>
+              Bei anderen Zahlungsmethoden melde dich bitte ganz normal wie gewohnt an und schreib uns
+              anschließend über das Kontaktformular weiter unten.
+            </p>
+            <p>
+              Bitte beachte: Damit wir deine Zahlung zuordnen können, gib beim Bezahlen als
+              Kommentar/Verwendungszweck deinen Namen an, falls er nicht ohnehin ersichtlich ist. Jede Zahlung
+              wird manuell geprüft, daher kann es etwas dauern, bis die Bestätigungsmail kommt.
+            </p>
+          </>
+        )}
+        <button
+          type="button"
+          onClick={() => setIntroOpen((open) => !open)}
+          aria-expanded={introOpen}
+          className="text-teal-400 hover:text-teal-300 underline underline-offset-2 py-1"
+        >
+          {introOpen ? "Weniger anzeigen" : "Mehr zur Bezahlung"}
+        </button>
+      </div>
 
       <div className="flex gap-2 mb-6 border-b border-gray-800">
         <button
@@ -144,18 +164,18 @@ export default function HomePage() {
         </p>
       )}
 
-      <div className="flex flex-wrap items-center gap-2 mb-6">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 mb-6">
         <input
           type="text"
           placeholder="Suche nach Titel…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 min-w-[160px] border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+          className="col-span-2 sm:col-span-1 sm:flex-1 sm:min-w-[160px] border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+          className="w-full sm:w-auto min-w-0 border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
         >
           {STATUS_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -166,10 +186,10 @@ export default function HomePage() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+          className="w-full sm:w-auto min-w-0 border border-gray-700 bg-gray-800 text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
         >
-          <option value="date">Sortieren: Datum</option>
-          <option value="name">Sortieren: Name</option>
+          <option value="date">Nach Datum</option>
+          <option value="name">Nach Name</option>
         </select>
       </div>
 
@@ -471,6 +491,7 @@ export default function HomePage() {
                   {soldOut && event.registrationOpen && (
                     <span className="inline-block mt-2 text-[11px] font-bold uppercase tracking-wide text-white bg-gradient-to-r from-teal-500 to-emerald-600 shadow-sm shadow-teal-950/50 rounded-full px-2 py-0.5">
                       ✋ Warteliste möglich
+                      {event.waitlistCount > 0 && ` · ${event.waitlistCount} warten schon`}
                     </span>
                   )}
                 </div>

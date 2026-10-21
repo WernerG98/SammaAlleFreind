@@ -25,7 +25,11 @@ export default function PublicLayout() {
 
       <div
         className={`sticky top-0 z-30 w-full px-3 sm:px-4 bg-gray-950/90 backdrop-blur-md transition-[padding] duration-300 ${
-          scrolled ? "py-2 border-b border-gray-800/60" : "pt-6 sm:pt-8"
+          scrolled
+            ? "py-2 border-b border-gray-800/60"
+            : isHome
+              ? "pt-6 sm:pt-8"
+              : "py-2 border-b border-gray-800/60 sm:border-b-0 sm:pt-8 sm:pb-0"
         }`}
       >
         <Link to="/" className="max-w-3xl mx-auto flex items-center gap-3 sm:gap-4 text-gray-100 group">
@@ -33,20 +37,28 @@ export default function PublicLayout() {
             src="/Logo.png"
             alt=""
             className={`rounded-full shadow-md ring-2 ring-gray-700 transition-all duration-300 group-hover:scale-105 group-hover:ring-teal-600 ${
-              scrolled ? "h-9 w-9 sm:h-10 sm:w-10" : "h-16 w-16 sm:h-20 sm:w-20"
+              scrolled
+                ? "h-9 w-9 sm:h-10 sm:w-10"
+                : isHome
+                  ? "h-16 w-16 sm:h-20 sm:w-20"
+                  : "h-9 w-9 sm:h-20 sm:w-20"
             }`}
           />
           <span className="flex flex-col">
             <span
               className={`font-extrabold tracking-tight text-white bg-gradient-to-r from-white to-teal-200 bg-clip-text transition-all duration-300 ${
-                scrolled ? "text-lg sm:text-xl" : "text-3xl sm:text-4xl"
+                scrolled ? "text-lg sm:text-xl" : isHome ? "text-3xl sm:text-4xl" : "text-lg sm:text-4xl"
               }`}
             >
               SammaAlleFreind
             </span>
             <span
               className={`text-sm sm:text-base font-medium text-teal-400/90 overflow-hidden transition-all duration-300 ${
-                scrolled ? "max-h-0 opacity-0" : "max-h-16 opacity-100"
+                scrolled
+                  ? "max-h-0 opacity-0"
+                  : isHome
+                    ? "max-h-16 opacity-100"
+                    : "max-h-0 opacity-0 sm:max-h-16 sm:opacity-100"
               }`}
             >
               Kampf gegen Langeweile in Arnstorf und Umgebung 😉
