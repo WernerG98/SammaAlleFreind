@@ -348,6 +348,11 @@ export default function EventPage() {
                   Termin, Preis und Details stehen noch nicht fest. Lass dich unverbindlich vormerken, wir melden
                   uns per E-Mail, sobald es konkret wird.
                 </p>
+                {event.waitlistCount >= 5 && (
+                  <p className="text-sm font-semibold text-teal-300 mt-2">
+                    🔥 {event.waitlistCount} sind schon dabei
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
