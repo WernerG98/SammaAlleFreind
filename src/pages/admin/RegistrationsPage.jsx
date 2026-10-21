@@ -34,7 +34,7 @@ function AssignBusControl({ busStats, assigning, onAssign }) {
         type="button"
         disabled={!selected || assigning}
         onClick={() => onAssign(selected)}
-        className="text-teal-400 hover:underline text-xs disabled:opacity-40 disabled:hover:no-underline whitespace-nowrap"
+        className="text-teal-400 hover:underline text-xs px-1 py-2 disabled:opacity-40 disabled:hover:no-underline whitespace-nowrap"
       >
         {assigning ? "…" : "Zuweisen"}
       </button>
@@ -537,7 +537,43 @@ export default function RegistrationsPage() {
             />
           </div>
 
-          <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
+          <div className="md:hidden space-y-2">
+            {filteredInterests.map((int) => (
+              <div key={int.id} className="bg-gray-900 border border-gray-800 rounded-lg p-3 text-sm text-gray-200">
+                <p className="font-semibold break-words">
+                  {int.firstName} {int.lastName}
+                </p>
+                <p className="text-xs text-gray-400 break-all">{int.email}</p>
+                <p className="text-xs text-gray-400 mt-1">Slot: {int.bus?.name || "Allgemein"}</p>
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                  {busStats.length > 0 ? (
+                    <AssignBusControl
+                      busStats={busStats}
+                      assigning={pendingId === int.id}
+                      onAssign={(busId) => assignBus(int, busId)}
+                    />
+                  ) : (
+                    <span />
+                  )}
+                  <button
+                    type="button"
+                    disabled={pendingId === int.id}
+                    onClick={() => setToRemove({ id: int.id, label: `${int.firstName} ${int.lastName}` })}
+                    className="text-red-400 hover:underline text-xs px-2 py-2"
+                  >
+                    Entfernen
+                  </button>
+                </div>
+              </div>
+            ))}
+            {filteredInterests.length === 0 && (
+              <p className="text-gray-400 py-4">
+                {interests.length === 0 ? "Noch niemand auf dieser Liste." : "Keine Treffer für diese Suche."}
+              </p>
+            )}
+          </div>
+
+          <div className="hidden md:block bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
             <table className="w-full text-sm min-w-[420px]">
               <thead className="bg-gray-800 text-left">
                 <tr>
@@ -634,7 +670,86 @@ export default function RegistrationsPage() {
             </button>
           </div>
 
-          <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
+          <div className="md:hidden space-y-2">
+            <div className="flex gap-2">
+              <select
+                value={sortField}
+                onChange={(e) => {
+                  setSortField(e.target.value);
+                  setSortDir("asc");
+                }}
+                className="flex-1 min-w-0 border border-gray-700 bg-gray-900 text-gray-100 rounded px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+              >
+                <option value="name">Sortieren: Name</option>
+                <option value="email">Sortieren: E-Mail</option>
+                <option value="bus">Sortieren: Slot</option>
+                <option value="newsletter">Sortieren: Newsletter</option>
+                <option value="paid">Sortieren: Bezahlt</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+                className="border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 hover:bg-gray-800"
+              >
+                {sortDir === "asc" ? "▲" : "▼"}
+              </button>
+            </div>
+            {filteredRegistrations.map((reg) => (
+              <div key={reg.id} className="bg-gray-900 border border-gray-800 rounded-lg p-3 text-sm text-gray-200">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold break-words">
+                      {reg.firstName} {reg.lastName}
+                    </p>
+                    <p className="text-xs text-gray-400 break-all">{reg.email}</p>
+                  </div>
+                  <label className="flex shrink-0 items-center gap-2 text-xs text-gray-300">
+                    <input
+                      type="checkbox"
+                      className="h-5 w-5"
+                      checked={reg.paid}
+                      disabled={pendingId === reg.id}
+                      onChange={() => togglePaid(reg)}
+                    />
+                    Bezahlt
+                  </label>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <select
+                    className="border border-gray-700 bg-gray-800 text-gray-100 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-teal-500"
+                    value={reg.busId}
+                    disabled={pendingId === reg.id}
+                    onChange={(e) => changeBus(reg, e.target.value)}
+                  >
+                    {buses.map((bus) => (
+                      <option key={bus.id} value={bus.id}>
+                        {bus.name}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="text-xs text-gray-400">Newsletter: {reg.newsletterOptIn ? "Ja" : "Nein"}</span>
+                  <button
+                    type="button"
+                    disabled={pendingId === reg.id}
+                    onClick={() => setToRemove({ id: reg.id, label: `${reg.firstName} ${reg.lastName}` })}
+                    className="ml-auto text-red-400 hover:underline text-xs px-2 py-2"
+                  >
+                    Entfernen
+                  </button>
+                </div>
+                {showComments && reg.comment && (
+                  <p className="mt-2 text-xs whitespace-pre-wrap text-gray-300 bg-gray-800/60 rounded p-2">
+                    {reg.comment}
+                  </p>
+                )}
+              </div>
+            ))}
+            {filteredRegistrations.length === 0 && (
+              <p className="text-gray-400 py-4">Keine Anmeldungen in dieser Auswahl.</p>
+            )}
+          </div>
+
+          <div className="hidden md:block bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
             <table className="w-full text-sm min-w-[640px]">
               <thead className="bg-gray-800 text-left">
                 <tr>

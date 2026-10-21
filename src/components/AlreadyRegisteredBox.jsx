@@ -51,7 +51,7 @@ function FoundRegistrationCard({ registration, commentsEnabled, buses, selected,
         <span className="font-medium">
           {registration.firstName} {registration.lastName}
         </span>
-        <span className="text-gray-500">({registration.busName})</span>
+        <span className="text-gray-400">({registration.busName})</span>
         {registration.paid && <span className="ml-1 text-xs text-emerald-400 font-medium">bezahlt</span>}
       </label>
 

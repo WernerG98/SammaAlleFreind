@@ -46,7 +46,7 @@ export default function NewsletterSignup() {
           type="button"
           onClick={() => setOpen(false)}
           aria-label="Schließen"
-          className="shrink-0 text-gray-500 hover:text-gray-300 text-lg leading-none"
+          className="shrink-0 text-gray-400 hover:text-gray-300 text-lg leading-none"
         >
           ✕
         </button>

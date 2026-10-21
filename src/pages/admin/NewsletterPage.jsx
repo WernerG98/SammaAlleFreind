@@ -81,7 +81,7 @@ export default function NewsletterPage() {
   function SortHeader({ field, children }) {
     const active = sortField === field;
     return (
-      <th className="px-4 py-2">
+      <th className="px-2 sm:px-4 py-2">
         <button
           type="button"
           onClick={() => toggleSort(field)}
@@ -165,20 +165,20 @@ export default function NewsletterPage() {
       />
 
       <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-x-auto">
-        <table className="w-full text-sm min-w-[420px]">
+        <table className="w-full text-sm sm:min-w-[420px]">
           <thead className="bg-gray-800 text-left">
             <tr>
               <SortHeader field="email">E-Mail</SortHeader>
               <SortHeader field="createdAt">Angemeldet seit</SortHeader>
-              <th className="px-4 py-2"></th>
+              <th className="px-2 sm:px-4 py-2"></th>
             </tr>
           </thead>
           <tbody>
             {filteredSubscribers.map((sub) => (
               <tr key={sub.id} className="border-t border-gray-800 text-gray-200">
-                <td className="px-4 py-2">{sub.email}</td>
-                <td className="px-4 py-2">{new Date(sub.createdAt).toLocaleDateString("de-DE")}</td>
-                <td className="px-4 py-2 text-right">
+                <td className="px-2 sm:px-4 py-2 break-all">{sub.email}</td>
+                <td className="px-2 sm:px-4 py-2">{new Date(sub.createdAt).toLocaleDateString("de-DE")}</td>
+                <td className="px-2 sm:px-4 py-2 text-right">
                   <button
                     type="button"
                     disabled={pendingId === sub.id}

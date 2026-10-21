@@ -1,0 +1,15 @@
+{
+  "name": "SammaAlleFreind",
+  "short_name": "SammaAlle",
+  "description": "Kampf gegen Langeweile in Arnstorf und Umgebung: Anmeldung, Bus-Platzverwaltung und Bezahlung für unsere Veranstaltungen.",
+  "lang": "de",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

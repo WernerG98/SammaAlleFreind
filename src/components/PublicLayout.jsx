@@ -6,6 +6,7 @@ export default function PublicLayout() {
   const location = useLocation();
   const isHome = location.pathname === "/";
   const [scrolled, setScrolled] = useState(false);
+  const widthClass = isHome ? "max-w-3xl lg:max-w-5xl" : "max-w-3xl";
 
   useEffect(() => {
     function onScroll() {
@@ -32,7 +33,7 @@ export default function PublicLayout() {
               : "py-2 border-b border-gray-800/60 sm:border-b-0 sm:pt-8 sm:pb-0"
         }`}
       >
-        <Link to="/" className="max-w-3xl mx-auto flex items-center gap-3 sm:gap-4 text-gray-100 group">
+        <Link to="/" className={`${widthClass} mx-auto flex items-center gap-3 sm:gap-4 text-gray-100 group`}>
           <img
             src="/Logo.png"
             alt=""
@@ -70,7 +71,7 @@ export default function PublicLayout() {
       <div className="flex-1 w-full px-3 py-4 sm:px-4 sm:py-6 md:py-8 relative">
         <div
           key={location.pathname}
-          className="max-w-3xl mx-auto bg-gray-900 rounded-xl shadow-lg ring-1 ring-white/10 p-3 sm:p-4 md:p-6 animate-fade-in-up"
+          className={`${widthClass} mx-auto bg-gray-900 rounded-xl shadow-lg ring-1 ring-white/10 p-3 sm:p-4 md:p-6 animate-fade-in-up`}
         >
           {!isHome && (
             <Link to="/" className="inline-block text-sm text-teal-400 hover:text-teal-300 mb-4">

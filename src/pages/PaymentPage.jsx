@@ -152,18 +152,18 @@ export default function PaymentPage() {
                   <dl className="text-sm text-gray-300 space-y-1">
                     {event.accountHolder && (
                       <div className="flex gap-2">
-                        <dt className="text-gray-500 w-24 shrink-0">Empfänger:</dt>
+                        <dt className="text-gray-400 w-24 shrink-0">Empfänger:</dt>
                         <dd>{event.accountHolder}</dd>
                       </div>
                     )}
                     <div className="flex gap-2 items-center">
-                      <dt className="text-gray-500 w-24 shrink-0">IBAN:</dt>
+                      <dt className="text-gray-400 w-24 shrink-0">IBAN:</dt>
                       <dd className="font-mono">{event.iban}</dd>
                       <CopyButton text={event.iban} />
                     </div>
                     {event.bic && (
                       <div className="flex gap-2">
-                        <dt className="text-gray-500 w-24 shrink-0">BIC:</dt>
+                        <dt className="text-gray-400 w-24 shrink-0">BIC:</dt>
                         <dd className="font-mono">{event.bic}</dd>
                       </div>
                     )}

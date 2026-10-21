@@ -20,7 +20,7 @@ export default function CancelConfirmPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12 text-center">
-      {status === "pending" && <p className="text-gray-500">Wird bearbeitet...</p>}
+      {status === "pending" && <p className="text-gray-400">Wird bearbeitet...</p>}
       {status === "done" && (
         <p className="text-gray-300">
           Deine Anmeldung wurde storniert. Falls du bereits bezahlt hast, bekommst du das Geld in Kürze

@@ -163,7 +163,7 @@ export default function DashboardPage() {
                     ·{" "}
                     <Link
                       to={`/admin/veranstaltungen/${event.id}/anmeldungen`}
-                      className="text-xs font-semibold text-amber-300 bg-amber-950/50 rounded-full px-2 py-0.5 hover:bg-amber-900/60"
+                      className="inline-block whitespace-nowrap text-xs font-semibold text-amber-300 bg-amber-950/50 rounded-full px-2 py-0.5 hover:bg-amber-900/60"
                     >
                       {event.collectInterest ? "🙋" : "✋"} {event._count.interests}{" "}
                       {event.collectInterest ? "dabei" : "auf der Warteliste"}
@@ -181,17 +181,17 @@ export default function DashboardPage() {
               )}
             </div>
             <div className="flex gap-3 text-sm shrink-0">
-              <Link to={`/admin/veranstaltungen/${event.id}/anmeldungen`} className="text-teal-400 hover:underline">
+              <Link to={`/admin/veranstaltungen/${event.id}/anmeldungen`} className="text-teal-400 hover:underline py-2">
                 Anmeldungen
               </Link>
-              <Link to={`/admin/veranstaltungen/${event.id}`} className="text-sky-400 hover:underline">
+              <Link to={`/admin/veranstaltungen/${event.id}`} className="text-sky-400 hover:underline py-2">
                 Bearbeiten
               </Link>
               <button
                 type="button"
                 disabled={pendingId === event.id}
                 onClick={() => setToDelete({ id: event.id, label: event.title })}
-                className="text-red-400 hover:underline"
+                className="text-red-400 hover:underline py-2"
               >
                 Löschen
               </button>

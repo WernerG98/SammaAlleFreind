@@ -6,7 +6,25 @@ import Honeypot from "../components/Honeypot.jsx";
 import AlreadyRegisteredBox from "../components/AlreadyRegisteredBox.jsx";
 import CapacityBar from "../components/CapacityBar.jsx";
 import Skeleton from "../components/Skeleton.jsx";
+import StickyCta from "../components/StickyCta.jsx";
+import { formatDeadlineHint } from "../lib/deadline.js";
 import { useToast } from "../components/Toast.jsx";
+
+function EventFlyer({ event }) {
+  if (!event.imageUrl) return null;
+  return (
+    <img
+      src={event.mediumUrl || event.imageUrl}
+      alt={`Flyer: ${event.title}`}
+      onError={(e) => {
+        if (e.currentTarget.dataset.fallback) return;
+        e.currentTarget.dataset.fallback = "1";
+        e.currentTarget.src = event.imageUrl;
+      }}
+      className="w-full rounded-xl shadow-md mb-6 object-cover"
+    />
+  );
+}
 
 function AddToCalendarButton({ event }) {
   return (
@@ -277,14 +295,8 @@ export default function EventPage() {
   }
   if (event.comingSoon) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-12">
-        {event.imageUrl && (
-          <img
-            src={event.imageUrl}
-            alt={`Flyer: ${event.title}`}
-            className="w-full rounded-xl shadow-md mb-6 object-cover"
-          />
-        )}
+      <div className="max-w-lg mx-auto px-4 py-12 pb-28 md:pb-12">
+        <EventFlyer event={event} />
         <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
         {event.isExternal && (
           <p className="mt-2 text-xs text-amber-300 bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2 inline-block">
@@ -327,6 +339,10 @@ export default function EventPage() {
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
         )}
 
+        {event.collectInterest && !waitlistDone && (
+          <StickyCta targetId="vormerken" label="🙋 Wer wär dabei? Vormerken" />
+        )}
+
         {event.collectInterest &&
           (waitlistDone ? (
             <div className="mt-6 bg-gradient-to-br from-emerald-950/60 to-emerald-900/20 border border-emerald-800 rounded-xl p-5 text-emerald-300">
@@ -339,7 +355,8 @@ export default function EventPage() {
                 e.preventDefault();
                 submitWaitlist();
               }}
-              className="mt-6 space-y-4 bg-gray-900 border border-teal-800 rounded-xl p-6 shadow-sm"
+              id="vormerken"
+              className="mt-6 scroll-mt-24 space-y-4 bg-gray-900 border border-teal-800 rounded-xl p-6 shadow-sm"
             >
               <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
               <div>
@@ -405,13 +422,7 @@ export default function EventPage() {
   if (event.noRegistrationRequired) {
     return (
       <div className="max-w-lg mx-auto px-4 py-12">
-        {event.imageUrl && (
-          <img
-            src={event.imageUrl}
-            alt={`Flyer: ${event.title}`}
-            className="w-full rounded-xl shadow-md mb-6 object-cover"
-          />
-        )}
+        <EventFlyer event={event} />
 
         <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
         {event.isExternal && (
@@ -465,16 +476,11 @@ export default function EventPage() {
   const allFull = availableBuses.length === 0;
   const deadlinePassed = !event.registrationOpen;
   const isWaitlistSelected = form.busId === WAITLIST_OPTION;
+  const deadlineHint = formatDeadlineHint(event.registrationDeadline);
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-12">
-      {event.imageUrl && (
-        <img
-          src={event.imageUrl}
-          alt={`Flyer: ${event.title}`}
-          className="w-full rounded-xl shadow-md mb-6 object-cover"
-        />
-      )}
+    <div className="max-w-lg mx-auto px-4 py-12 pb-28 md:pb-12">
+      <EventFlyer event={event} />
 
       <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
       {event.isExternal && (
@@ -519,6 +525,11 @@ export default function EventPage() {
             month: "2-digit",
             year: "numeric",
           })}
+          {deadlineHint && (
+            <span className={`ml-2 font-semibold ${deadlineHint.urgent ? "text-red-300" : "text-amber-300"}`}>
+              ⏰ {deadlineHint.text}
+            </span>
+          )}
         </p>
       )}
       {event.description && (
@@ -536,7 +547,11 @@ export default function EventPage() {
           ✋ Danke! Du stehst jetzt auf der Warteliste, wir melden uns, sobald ein Platz frei wird.
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
+        <form
+          id="anmeldung"
+          onSubmit={handleSubmit}
+          className="mt-8 scroll-mt-24 space-y-4 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm"
+        >
           <Honeypot value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
           <h2 className="font-semibold text-gray-100">Anmeldung</h2>
 
@@ -571,7 +586,7 @@ export default function EventPage() {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
             {!isWaitlistSelected && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-400 mt-1">
                 Gilt auch für weitere Personen unten, sie dürfen dieselbe E-Mail-Adresse haben.
               </p>
             )}
@@ -650,7 +665,7 @@ export default function EventPage() {
                     }
                     className={`rounded-lg border-2 px-3 py-2 text-left text-sm transition-colors ${
                       disabled
-                        ? "bg-gray-800 border-gray-700 text-gray-500"
+                        ? "bg-gray-800 border-gray-700 text-gray-400"
                         : selected
                           ? "border-teal-500 bg-teal-950/40 text-teal-300 cursor-pointer"
                           : "border-gray-700 text-gray-300 hover:border-teal-600 cursor-pointer"
@@ -731,7 +746,7 @@ export default function EventPage() {
                 Ich möchte den Newsletter zu zukünftigen Veranstaltungen erhalten.
               </label>
               {form.newsletterOptIn && (
-                <p className="text-xs text-gray-500 mt-1 ml-6">
+                <p className="text-xs text-gray-400 mt-1 ml-6">
                   Die automatische Bestätigungsmail landet manchmal im Spam-Ordner, bitte dort auch kurz
                   nachschauen.
                 </p>
@@ -799,6 +814,10 @@ export default function EventPage() {
                   : "Anmelden"}
           </button>
         </form>
+      )}
+
+      {!deadlinePassed && !waitlistDone && (
+        <StickyCta targetId="anmeldung" label={allFull ? "✋ Auf die Warteliste" : "🎉 Jetzt anmelden"} />
       )}
 
       {gasModalOpen && (

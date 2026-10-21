@@ -5,8 +5,32 @@ import ContactForm from "../components/ContactForm.jsx";
 import NewsletterSignup from "../components/NewsletterSignup.jsx";
 import CapacityBar from "../components/CapacityBar.jsx";
 import { EventCardSkeleton } from "../components/Skeleton.jsx";
+import { formatDeadlineHint } from "../lib/deadline.js";
 
 const COUNTDOWN_THRESHOLD_DAYS = 14;
+const EVENTS_CACHE_KEY = "events-cache-v1";
+const EVENTS_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+// Zuletzt gesehene Liste sofort zeigen und im Hintergrund auffrischen,
+// damit die Startseite auch bei schlafender DB nicht leer bleibt.
+function readCachedEvents() {
+  try {
+    const raw = localStorage.getItem(EVENTS_CACHE_KEY);
+    if (!raw) return null;
+    const { t, data } = JSON.parse(raw);
+    return Array.isArray(data) && Date.now() - t < EVENTS_CACHE_MAX_AGE_MS ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+function cacheEvents(data) {
+  try {
+    localStorage.setItem(EVENTS_CACHE_KEY, JSON.stringify({ t: Date.now(), data }));
+  } catch {
+    // Speicher voll oder gesperrt: dann eben ohne Cache.
+  }
+}
 
 function EventThumb({ event, className }) {
   const [src, setSrc] = useState(event.thumbUrl || event.imageUrl);
@@ -56,6 +80,14 @@ function getEventMeta(event) {
   return { status: closed ? "closed" : "open", totalCapacity, totalRemaining, soldOut, closed };
 }
 
+function DeadlineHint({ deadline }) {
+  const hint = formatDeadlineHint(deadline);
+  if (!hint) return null;
+  return (
+    <p className={`text-xs font-semibold mt-2 ${hint.urgent ? "text-red-300" : "text-amber-300"}`}>⏰ {hint.text}</p>
+  );
+}
+
 function FeaturedEvent({ event, countdown }) {
   const { status, soldOut, totalCapacity, totalRemaining } = event.meta;
   const [src, setSrc] = useState(event.mediumUrl || event.imageUrl);
@@ -77,9 +109,9 @@ function FeaturedEvent({ event, countdown }) {
   return (
     <Link
       to={`/veranstaltung/${event.slug}`}
-      className="group block mb-6 overflow-hidden rounded-2xl border-2 border-teal-700/60 bg-gradient-to-br from-teal-950/40 to-gray-900 shadow-lg hover:shadow-xl hover:shadow-teal-950/40 hover:border-teal-500 active:scale-[0.99] transition-all"
+      className="group block lg:flex mb-6 overflow-hidden rounded-2xl border-2 border-teal-700/60 bg-gradient-to-br from-teal-950/40 to-gray-900 shadow-lg hover:shadow-xl hover:shadow-teal-950/40 hover:border-teal-500 active:scale-[0.99] transition-all"
     >
-      <div className="relative h-44 sm:h-60 overflow-hidden bg-gray-800">
+      <div className="relative h-44 sm:h-60 lg:h-auto lg:w-1/2 lg:min-h-[300px] overflow-hidden bg-gray-800">
         {src ? (
           <img
             src={src}
@@ -96,13 +128,13 @@ function FeaturedEvent({ event, countdown }) {
             🎉
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-l from-gray-900 via-gray-900/10 to-transparent" />
         <span className="absolute top-3 left-3 text-[11px] font-bold uppercase tracking-wide text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-md rounded-full px-2.5 py-1">
           ⭐ Nächste Veranstaltung
         </span>
       </div>
 
-      <div className="relative -mt-6 px-5 pb-5">
+      <div className="relative -mt-6 lg:mt-0 px-5 pb-5 lg:w-1/2 lg:flex lg:flex-col lg:justify-center lg:p-8">
         <span
           className={`inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-2 text-white shadow-sm ${
             unavailable ? "bg-gradient-to-r from-red-500 to-rose-700" : "bg-gradient-to-r from-teal-500 to-emerald-600"
@@ -147,6 +179,7 @@ function FeaturedEvent({ event, countdown }) {
           {totalCapacity > 0 && ` · ${totalRemaining} von ${totalCapacity} Plätzen frei`}
         </p>
         {totalCapacity > 0 && <CapacityBar capacity={totalCapacity} remaining={totalRemaining} className="mt-2 max-w-[260px]" />}
+        {event.registrationOpen && <DeadlineHint deadline={event.registrationDeadline} />}
         {soldOut && event.registrationOpen && event.waitlistCount > 0 && (
           <p className="text-xs text-amber-300 mt-2">✋ {event.waitlistCount} warten schon auf der Warteliste</p>
         )}
@@ -169,7 +202,7 @@ const STATUS_OPTIONS = [
 ];
 
 export default function HomePage() {
-  const [events, setEvents] = useState(null);
+  const [events, setEvents] = useState(readCachedEvents);
   const [error, setError] = useState("");
   const [tab, setTab] = useState("ours");
   const [search, setSearch] = useState("");
@@ -180,7 +213,10 @@ export default function HomePage() {
   useEffect(() => {
     api
       .get("/events")
-      .then(setEvents)
+      .then((data) => {
+        setEvents(data);
+        cacheEvents(data);
+      })
       .catch((err) => setError(err.message));
   }, []);
 
@@ -215,9 +251,9 @@ export default function HomePage() {
   const listEvents = featured ? visibleEvents.filter((event) => event.id !== featured.id) : visibleEvents;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12">
+    <div className="px-4 py-12">
       <h1 className="text-2xl font-bold mb-2 text-white">🎉 Info zu Veranstaltungen</h1>
-      <div className="text-sm text-gray-400 mb-6 space-y-2">
+      <div className="max-w-3xl text-sm text-gray-400 mb-6 space-y-2">
         <p>
           Je nach Veranstaltung kannst du per PayPal oder per Überweisung bezahlen, die jeweils verfügbaren
           Optionen siehst du nach der Anmeldung auf der Zahlungsseite. Fix dabei bist du erst, sobald deine
@@ -251,7 +287,7 @@ export default function HomePage() {
           type="button"
           onClick={() => setTab("ours")}
           className={`px-3 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors ${
-            tab === "ours" ? "border-teal-500 text-teal-300" : "border-transparent text-gray-500 hover:text-gray-300"
+            tab === "ours" ? "border-teal-500 text-teal-300" : "border-transparent text-gray-400 hover:text-gray-300"
           }`}
         >
           🚌 Unsere Veranstaltungen
@@ -262,7 +298,7 @@ export default function HomePage() {
           className={`px-3 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors ${
             tab === "external"
               ? "border-amber-500 text-amber-300"
-              : "border-transparent text-gray-500 hover:text-gray-300"
+              : "border-transparent text-gray-400 hover:text-gray-300"
           }`}
         >
           🤝 Externe Veranstaltungen
@@ -340,7 +376,7 @@ export default function HomePage() {
 
       {featured && <FeaturedEvent event={featured} countdown={formatCountdown(featured.eventDate)} />}
 
-      <div className="space-y-4">
+      <div className="grid gap-4 lg:grid-cols-2 [&>a]:h-full">
         {listEvents.map((event) => {
           const countdown = formatCountdown(event.eventDate);
 
@@ -426,7 +462,7 @@ export default function HomePage() {
                   <div className="min-w-0 flex-1">
                     <h2 className="text-lg font-semibold text-gray-300">{event.title}</h2>
                     {event.isExternal && (
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-xs text-gray-400 mt-0.5">
                         {event.externalOrganizer || "Externer Verein"}
                         {event.externalContactEmail && ` · ${event.externalContactEmail}`}
                       </p>
@@ -448,13 +484,13 @@ export default function HomePage() {
                         })}{" "}
                         Uhr
                         {countdown && (
-                          <span className={`ml-2 text-xs font-semibold text-gray-500 ${isUrgentCountdown(countdown) ? "animate-pulse" : ""}`}>
+                          <span className={`ml-2 text-xs font-semibold text-gray-400 ${isUrgentCountdown(countdown) ? "animate-pulse" : ""}`}>
                             ⏳ {countdown}
                           </span>
                         )}
                       </p>
                     )}
-                    <p className="text-sm text-gray-500 mt-2 font-semibold">⏳ Coming Soon</p>
+                    <p className="text-sm text-gray-400 mt-2 font-semibold">⏳ Coming Soon</p>
                     {event.collectInterest && (
                       <span className="inline-block mt-2 text-[11px] font-bold uppercase tracking-wide text-white bg-gradient-to-r from-teal-500 to-emerald-600 shadow-sm shadow-teal-950/50 rounded-full px-2 py-0.5">
                         🙋 Wer wär dabei? Jetzt vormerken
@@ -593,6 +629,7 @@ export default function HomePage() {
                         })} € pro Person`
                       : "Kostenlos"}
                   </p>
+                  {event.registrationOpen && <DeadlineHint deadline={event.registrationDeadline} />}
                   {!event.registrationOpen && (
                     <p className="text-sm mt-2 font-semibold text-red-400">Anmeldefrist abgelaufen</p>
                   )}
@@ -620,17 +657,19 @@ export default function HomePage() {
         })}
       </div>
 
-      {tab === "ours" ? (
-        <>
-          <NewsletterSignup />
-          <ContactForm />
-        </>
-      ) : (
-        <ContactForm
-          heading="🤝 Eigene Veranstaltung eintragen"
-          description="Möchtet ihr als lokaler Verein oder Gruppe eine Veranstaltung auf dieser Seite eintragen? Nehmt Kontakt mit uns auf. Wir richten uns nur an Arnstorf und Umgebung."
-        />
-      )}
+      <div className="max-w-3xl mx-auto">
+        {tab === "ours" ? (
+          <>
+            <NewsletterSignup />
+            <ContactForm />
+          </>
+        ) : (
+          <ContactForm
+            heading="🤝 Eigene Veranstaltung eintragen"
+            description="Möchtet ihr als lokaler Verein oder Gruppe eine Veranstaltung auf dieser Seite eintragen? Nehmt Kontakt mit uns auf. Wir richten uns nur an Arnstorf und Umgebung."
+          />
+        )}
+      </div>
     </div>
   );
 }
