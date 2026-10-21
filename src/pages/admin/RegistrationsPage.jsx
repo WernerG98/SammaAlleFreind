@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../../lib/api.js";
 import ConfirmDialog from "../../components/ConfirmDialog.jsx";
+import RichTextEditor, { isEmptyHtml } from "../../components/RichTextEditor.jsx";
 import { useToast } from "../../components/Toast.jsx";
 
 function AssignBusControl({ busStats, assigning, onAssign }) {
@@ -54,6 +55,10 @@ function InterestEmailForm({ eventId, buses, collectInterest }) {
     e.preventDefault();
     setError("");
     setResult(null);
+    if (isEmptyHtml(bodyHtml)) {
+      setError("Bitte einen Inhalt eingeben.");
+      return;
+    }
     setStatus("submitting");
     try {
       const res = await api.post("/admin/events", {
@@ -100,14 +105,7 @@ function InterestEmailForm({ eventId, buses, collectInterest }) {
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
         />
-        <textarea
-          required
-          rows={5}
-          placeholder="Inhalt (HTML wird unterstützt)"
-          className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm font-mono focus:outline-none focus:border-teal-500"
-          value={bodyHtml}
-          onChange={(e) => setBodyHtml(e.target.value)}
-        />
+        <RichTextEditor value={bodyHtml} onChange={setBodyHtml} placeholder="Inhalt der Nachricht" minHeight={140} />
 
         {error && <p className="text-sm text-red-400">{error}</p>}
         {result && (
@@ -141,6 +139,10 @@ function BulkEmailForm({ eventId }) {
     e.preventDefault();
     setError("");
     setResult(null);
+    if (isEmptyHtml(bodyHtml)) {
+      setError("Bitte einen Inhalt eingeben.");
+      return;
+    }
     setStatus("submitting");
     try {
       const res = await api.post("/admin/events", { action: "send-email", eventId, target, subject, bodyHtml });
@@ -173,15 +175,8 @@ function BulkEmailForm({ eventId }) {
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
         />
-        <textarea
-          required
-          rows={5}
-          placeholder="Inhalt (HTML wird unterstützt)"
-          className="w-full border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 rounded px-3 py-2 text-sm font-mono focus:outline-none focus:border-teal-500"
-          value={bodyHtml}
-          onChange={(e) => setBodyHtml(e.target.value)}
-        />
-        <p className="text-xs text-gray-500 -mt-1">
+        <RichTextEditor value={bodyHtml} onChange={setBodyHtml} placeholder="Inhalt der Nachricht" minHeight={140} />
+        <p className="text-xs text-gray-400 -mt-1">
           Optional <code>{"{names}"}</code> im Text verwenden, um die betreffenden Namen und Slots an genau
           dieser Stelle einzufügen. Wenn eine E-Mail-Adresse mehrere Anmeldungen abdeckt, werden alle
           zugehörigen Namen automatisch aufgelistet (ohne <code>{"{names}"}</code> am Ende der Mail).

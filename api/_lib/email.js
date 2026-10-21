@@ -225,9 +225,15 @@ export function buildNewsletterRemovedHtml() {
   `;
 }
 
+// Von Admins im Editor geschriebene Texte: Rahmen mit Schrift und Zeilenabstand, damit
+// Zeilenumbrüche, Absätze und Emojis in jedem Mailprogramm gleich aussehen.
+export function wrapRichTextHtml(bodyHtml) {
+  return `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.5; color: #111827;">${bodyHtml}</div>`;
+}
+
 export function buildNewsletterHtml({ bodyHtml, unsubscribeUrl }) {
   return `
-    ${bodyHtml}
+    ${wrapRichTextHtml(bodyHtml)}
     <hr />
     <p style="font-size: 12px; color: #666;">
       Du erhältst diese E-Mail, weil du dich für unseren Newsletter angemeldet hast.

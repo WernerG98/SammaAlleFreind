@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../../lib/api.js";
 import ConfirmDialog from "../../components/ConfirmDialog.jsx";
+import RichTextEditor, { isEmptyHtml } from "../../components/RichTextEditor.jsx";
 import { useToast } from "../../components/Toast.jsx";
 
 export default function NewsletterPage() {
@@ -31,6 +32,10 @@ export default function NewsletterPage() {
     e.preventDefault();
     setSendError("");
     setResult(null);
+    if (isEmptyHtml(form.bodyHtml)) {
+      setSendError("Bitte einen Inhalt eingeben.");
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await api.post("/newsletter", { action: "send", ...form });
@@ -122,14 +127,12 @@ export default function NewsletterPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-300">Inhalt (HTML wird unterstützt)</label>
-          <textarea
-            required
-            rows={10}
-            className="w-full border border-gray-700 bg-gray-800 text-gray-100 rounded px-3 py-2 font-mono text-sm focus:outline-none focus:border-teal-500"
-            placeholder="<p>Hallo zusammen, unsere nächste Veranstaltung ist...</p>"
+          <label className="block text-sm font-medium mb-1 text-gray-300">Inhalt</label>
+          <RichTextEditor
             value={form.bodyHtml}
-            onChange={(e) => setForm({ ...form, bodyHtml: e.target.value })}
+            onChange={(html) => setForm((f) => ({ ...f, bodyHtml: html }))}
+            placeholder="Hallo zusammen, unsere nächste Veranstaltung ist..."
+            minHeight={220}
           />
         </div>
 

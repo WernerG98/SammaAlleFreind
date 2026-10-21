@@ -1,6 +1,6 @@
 import { prisma, parseCapacity, normalizeIbanOrBic } from "../../_lib/db.js";
 import { requireAdmin } from "../../_lib/auth.js";
-import { sendEmail } from "../../_lib/email.js";
+import { sendEmail, wrapRichTextHtml } from "../../_lib/email.js";
 
 const STATS_TREND_MONTHS = 6;
 
@@ -164,7 +164,7 @@ export default async function handler(req, res) {
       const failed = [];
       for (const [recipientEmail, names] of namesByEmail) {
         const namesList = names.join(", ");
-        let html = bodyHtml;
+        let html = wrapRichTextHtml(bodyHtml);
         if (namesList) {
           html = html.includes("{names}")
             ? html.replace(/\{names\}/g, namesList)
