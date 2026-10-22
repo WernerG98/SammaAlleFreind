@@ -62,7 +62,7 @@ export default function PublicLayout() {
                     : "max-h-0 opacity-0 sm:max-h-16 sm:opacity-100"
               }`}
             >
-              Kampf gegen Langeweile in Arnstorf und Umgebung 😉
+              Ich mag BIR 🍺
             </span>
           </span>
         </Link>
