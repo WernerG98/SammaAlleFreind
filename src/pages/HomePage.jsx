@@ -208,7 +208,6 @@ export default function HomePage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
-  const [introOpen, setIntroOpen] = useState(false);
 
   useEffect(() => {
     api
@@ -252,34 +251,13 @@ export default function HomePage() {
 
   return (
     <div className="px-4 py-12">
-      <h1 className="text-2xl font-bold mb-2 text-white">🎉 Info zu Veranstaltungen</h1>
-      <div className="max-w-3xl text-sm text-gray-400 mb-6 space-y-2">
-        <p>
-          Je nach Veranstaltung kannst du per PayPal oder per Überweisung bezahlen, die jeweils verfügbaren
-          Optionen siehst du nach der Anmeldung auf der Zahlungsseite. Fix dabei bist du erst, sobald deine
-          Zahlung eingegangen ist und du die Bestätigungsmail erhalten hast.
+      <div className="mb-8">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+          Zam wegfahren. Zam feiern.
+        </h1>
+        <p className="mt-2 max-w-2xl text-gray-300">
+          Busfahrten, Partys und Ausflüge rund um Arnstorf. Such dir dein nächstes Event aus und sei dabei.
         </p>
-        {introOpen && (
-          <>
-            <p>
-              Bei anderen Zahlungsmethoden melde dich bitte ganz normal wie gewohnt an und schreib uns
-              anschließend über das Kontaktformular weiter unten.
-            </p>
-            <p>
-              Bitte beachte: Damit wir deine Zahlung zuordnen können, gib beim Bezahlen als
-              Kommentar/Verwendungszweck deinen Namen an, falls er nicht ohnehin ersichtlich ist. Jede Zahlung
-              wird manuell geprüft, daher kann es etwas dauern, bis die Bestätigungsmail kommt.
-            </p>
-          </>
-        )}
-        <button
-          type="button"
-          onClick={() => setIntroOpen((open) => !open)}
-          aria-expanded={introOpen}
-          className="text-teal-400 hover:text-teal-300 underline underline-offset-2 py-1"
-        >
-          {introOpen ? "Weniger anzeigen" : "Mehr zur Bezahlung"}
-        </button>
       </div>
 
       <div className="flex gap-2 mb-6 border-b border-gray-800">

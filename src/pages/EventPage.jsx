@@ -772,8 +772,13 @@ export default function EventPage() {
                 Rückerstattung nicht mehr möglich.
               </p>
               <p>
-                Dein Platz ist erst reserviert, sobald deine Zahlung bei uns eingegangen und bestätigt ist. Bis
-                dahin ist noch kein Platz für dich fest eingeplant.
+                Bezahlt wird nach der Anmeldung per PayPal oder Überweisung. Dein Platz ist erst reserviert,
+                sobald deine Zahlung bei uns eingegangen und bestätigt ist. Bis dahin ist noch kein Platz für
+                dich fest eingeplant.
+              </p>
+              <p>
+                Du möchtest anders bezahlen? Melde dich ganz normal an und schreib uns danach über das
+                Kontaktformular auf der Startseite.
               </p>
               <label className="flex items-center gap-2 font-medium pt-1">
                 <input
