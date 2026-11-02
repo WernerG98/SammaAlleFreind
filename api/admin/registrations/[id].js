@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   const { id } = req.query;
 
   if (req.method === "POST") {
-    const { paid, busId } = req.body || {};
+    const { paid, busId, overbook } = req.body || {};
 
     const registration = await prisma.registration.findUnique({
       where: { id },
@@ -47,8 +47,9 @@ export default async function handler(req, res) {
       if (!targetBus || targetBus.eventId !== interest.eventId) {
         return res.status(404).json({ error: "Slot nicht gefunden." });
       }
-      if (targetBus.capacity !== null && targetBus.registrations.length >= targetBus.capacity) {
-        return res.status(409).json({ error: "Dieser Slot hat keine freien Plätze mehr." });
+      // Admins dürfen einen vollen Slot bewusst überbuchen, aber nur mit ausdrücklichem overbook-Flag.
+      if (targetBus.capacity !== null && targetBus.registrations.length >= targetBus.capacity && !overbook) {
+        return res.status(409).json({ error: "Dieser Slot hat keine freien Plätze mehr.", code: "SLOT_FULL" });
       }
 
       const isFree = !interest.event.pricePerPerson;
@@ -99,8 +100,8 @@ export default async function handler(req, res) {
       if (!targetBus || targetBus.eventId !== registration.eventId) {
         return res.status(404).json({ error: "Zielbus nicht gefunden." });
       }
-      if (targetBus.capacity !== null && targetBus.registrations.length >= targetBus.capacity) {
-        return res.status(409).json({ error: "Der Zielbus hat keine freien Plätze mehr." });
+      if (targetBus.capacity !== null && targetBus.registrations.length >= targetBus.capacity && !overbook) {
+        return res.status(409).json({ error: "Der Zielbus hat keine freien Plätze mehr.", code: "SLOT_FULL" });
       }
       targetBusId = busId;
     }

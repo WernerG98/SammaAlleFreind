@@ -7,12 +7,10 @@ import { useToast } from "../../components/Toast.jsx";
 
 function AssignBusControl({ busStats, assigning, onAssign }) {
   const [selected, setSelected] = useState("");
-  // Admin-Zuweisung darf auch in noch nicht öffentlich buchbare Slots gehen,
-  // nur die Kapazität ist hier eine echte Grenze.
-  const selectableBuses = busStats.filter((b) => !b.full);
-
-  if (selectableBuses.length === 0) {
-    return <span className="text-xs text-gray-600">Kein freier Slot</span>;
+  // Admins dürfen in jeden Slot zuweisen: auch in noch nicht öffentlich buchbare und,
+  // nach Rückfrage, in volle (Überbuchung).
+  if (busStats.length === 0) {
+    return <span className="text-xs text-gray-400">Kein Slot vorhanden</span>;
   }
 
   return (
@@ -24,10 +22,16 @@ function AssignBusControl({ busStats, assigning, onAssign }) {
         className="border border-gray-700 bg-gray-800 text-gray-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-teal-500 disabled:opacity-50"
       >
         <option value="">Slot wählen…</option>
-        {selectableBuses.map((b) => (
+        {busStats.map((b) => (
           <option key={b.id} value={b.id}>
-            {b.enabled ? "" : "⏳ "}
-            {b.name} ({b.capacity === null ? "unbegrenzt" : `${b.capacity - b.registeredCount} frei`})
+            {b.full ? "⚠ " : b.enabled ? "" : "⏳ "}
+            {b.name} (
+            {b.capacity === null
+              ? "unbegrenzt"
+              : b.full
+                ? `voll, ${b.registeredCount}/${b.capacity} - überbuchen`
+                : `${b.capacity - b.registeredCount} frei`}
+            )
           </option>
         ))}
       </select>
@@ -215,6 +219,7 @@ export default function RegistrationsPage() {
   const [bulkRemoveMode, setBulkRemoveMode] = useState("all");
   const [bulkRemoving, setBulkRemoving] = useState(false);
   const [busFilter, setBusFilter] = useState("all");
+  const [overbookRequest, setOverbookRequest] = useState(null);
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
@@ -369,12 +374,17 @@ export default function RegistrationsPage() {
     }
   }
 
-  async function changeBus(reg, newBusId) {
+  async function changeBus(reg, newBusId, overbook = false) {
     if (newBusId === reg.busId) return;
+    const target = busStats.find((b) => b.id === newBusId);
+    if (target?.full && !overbook) {
+      setOverbookRequest({ kind: "move", item: reg, busId: newBusId, bus: target });
+      return;
+    }
     setError("");
     setPendingId(reg.id);
     try {
-      await api.post(`/admin/registrations/${reg.id}`, { busId: newBusId });
+      await api.post(`/admin/registrations/${reg.id}`, { busId: newBusId, overbook: overbook || undefined });
       load();
     } catch (err) {
       setError(err.message);
@@ -383,17 +393,33 @@ export default function RegistrationsPage() {
     }
   }
 
-  async function assignBus(interest, busId) {
+  async function assignBus(interest, busId, overbook = false) {
+    const target = busStats.find((b) => b.id === busId);
+    if (target?.full && !overbook) {
+      setOverbookRequest({ kind: "assign", item: interest, busId, bus: target });
+      return;
+    }
     setError("");
     setPendingId(interest.id);
     try {
-      await api.post(`/admin/registrations/${interest.id}`, { busId });
+      await api.post(`/admin/registrations/${interest.id}`, { busId, overbook: overbook || undefined });
       toast(`${interest.firstName} ${interest.lastName} zugewiesen und per E-Mail benachrichtigt.`);
       load();
     } catch (err) {
       setError(err.message);
     } finally {
       setPendingId(null);
+    }
+  }
+
+  async function confirmOverbook() {
+    const request = overbookRequest;
+    if (!request) return;
+    setOverbookRequest(null);
+    if (request.kind === "move") {
+      await changeBus(request.item, request.busId, true);
+    } else {
+      await assignBus(request.item, request.busId, true);
     }
   }
 
@@ -497,13 +523,18 @@ export default function RegistrationsPage() {
             className={`text-xs px-3 py-1.5 rounded-full border flex items-center gap-1 ${
               busFilter === bus.id
                 ? "bg-teal-600 text-white border-teal-600"
-                : bus.full || !bus.enabled
-                  ? "bg-gray-800 text-gray-500 border-gray-700"
-                  : "bg-gray-900 text-gray-300 border-gray-700"
+                : bus.capacity !== null && bus.registeredCount > bus.capacity
+                  ? "bg-amber-950/40 text-amber-300 border-amber-700"
+                  : bus.full || !bus.enabled
+                    ? "bg-gray-800 text-gray-400 border-gray-700"
+                    : "bg-gray-900 text-gray-300 border-gray-700"
             }`}
           >
             {(bus.full || !bus.enabled) && <span aria-hidden="true">{bus.enabled ? "🔒" : "⏳"}</span>}
             {bus.name} ({bus.registeredCount}/{bus.capacity ?? "∞"})
+            {bus.capacity !== null && bus.registeredCount > bus.capacity && (
+              <span className="font-semibold">überbucht</span>
+            )}
           </button>
         ))}
         <button
@@ -814,6 +845,19 @@ export default function RegistrationsPage() {
           {registrations.length > 0 && <BulkEmailForm eventId={id} />}
         </>
       )}
+
+      <ConfirmDialog
+        open={!!overbookRequest}
+        title="Slot überbuchen?"
+        message={
+          overbookRequest
+            ? `${overbookRequest.item.firstName} ${overbookRequest.item.lastName} wird ${overbookRequest.kind === "move" ? "nach" : "in"} "${overbookRequest.bus.name}" ${overbookRequest.kind === "move" ? "verschoben" : "zugewiesen"}. Der Slot ist schon voll (${overbookRequest.bus.registeredCount} von ${overbookRequest.bus.capacity}) und hat danach ${overbookRequest.bus.registeredCount + 1} Personen. Auf der Seite für Besucher bleibt er einfach "ausgebucht". Die Person bekommt eine E-Mail.`
+            : ""
+        }
+        confirmLabel={overbookRequest?.kind === "move" ? "Trotzdem verschieben" : "Trotzdem zuweisen"}
+        onConfirm={confirmOverbook}
+        onCancel={() => setOverbookRequest(null)}
+      />
 
       <ConfirmDialog
         open={!!toRemove}
