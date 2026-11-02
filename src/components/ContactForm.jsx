@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../lib/api.js";
 import Honeypot from "./Honeypot.jsx";
 
@@ -10,6 +10,13 @@ export default function ContactForm({
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", message: "", website: "" });
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
+
+  // Andere Stellen der Seite (z. B. der Hinweis bei den externen Veranstaltungen) können das Formular öffnen.
+  useEffect(() => {
+    const openForm = () => setOpen(true);
+    window.addEventListener("open-contact-form", openForm);
+    return () => window.removeEventListener("open-contact-form", openForm);
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();

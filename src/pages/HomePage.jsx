@@ -87,6 +87,37 @@ function attendeesLabel(count) {
   return count === 1 ? "1 Person ist dabei" : `${count} Personen sind dabei`;
 }
 
+function ExternalCta() {
+  return (
+    <>
+      <div className="mb-3 overflow-hidden rounded-2xl border-2 border-amber-600/70 bg-gradient-to-br from-amber-950/60 via-gray-900 to-gray-900 p-5 sm:p-6 shadow-lg shadow-amber-950/30">
+        <div className="flex items-start gap-4">
+          <span className="text-4xl sm:text-5xl leading-none" aria-hidden="true">
+            🤝
+          </span>
+          <div className="min-w-0">
+            <h2 className="text-lg sm:text-xl font-bold text-amber-100">Euer Verein veranstaltet etwas?</h2>
+            <p className="mt-1 text-sm sm:text-base text-gray-300">
+              Auch eure Veranstaltung kann hier online gehen. Nehmt dazu kurz Kontakt mit uns auf, wir melden uns
+              bei euch. Wir richten uns an Vereine und Gruppen aus Arnstorf und Umgebung.
+            </p>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event("open-contact-form"))}
+              className="mt-4 inline-flex items-center rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-amber-950/40 hover:from-amber-400 hover:to-orange-400 active:scale-[0.98] transition-all"
+            >
+              Jetzt Kontakt aufnehmen →
+            </button>
+          </div>
+        </div>
+      </div>
+      <p className="mb-6 text-xs text-gray-400">
+        Für die Inhalte der externen Veranstaltungen sind die jeweiligen Ansprechpersonen verantwortlich.
+      </p>
+    </>
+  );
+}
+
 function DeadlineHint({ deadline }) {
   const hint = formatDeadlineHint(deadline);
   if (!hint) return null;
@@ -293,13 +324,7 @@ export default function HomePage() {
         </button>
       </div>
 
-      {tab === "external" && (
-        <p className="text-xs text-amber-300 bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2 mb-6">
-          Für die Inhalte der externen Veranstaltungen sind die jeweiligen Ansprechpersonen verantwortlich.
-          Möchtet ihr als Verein oder Gruppe eure Veranstaltung auch hier eintragen? Nehmt gerne über das
-          Kontaktformular weiter unten Kontakt mit uns auf.
-        </p>
-      )}
+      {tab === "external" && <ExternalCta />}
 
       <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 mb-6">
         <input
