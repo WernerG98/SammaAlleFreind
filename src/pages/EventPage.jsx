@@ -7,6 +7,7 @@ import AlreadyRegisteredBox from "../components/AlreadyRegisteredBox.jsx";
 import CapacityBar from "../components/CapacityBar.jsx";
 import Skeleton from "../components/Skeleton.jsx";
 import StickyCta from "../components/StickyCta.jsx";
+import AttendeesStrip from "../components/AttendeesStrip.jsx";
 import { formatDeadlineHint } from "../lib/deadline.js";
 import { useToast } from "../components/Toast.jsx";
 
@@ -339,6 +340,12 @@ export default function EventPage() {
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
         )}
 
+        {event.collectInterest && event.waitlistCount >= 5 && (
+          <AttendeesStrip icon="🔥" className="mt-6">
+            {event.waitlistCount} sind schon dabei
+          </AttendeesStrip>
+        )}
+
         {event.collectInterest && !waitlistDone && (
           <StickyCta targetId="vormerken" label="🙋 Wer wär dabei? Vormerken" />
         )}
@@ -365,11 +372,6 @@ export default function EventPage() {
                   Termin, Preis und Details stehen noch nicht fest. Lass dich unverbindlich vormerken, wir melden
                   uns per E-Mail, sobald es konkret wird.
                 </p>
-                {event.waitlistCount >= 5 && (
-                  <p className="text-sm font-semibold text-teal-300 mt-2">
-                    🔥 {event.waitlistCount} sind schon dabei
-                  </p>
-                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -477,6 +479,8 @@ export default function EventPage() {
   const deadlinePassed = !event.registrationOpen;
   const isWaitlistSelected = form.busId === WAITLIST_OPTION;
   const deadlineHint = formatDeadlineHint(event.registrationDeadline);
+  const hasUnlimitedSlot = event.buses.some((b) => b.enabled && b.remaining === null);
+  const registeredTotal = event.buses.reduce((sum, b) => sum + (b.registered || 0), 0);
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12 pb-28 md:pb-12">
@@ -534,6 +538,12 @@ export default function EventPage() {
       )}
       {event.description && (
         <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
+      )}
+
+      {hasUnlimitedSlot && registeredTotal > 0 && (
+        <AttendeesStrip className="mt-6">
+          {registeredTotal === 1 ? "1 Person ist dabei" : `${registeredTotal} Personen sind dabei`}
+        </AttendeesStrip>
       )}
 
       <AlreadyRegisteredBox slug={event.slug} />

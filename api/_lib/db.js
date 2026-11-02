@@ -129,6 +129,7 @@ export function withRemainingSeats(event, { password, listMode = false } = {}) {
         name: bus.name,
         capacity: bus.capacity,
         enabled: bus.enabled,
+        registered: bus.capacity === null ? registeredCount : Math.min(registeredCount, bus.capacity),
         remaining: bus.capacity === null ? null : Math.max(0, bus.capacity - registeredCount),
       };
     }),

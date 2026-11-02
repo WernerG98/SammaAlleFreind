@@ -6,6 +6,7 @@ import NewsletterSignup from "../components/NewsletterSignup.jsx";
 import CapacityBar from "../components/CapacityBar.jsx";
 import { EventCardSkeleton } from "../components/Skeleton.jsx";
 import { formatDeadlineHint } from "../lib/deadline.js";
+import AttendeesStrip from "../components/AttendeesStrip.jsx";
 
 const COUNTDOWN_THRESHOLD_DAYS = 14;
 const EVENTS_CACHE_KEY = "events-cache-v1";
@@ -77,7 +78,13 @@ function getEventMeta(event) {
   const soldOut = !hasUnlimitedBus && totalRemaining === 0;
   const closed = !event.registrationOpen || soldOut;
 
-  return { status: closed ? "closed" : "open", totalCapacity, totalRemaining, soldOut, closed };
+  const totalRegistered = event.buses.reduce((sum, b) => sum + (b.registered || 0), 0);
+
+  return { status: closed ? "closed" : "open", totalCapacity, totalRemaining, totalRegistered, hasUnlimitedBus, soldOut, closed };
+}
+
+function attendeesLabel(count) {
+  return count === 1 ? "1 Person ist dabei" : `${count} Personen sind dabei`;
 }
 
 function DeadlineHint({ deadline }) {
@@ -89,7 +96,7 @@ function DeadlineHint({ deadline }) {
 }
 
 function FeaturedEvent({ event, countdown }) {
-  const { status, soldOut, totalCapacity, totalRemaining } = event.meta;
+  const { status, soldOut, totalCapacity, totalRemaining, totalRegistered, hasUnlimitedBus } = event.meta;
   const [src, setSrc] = useState(event.mediumUrl || event.imageUrl);
 
   let badge = "🎉 Jetzt anmelden";
@@ -179,6 +186,9 @@ function FeaturedEvent({ event, countdown }) {
           {totalCapacity > 0 && ` · ${totalRemaining} von ${totalCapacity} Plätzen frei`}
         </p>
         {totalCapacity > 0 && <CapacityBar capacity={totalCapacity} remaining={totalRemaining} className="mt-2 max-w-[260px]" />}
+        {hasUnlimitedBus && totalRegistered > 0 && (
+          <AttendeesStrip className="mt-2 max-w-[260px]">{attendeesLabel(totalRegistered)}</AttendeesStrip>
+        )}
         {event.registrationOpen && <DeadlineHint deadline={event.registrationDeadline} />}
         {soldOut && event.registrationOpen && event.waitlistCount > 0 && (
           <p className="text-xs text-amber-300 mt-2">✋ {event.waitlistCount} warten schon auf der Warteliste</p>
@@ -470,10 +480,16 @@ export default function HomePage() {
                     )}
                     <p className="text-sm text-gray-400 mt-2 font-semibold">⏳ Coming Soon</p>
                     {event.collectInterest && (
+                      <>
                       <span className="inline-block mt-2 text-[11px] font-bold uppercase tracking-wide text-white bg-gradient-to-r from-teal-500 to-emerald-600 shadow-sm shadow-teal-950/50 rounded-full px-2 py-0.5">
                         🙋 Wer wär dabei? Jetzt vormerken
-                        {event.waitlistCount >= 5 && ` · ${event.waitlistCount} sind dabei`}
                       </span>
+                      {event.waitlistCount >= 5 && (
+                        <AttendeesStrip icon="🙋" className="mt-2 max-w-[260px]">
+                          {event.waitlistCount} sind schon dabei
+                        </AttendeesStrip>
+                      )}
+                      </>
                     )}
                   </div>
                   {event.imageUrl && (
@@ -536,7 +552,7 @@ export default function HomePage() {
             );
           }
 
-          const { closed, soldOut, totalCapacity, totalRemaining } = event.meta;
+          const { closed, soldOut, totalCapacity, totalRemaining, totalRegistered, hasUnlimitedBus } = event.meta;
 
           return (
             <Link
@@ -610,6 +626,9 @@ export default function HomePage() {
                   {event.registrationOpen && <DeadlineHint deadline={event.registrationDeadline} />}
                   {!event.registrationOpen && (
                     <p className="text-sm mt-2 font-semibold text-red-400">Anmeldefrist abgelaufen</p>
+                  )}
+                  {hasUnlimitedBus && totalRegistered > 0 && (
+                    <AttendeesStrip className="mt-2 max-w-[260px]">{attendeesLabel(totalRegistered)}</AttendeesStrip>
                   )}
                   {totalCapacity > 0 && (
                     <>
