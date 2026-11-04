@@ -101,3 +101,11 @@ model SiteSetting {
   key   String @unique
   value String @db.Text
 }
+
+model LoginAttempt {
+  id          String    @id @default(cuid())
+  key         String    @unique
+  failures    Int       @default(0)
+  windowStart DateTime  @default(now())
+  lockedUntil DateTime?
+}

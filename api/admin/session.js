@@ -1,5 +1,27 @@
 import bcrypt from "bcryptjs";
 import { createSessionCookie, clearSessionCookie, getAdminSession } from "../_lib/auth.js";
+import {
+  IP_LIMIT,
+  USER_LIMIT,
+  clearFailures,
+  getClientIp,
+  getLockMinutes,
+  recordFailure,
+} from "../_lib/loginLimit.js";
+
+// Wird nur verglichen, wenn der Benutzername unbekannt ist (gleiche Antwortzeit wie bei bekanntem Namen).
+const DUMMY_HASH = "$2a$12$CeH56yEYs2gWKQ.Jab5lBuN4helFiCCLQZFb.uVZCYO/oe2c/E/Lq";
+
+// Die Sperre darf den Login nie selbst lahmlegen: Wenn die Datenbank nicht antwortet,
+// wird ohne Sperre weitergemacht (der Login selbst braucht die Datenbank nicht).
+async function safely(task) {
+  try {
+    return await task();
+  } catch (err) {
+    console.error("Login-Sperre nicht verfügbar:", err.message);
+    return null;
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
@@ -26,15 +48,29 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Admin-Zugang ist serverseitig nicht konfiguriert." });
     }
 
+    const ipKey = `ip:${getClientIp(req)}`;
+    const userKey = `user:${String(username || "").trim().toLowerCase().slice(0, 64)}`;
+    const failureEntries = [
+      { key: ipKey, limit: IP_LIMIT },
+      { key: userKey, limit: USER_LIMIT },
+    ];
+
+    const lockMinutes = await safely(() => getLockMinutes([ipKey, userKey]));
+    if (lockMinutes) {
+      return res.status(429).json({
+        error: `Zu viele Fehlversuche. Bitte versuche es in ${lockMinutes} Minute${lockMinutes === 1 ? "" : "n"} erneut.`,
+      });
+    }
+
     const account = accounts.find((a) => a.username === username);
-    if (!account) {
+    const passwordMatches = await bcrypt.compare(password || "", account?.hash || DUMMY_HASH);
+    const valid = Boolean(account) && passwordMatches;
+    if (!valid) {
+      await safely(() => recordFailure(failureEntries));
       return res.status(401).json({ error: "Benutzername oder Passwort falsch." });
     }
 
-    const valid = await bcrypt.compare(password || "", account.hash);
-    if (!valid) {
-      return res.status(401).json({ error: "Benutzername oder Passwort falsch." });
-    }
+    await safely(() => clearFailures([ipKey, userKey]));
 
     const cookie = await createSessionCookie(username, account.role);
     res.setHeader("Set-Cookie", cookie);
