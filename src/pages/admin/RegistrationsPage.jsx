@@ -131,10 +131,44 @@ function InterestEmailForm({ eventId, buses, collectInterest }) {
   );
 }
 
-function BulkEmailForm({ eventId }) {
+function escapeHtml(text) {
+  return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function paymentReminderTemplate(eventTitle) {
+  return {
+    subject: `Zahlungserinnerung: ${eventTitle}`,
+    bodyHtml: [
+      "<div>Hallo,</div>",
+      "<div><br></div>",
+      `<div>für <b>${escapeHtml(eventTitle)}</b> ist bei uns noch keine Zahlung eingegangen. Dein Platz ist erst reserviert, sobald deine Zahlung bei uns eingegangen und bestätigt ist.</div>`,
+      "<div><br></div>",
+      "<div><b>Betrifft:</b> {names}</div>",
+      "<div><b>Offener Betrag:</b> {betrag}</div>",
+      "<div><br></div>",
+      "<div>Hier kannst du bezahlen:</div>",
+      "<div>{zahlungslink}</div>",
+      "<div><br></div>",
+      "<div>Falls du schon bezahlt hast, melde dich bitte kurz bei uns, dann prüfen wir das.</div>",
+      "<div><br></div>",
+      "<div>Viele Grüße</div>",
+    ].join(""),
+  };
+}
+
+function BulkEmailForm({ eventId, eventTitle }) {
   const [target, setTarget] = useState("paid");
   const [subject, setSubject] = useState("");
   const [bodyHtml, setBodyHtml] = useState("");
+  const [editorKey, setEditorKey] = useState(0);
+
+  function applyPaymentReminder() {
+    const template = paymentReminderTemplate(eventTitle || "unserer Veranstaltung");
+    setTarget("unpaid");
+    setSubject(template.subject);
+    setBodyHtml(template.bodyHtml);
+    setEditorKey((key) => key + 1);
+  }
   const [status, setStatus] = useState("idle");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
@@ -179,11 +213,26 @@ function BulkEmailForm({ eventId }) {
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
         />
-        <RichTextEditor value={bodyHtml} onChange={setBodyHtml} placeholder="Inhalt der Nachricht" minHeight={140} />
+        <button
+          type="button"
+          onClick={applyPaymentReminder}
+          className="text-sm text-amber-300 border border-amber-800 rounded px-3 py-1.5 hover:bg-amber-950/40"
+        >
+          💶 Vorlage: Zahlungserinnerung an alle Unbezahlten
+        </button>
+        <RichTextEditor
+          key={editorKey}
+          value={bodyHtml}
+          onChange={setBodyHtml}
+          placeholder="Inhalt der Nachricht"
+          minHeight={140}
+        />
         <p className="text-xs text-gray-400 -mt-1">
-          Optional <code>{"{names}"}</code> im Text verwenden, um die betreffenden Namen und Slots an genau
-          dieser Stelle einzufügen. Wenn eine E-Mail-Adresse mehrere Anmeldungen abdeckt, werden alle
-          zugehörigen Namen automatisch aufgelistet (ohne <code>{"{names}"}</code> am Ende der Mail).
+          Platzhalter: <code>{"{names}"}</code> fügt die betreffenden Namen und Slots ein, <code>{"{betrag}"}</code>{" "}
+          den offenen Gesamtbetrag und <code>{"{zahlungslink}"}</code> den Link zur Zahlungsseite. Jede
+          E-Mail-Adresse bekommt nur eine Mail: Deckt sie mehrere Anmeldungen ab, werden alle Namen
+          aufgelistet, der Betrag gilt für alle zusammen, und gemeinsam angemeldete Personen haben einen
+          gemeinsamen Link. Ohne <code>{"{names}"}</code> werden die Namen am Ende der Mail angehängt.
         </p>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
@@ -842,7 +891,7 @@ export default function RegistrationsPage() {
             )}
           </div>
 
-          {registrations.length > 0 && <BulkEmailForm eventId={id} />}
+          {registrations.length > 0 && <BulkEmailForm eventId={id} eventTitle={event?.title} />}
         </>
       )}
 

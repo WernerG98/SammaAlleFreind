@@ -170,6 +170,23 @@ export default function DashboardPage() {
                     </Link>
                   </>
                 )}
+                {event.unpaidRegistrations > 0 && Number(event.pricePerPerson) > 0 && (
+                  <>
+                    {" "}
+                    ·{" "}
+                    <Link
+                      to={`/admin/veranstaltungen/${event.id}/anmeldungen`}
+                      className="inline-block whitespace-nowrap text-xs font-semibold text-rose-300 bg-rose-950/50 rounded-full px-2 py-0.5 hover:bg-rose-900/60"
+                    >
+                      💶 {event.unpaidRegistrations} unbezahlt (
+                      {(event.unpaidRegistrations * Number(event.pricePerPerson)).toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      €)
+                    </Link>
+                  </>
+                )}
               </p>
               {daysUntilDeletion !== null && (
                 <p className="text-xs text-red-400 mt-1">

@@ -121,7 +121,18 @@ export default async function handler(req, res) {
       orderBy: { eventDate: "asc" },
       include: { buses: true, _count: { select: { registrations: true, interests: true } } },
     });
-    return res.status(200).json(events);
+
+    // Offene Zahlungen pro Veranstaltung (jede unbezahlte Anmeldung ist eine Person).
+    const unpaid = await prisma.registration.groupBy({
+      by: ["eventId"],
+      where: { paid: false, eventId: { in: events.map((e) => e.id) } },
+      _count: { _all: true },
+    });
+    const unpaidByEvent = new Map(unpaid.map((row) => [row.eventId, row._count._all]));
+
+    return res
+      .status(200)
+      .json(events.map((event) => ({ ...event, unpaidRegistrations: unpaidByEvent.get(event.id) || 0 })));
   }
 
   if (req.method === "POST") {
@@ -133,11 +144,12 @@ export default async function handler(req, res) {
           .json({ error: "eventId, target (paid/unpaid/interested), Betreff und Inhalt sind erforderlich." });
       }
 
-      if (isExternalRole) {
-        const owningEvent = await prisma.event.findUnique({ where: { id: eventId }, select: { isExternal: true } });
-        if (!owningEvent || !owningEvent.isExternal) {
-          return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
-        }
+      const owningEvent = await prisma.event.findUnique({
+        where: { id: eventId },
+        select: { isExternal: true, pricePerPerson: true },
+      });
+      if (isExternalRole && (!owningEvent || !owningEvent.isExternal)) {
+        return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
       }
 
       const recipients =
@@ -148,26 +160,58 @@ export default async function handler(req, res) {
             })
           : await prisma.registration.findMany({
               where: { eventId, paid: target === "paid" },
-              select: { email: true, firstName: true, lastName: true, bus: { select: { name: true } } },
+              select: {
+                id: true,
+                groupId: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                bus: { select: { name: true } },
+              },
             });
 
       // Several registrations can now share one email (group signups) - group
       // by email so each recipient gets a single mail that lists every name
       // and slot it covers, instead of one mail per registration.
       const namesByEmail = new Map();
+      const paymentLinkIdsByEmail = new Map();
       for (const r of recipients) {
-        if (!namesByEmail.has(r.email)) namesByEmail.set(r.email, []);
+        if (!namesByEmail.has(r.email)) {
+          namesByEmail.set(r.email, []);
+          paymentLinkIdsByEmail.set(r.email, new Map());
+        }
         if (r.bus) namesByEmail.get(r.email).push(`${r.firstName} ${r.lastName} (${r.bus.name})`);
+        // Eine gemeinsam angemeldete Gruppe hat eine gemeinsame Zahlungsseite, daher ein Link pro Gruppe.
+        const groupKey = r.groupId || r.id;
+        if (r.id && !paymentLinkIdsByEmail.get(r.email).has(groupKey)) {
+          paymentLinkIdsByEmail.get(r.email).set(groupKey, r.id);
+        }
       }
+
+      const baseUrl = process.env.PUBLIC_BASE_URL || "http://localhost:3000";
+      const pricePerPerson = owningEvent?.pricePerPerson ? Number(owningEvent.pricePerPerson) : 0;
 
       let sent = 0;
       const failed = [];
       for (const [recipientEmail, names] of namesByEmail) {
         const namesList = names.join(", ");
-        let html = wrapRichTextHtml(bodyHtml);
+        const amount = pricePerPerson
+          ? `${(pricePerPerson * names.length).toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`
+          : "kostenlos";
+        const paymentLinks = [...paymentLinkIdsByEmail.get(recipientEmail).values()]
+          .map((registrationId) => {
+            const url = `${baseUrl}/anmeldung/${registrationId}/zahlung`;
+            return `<a href="${url}">${url}</a>`;
+          })
+          .join("<br/>");
+
+        let html = wrapRichTextHtml(bodyHtml).replace(/{betrag}/g, amount).replace(/{zahlungslink}/g, paymentLinks);
         if (namesList) {
           html = html.includes("{names}")
-            ? html.replace(/\{names\}/g, namesList)
+            ? html.replace(/{names}/g, namesList)
             : `${html}<p><strong>Betrifft:</strong> ${namesList}</p>`;
         }
         try {
