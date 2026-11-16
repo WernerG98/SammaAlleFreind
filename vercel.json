@@ -3,9 +3,9 @@
   "regions": ["fra1"],
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.sammaallefreind.de" }],
-      "destination": "https://sammaallefreind.de/:path*",
+      "destination": "https://sammaallefreind.de/$1",
       "permanent": true
     }
   ],
