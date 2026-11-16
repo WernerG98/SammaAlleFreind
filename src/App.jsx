@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { ToastProvider } from "./components/Toast.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import PublicLayout from "./components/PublicLayout.jsx";
+import CanonicalLink from "./components/CanonicalLink.jsx";
 
 const EventPage = lazy(() => import("./pages/EventPage.jsx"));
 const PaymentPage = lazy(() => import("./pages/PaymentPage.jsx"));
@@ -22,6 +23,7 @@ const NewsletterPage = lazy(() => import("./pages/admin/NewsletterPage.jsx"));
 export default function App() {
   return (
     <ToastProvider>
+      <CanonicalLink />
       <Suspense fallback={<div className="min-h-screen" />}>
         <Routes>
           <Route element={<PublicLayout />}>

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /anmeldung/
+Disallow: /newsletter/
+
+Sitemap: https://sammaallefreind.de/sitemap.xml
