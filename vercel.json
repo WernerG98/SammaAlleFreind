@@ -1,6 +1,14 @@
 {
   "framework": "vite",
   "regions": ["fra1"],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.sammaallefreind.de" }],
+      "destination": "https://sammaallefreind.de/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/veranstaltung/:slug",
