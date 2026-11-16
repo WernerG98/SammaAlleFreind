@@ -15,7 +15,7 @@
     },
     {
       "source": "/sitemap.xml",
-      "destination": "/api/sitemap"
+      "destination": "/api/events?sitemap=1"
     },
     {
       "source": "/((?!api/|@vite|@react-refresh|src/|node_modules/).*)",
