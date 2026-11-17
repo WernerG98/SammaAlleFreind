@@ -43,6 +43,7 @@ export default function EventFormPage() {
     comingSoon: false,
     collectInterest: false,
     eventDate: "",
+    eventEndDate: "",
     registrationDeadline: "",
     pricePerPerson: "",
     paypalLink: "",
@@ -130,6 +131,7 @@ export default function EventFormPage() {
           noRegistrationRequired: event.noRegistrationRequired || false,
           commentsEnabled: event.commentsEnabled || false,
           eventDate: event.eventDate ? toDateTimeInputValue(event.eventDate) : "",
+          eventEndDate: event.eventEndDate ? toDateTimeInputValue(event.eventEndDate) : "",
           registrationDeadline: event.registrationDeadline ? toDateInputValue(event.registrationDeadline) : "",
           pricePerPerson: event.pricePerPerson || "",
           paypalLink: event.paypalLink || "",
@@ -168,6 +170,7 @@ export default function EventFormPage() {
       const payload = {
         ...form,
         eventDate: form.eventDate ? new Date(form.eventDate).toISOString() : "",
+        eventEndDate: form.eventEndDate ? new Date(form.eventEndDate).toISOString() : "",
         buses: form.comingSoon || form.noRegistrationRequired ? [] : buses,
       };
       if (isNew) {
@@ -387,6 +390,19 @@ export default function EventFormPage() {
                     value={form.eventDate}
                     onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-300">Ende (optional)</label>
+                  <input
+                    type="datetime-local"
+                    className={inputClass}
+                    value={form.eventEndDate}
+                    min={form.eventDate || undefined}
+                    onChange={(e) => setForm({ ...form, eventEndDate: e.target.value })}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Nur für „Zum Kalender hinzufügen“, wird sonst nirgends angezeigt. Leer = 2 Stunden.
+                  </p>
                 </div>
                 {!form.noRegistrationRequired && (
                   <div>

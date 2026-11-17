@@ -34,7 +34,8 @@ export function downloadEventIcs(event) {
   if (!event.eventDate) return;
 
   const start = new Date(event.eventDate);
-  const end = new Date(start.getTime() + DEFAULT_DURATION_MS);
+  const customEnd = event.eventEndDate ? new Date(event.eventEndDate) : null;
+  const end = customEnd && customEnd > start ? customEnd : new Date(start.getTime() + DEFAULT_DURATION_MS);
   const pageUrl = `${window.location.origin}/veranstaltung/${event.slug}`;
 
   const lines = [

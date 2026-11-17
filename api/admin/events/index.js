@@ -1,4 +1,4 @@
-import { prisma, parseCapacity, normalizeIbanOrBic } from "../../_lib/db.js";
+import { prisma, parseCapacity, normalizeIbanOrBic, parseEndDate } from "../../_lib/db.js";
 import { requireAdmin } from "../../_lib/auth.js";
 import { sendEmail, wrapRichTextHtml } from "../../_lib/email.js";
 
@@ -230,6 +230,7 @@ export default async function handler(req, res) {
       description,
       imageUrl,
       eventDate,
+      eventEndDate,
       comingSoon,
       collectInterest,
       noRegistrationRequired,
@@ -277,6 +278,9 @@ export default async function handler(req, res) {
     if (!isComingSoon && !eventDate) {
       return res.status(400).json({ error: "Datum ist erforderlich." });
     }
+    if (eventEndDate && eventDate && new Date(eventEndDate) <= new Date(eventDate)) {
+      return res.status(400).json({ error: "Das Ende muss nach dem Beginn liegen." });
+    }
     if (!isComingSoon && !isNoRegistrationRequired && (!Array.isArray(buses) || buses.length === 0)) {
       return res.status(400).json({ error: "Mindestens ein Slot ist erforderlich." });
     }
@@ -295,6 +299,7 @@ export default async function handler(req, res) {
         description: description?.trim() || null,
         imageUrl: imageUrl?.trim() || null,
         eventDate: eventDate ? new Date(eventDate) : null,
+        eventEndDate: parseEndDate(eventDate, eventEndDate),
         comingSoon: isComingSoon,
         collectInterest: isComingSoon && Boolean(collectInterest),
         noRegistrationRequired: isNoRegistrationRequired,

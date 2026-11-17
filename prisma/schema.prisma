@@ -14,6 +14,7 @@ model Event {
   description    String?
   imageUrl       String?
   eventDate      DateTime?
+  eventEndDate   DateTime? // nur fuer den Kalender-Export, wird sonst nirgends angezeigt
   comingSoon     Boolean  @default(false)
   collectInterest Boolean @default(false)
   registrationDeadline DateTime?

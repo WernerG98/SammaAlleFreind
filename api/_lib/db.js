@@ -41,6 +41,11 @@ export async function cleanupExpiredEvents() {
   await Promise.all(expired.map((e) => deleteImageIfManaged(e.imageUrl)));
 }
 
+// Ende ist optional und nur sinnvoll, wenn es auch einen Beginn gibt.
+export function parseEndDate(eventDate, eventEndDate) {
+  return eventDate && eventEndDate ? new Date(eventEndDate) : null;
+}
+
 export function isRegistrationOpen(event) {
   if (event.comingSoon) return false;
   if (event.noRegistrationRequired) return false;
@@ -70,6 +75,7 @@ export function withRemainingSeats(event, { password, listMode = false } = {}) {
       imageUrl: event.imageUrl,
       thumbUrl: thumbUrlFor(event.imageUrl),
       eventDate: event.isPrivate ? null : event.eventDate,
+      eventEndDate: event.isPrivate ? null : event.eventEndDate,
       registrationDeadline: event.registrationDeadline,
       pricePerPerson: event.pricePerPerson,
       comingSoon: false,
@@ -103,6 +109,7 @@ export function withRemainingSeats(event, { password, listMode = false } = {}) {
     thumbUrl: thumbUrlFor(event.imageUrl),
     mediumUrl: mediumUrlFor(event.imageUrl),
     eventDate: event.eventDate,
+    eventEndDate: event.eventEndDate,
     comingSoon: event.comingSoon,
     collectInterest: event.comingSoon && event.collectInterest,
     noRegistrationRequired: event.noRegistrationRequired,
