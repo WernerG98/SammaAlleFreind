@@ -174,7 +174,7 @@ function FeaturedEvent({ event, countdown }) {
 
       <div className="relative -mt-6 lg:mt-0 px-5 pb-5 lg:w-3/5 lg:flex lg:flex-col lg:justify-center lg:p-8">
         <span
-          className={`inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-2 text-white shadow-sm ${
+          className={`self-start inline-block text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-2 text-white shadow-sm ${
             unavailable ? "bg-gradient-to-r from-red-500 to-rose-700" : "bg-gradient-to-r from-teal-500 to-emerald-600"
           }`}
         >
@@ -224,7 +224,7 @@ function FeaturedEvent({ event, countdown }) {
         {soldOut && event.registrationOpen && event.waitlistCount > 0 && (
           <p className="text-xs text-amber-300 mt-2">✋ {event.waitlistCount} warten schon auf der Warteliste</p>
         )}
-        <span className="mt-4 inline-flex items-center rounded-lg bg-gradient-to-r from-teal-500 to-emerald-500 group-hover:from-teal-400 group-hover:to-emerald-400 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-teal-950/30 transition-colors">
+        <span className="mt-4 self-start inline-flex items-center rounded-lg bg-gradient-to-r from-teal-500 to-emerald-500 group-hover:from-teal-400 group-hover:to-emerald-400 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-teal-950/30 transition-colors">
           {cta}
         </span>
       </div>
@@ -291,7 +291,7 @@ export default function HomePage() {
   const listEvents = featured ? visibleEvents.filter((event) => event.id !== featured.id) : visibleEvents;
 
   return (
-    <div className="px-4 py-12">
+    <div className="px-1 pt-2 pb-8 sm:px-4 sm:pb-12">
       <div className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
           Zam wegfahren. Zam feiern.

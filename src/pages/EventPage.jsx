@@ -14,7 +14,8 @@ import { useToast } from "../components/Toast.jsx";
 function EventFlyer({ event }) {
   if (!event.imageUrl) return null;
   return (
-    <img
+    <a href={event.imageUrl} target="_blank" rel="noreferrer" className="mt-4 mb-2 block" title="Flyer groß anzeigen">
+      <img
       src={event.mediumUrl || event.imageUrl}
       alt={`Flyer: ${event.title}`}
       onError={(e) => {
@@ -22,8 +23,9 @@ function EventFlyer({ event }) {
         e.currentTarget.dataset.fallback = "1";
         e.currentTarget.src = event.imageUrl;
       }}
-      className="w-full rounded-xl shadow-md mb-6 object-cover"
+      className="mx-auto block w-auto max-w-full max-h-[60vh] rounded-xl shadow-md cursor-zoom-in"
     />
+    </a>
   );
 }
 
@@ -219,11 +221,11 @@ export default function EventPage() {
   }
 
   if (error && !event) {
-    return <p className="max-w-lg mx-auto px-4 py-12 text-red-400">{error}</p>;
+    return <p className="max-w-lg mx-auto px-1 pt-2 pb-8 sm:px-4 sm:pb-12 text-red-400">{error}</p>;
   }
   if (!event) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-12">
+      <div className="max-w-lg mx-auto px-1 pt-2 pb-8 sm:px-4 sm:pb-12">
         <Skeleton className="h-48 w-full rounded-xl mb-6" />
         <Skeleton className="h-7 w-2/3 mb-3" />
         <Skeleton className="h-4 w-1/2 mb-2" />
@@ -234,7 +236,7 @@ export default function EventPage() {
   }
   if (event.locked) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-12">
+      <div className="max-w-lg mx-auto px-1 pt-2 pb-8 sm:px-4 sm:pb-12">
         <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
         <p className="mt-2 text-amber-400 font-semibold">
           {event.isPrivate ? "🔒 Privat" : "🔒 Vorabzugang"}, nur mit Passwort sichtbar.
@@ -296,8 +298,7 @@ export default function EventPage() {
   }
   if (event.comingSoon) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-12 pb-28 md:pb-12">
-        <EventFlyer event={event} />
+      <div className="max-w-lg mx-auto px-1 pt-2 pb-28 sm:px-4 md:pb-12">
         <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
         {event.isExternal && (
           <p className="mt-2 text-xs text-amber-300 bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2 inline-block">
@@ -336,6 +337,7 @@ export default function EventPage() {
           <ShareButton event={event} />
         </div>
         <p className="mt-2 text-teal-400 font-semibold">✨ Coming Soon. Details folgen in Kürze.</p>
+        <EventFlyer event={event} />
         {event.description && (
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
         )}
@@ -423,8 +425,7 @@ export default function EventPage() {
 
   if (event.noRegistrationRequired) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-12">
-        <EventFlyer event={event} />
+      <div className="max-w-lg mx-auto px-1 pt-2 pb-8 sm:px-4 sm:pb-12">
 
         <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
         {event.isExternal && (
@@ -463,6 +464,7 @@ export default function EventPage() {
           {event.eventDate && <AddToCalendarButton event={event} />}
           <ShareButton event={event} />
         </div>
+        <EventFlyer event={event} />
         {event.description && (
           <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
         )}
@@ -483,8 +485,7 @@ export default function EventPage() {
   const registeredTotal = event.buses.reduce((sum, b) => sum + (b.registered || 0), 0);
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-12 pb-28 md:pb-12">
-      <EventFlyer event={event} />
+    <div className="max-w-lg mx-auto px-1 pt-2 pb-28 sm:px-4 md:pb-12">
 
       <h1 className="text-2xl font-bold text-gray-100">{event.title}</h1>
       {event.isExternal && (
@@ -536,6 +537,7 @@ export default function EventPage() {
           )}
         </p>
       )}
+      <EventFlyer event={event} />
       {event.description && (
         <div className="mt-4 text-gray-300" dangerouslySetInnerHTML={{ __html: event.description }} />
       )}
