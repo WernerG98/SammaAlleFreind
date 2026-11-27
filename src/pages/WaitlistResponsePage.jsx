@@ -4,7 +4,7 @@ import { api } from "../lib/api.js";
 import Skeleton from "../components/Skeleton.jsx";
 
 const ACTIONS = {
-  nein: { response: "decline", question: "Möchtest du den freien Platz ablehnen?", confirm: "Ja, Nein danke" },
+  nein: { response: "decline", question: "Möchtest du den freien Platz ablehnen?", confirm: "Ja" },
   streichen: {
     response: "remove",
     question: "Möchtest du dich wirklich von der Warteliste streichen?",
