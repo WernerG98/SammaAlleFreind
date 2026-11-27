@@ -215,7 +215,7 @@ export default function PaymentPage() {
             type="button"
             onClick={handleRequestCancel}
             disabled={requestingCancel || selectedCancelIds.size === 0}
-            className="text-sm text-red-400 hover:text-red-300 underline disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-red-800 bg-red-950/40 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-900/50 hover:text-red-200 active:scale-[0.98] transition-all disabled:opacity-50"
           >
             {requestingCancel
               ? "Wird gesendet…"
@@ -229,7 +229,7 @@ export default function PaymentPage() {
           <button
             type="button"
             onClick={() => setShowCancelOptions(true)}
-            className="text-sm text-red-400 hover:text-red-300 underline"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-red-800 bg-red-950/40 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-900/50 hover:text-red-200 active:scale-[0.98] transition-all"
           >
             Anmeldung stornieren
           </button>
