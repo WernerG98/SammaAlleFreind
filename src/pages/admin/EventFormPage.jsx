@@ -42,7 +42,6 @@ export default function EventFormPage() {
     imageUrl: "",
     comingSoon: false,
     collectInterest: false,
-    interestCountBonus: 0,
     eventDate: "",
     eventEndDate: "",
     registrationDeadline: "",
@@ -129,7 +128,6 @@ export default function EventFormPage() {
           imageUrl: event.imageUrl || "",
           comingSoon: event.comingSoon,
           collectInterest: event.collectInterest || false,
-          interestCountBonus: event.interestCountBonus || 0,
           noRegistrationRequired: event.noRegistrationRequired || false,
           commentsEnabled: event.commentsEnabled || false,
           eventDate: event.eventDate ? toDateTimeInputValue(event.eventDate) : "",
@@ -280,19 +278,6 @@ export default function EventFormPage() {
                 Gäste können sich mit Name und E-Mail unverbindlich vormerken lassen. Du siehst sie unter
                 "Anmeldungen" und kannst ihnen per Rundmail Bescheid geben, sobald die Veranstaltung feststeht.
               </p>
-              {form.collectInterest && (
-                <label className="flex items-center gap-2 pt-2 text-sm text-gray-300">
-                  Zusätzlich zählen bei „… sind schon dabei“:
-                  <input
-                    type="number"
-                    min="0"
-                    max="999"
-                    className="w-20 rounded border border-gray-600 bg-gray-900 px-2 py-1 text-gray-100"
-                    value={form.interestCountBonus}
-                    onChange={(e) => setForm({ ...form, interestCountBonus: e.target.value })}
-                  />
-                </label>
-              )}
               <p className="text-xs text-gray-500">
                 Nach dem Freischalten wird diese Liste nach 24 Stunden gelöscht (ohne Mail an die Leute), danach
                 beginnt eine neue Warteliste.

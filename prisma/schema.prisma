@@ -20,7 +20,7 @@ model Event {
   // Zeitpunkt, zu dem die Wer-waer-dabei-Phase durch Freischalten endete. 24 h spaeter werden
   // die Vormerkungen aus dieser Phase geloescht, danach beginnt eine neue Warteliste.
   interestListClosedAt DateTime?
-  // Manuell dazugezaehlte Personen fuer die Anzeige "… sind schon dabei" (z. B. muendliche Zusagen).
+  // Einmaliger Zuschlag fuer die Anzeige "… sind schon dabei" (nur Tour de Radldrong, direkt in der DB gesetzt).
   interestCountBonus Int @default(0)
   registrationDeadline DateTime?
   pricePerPerson Decimal? @db.Decimal(10, 2)
