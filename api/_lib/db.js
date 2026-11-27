@@ -125,7 +125,9 @@ export function withRemainingSeats(event, { password, listMode = false } = {}) {
     externalContactEmail: event.externalContactEmail,
     locked: false,
     registrationOpen: isRegistrationOpen(event),
-    waitlistCount: event._count?.interests ?? 0,
+    // Der manuelle Zuschlag zählt nur in der Wer-wär-dabei-Phase, nicht auf der echten Warteliste.
+    waitlistCount:
+      (event._count?.interests ?? 0) + (event.comingSoon && event.collectInterest ? event.interestCountBonus || 0 : 0),
     buses: event.buses.map((bus) => {
       // A seat is reserved the moment someone registers, not only once an
       // admin confirms payment - otherwise several people could all be told

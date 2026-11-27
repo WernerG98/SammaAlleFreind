@@ -146,7 +146,12 @@ export async function processSeatReleases({ eventId, db = prisma, send = sendEma
       let offered = false;
       for (let attempt = 0; attempt < 5 && !offered; attempt += 1) {
         const candidate = await db.eventInterest.findFirst({
-          where: { eventId: releaseEventId, offerStatus: null, OR: [{ busId: null }, { busId: release.busId }] },
+          where: {
+            eventId: releaseEventId,
+            offerStatus: null,
+            OR: [{ busId: null }, { busId: release.busId }],
+            ...(event.interestListClosedAt ? { createdAt: { gt: event.interestListClosedAt } } : {}),
+          },
           orderBy: { createdAt: "asc" },
         });
         if (!candidate) break;
@@ -176,6 +181,26 @@ export async function processSeatReleases({ eventId, db = prisma, send = sendEma
   }
 
   return summary;
+}
+
+export const INTEREST_LIST_KEEP_MS = 24 * 60 * 60 * 1000;
+
+// Löscht 24 h nach dem Freischalten die Vormerkungen aus der Wer-wär-dabei-Phase. Einträge, die
+// nach dem Freischalten dazugekommen sind (neue Warteliste), bleiben stehen.
+export async function cleanupInterestLists({ db = prisma, now = Date.now() } = {}) {
+  const due = await db.event.findMany({
+    where: { interestListClosedAt: { lte: new Date(now - INTEREST_LIST_KEEP_MS) } },
+    select: { id: true, interestListClosedAt: true },
+  });
+  let removed = 0;
+  for (const event of due) {
+    const result = await db.eventInterest.deleteMany({
+      where: { eventId: event.id, createdAt: { lte: event.interestListClosedAt } },
+    });
+    removed += result.count;
+    await db.event.update({ where: { id: event.id }, data: { interestListClosedAt: null } });
+  }
+  return { eventsCleaned: due.length, interestsRemoved: removed };
 }
 
 export async function getOfferByToken(token, db = prisma) {

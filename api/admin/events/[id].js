@@ -33,6 +33,7 @@ export default async function handler(req, res) {
       eventEndDate,
       comingSoon,
       collectInterest,
+      interestCountBonus,
       noRegistrationRequired,
       registrationDeadline,
       pricePerPerson,
@@ -60,6 +61,14 @@ export default async function handler(req, res) {
     const isCommentsEnabled = Boolean(commentsEnabled);
     const busList = Array.isArray(buses) ? buses : [];
     const isExternalEvent = session.role === "external" ? true : Boolean(isExternal);
+    const previous = await prisma.event.findUnique({ where: { id }, select: { comingSoon: true } });
+    // Freischalten nach der Coming-Soon-Phase: Zeitpunkt merken, die Vormerkungen aus der
+    // Phase werden 24 h später gelöscht. Zurück auf Coming Soon setzt den Zeitpunkt zurück.
+    const interestListClosedAt = isComingSoon
+      ? { interestListClosedAt: null }
+      : previous?.comingSoon
+        ? { interestListClosedAt: new Date() }
+        : {};
 
     if (!title?.trim()) {
       return res.status(400).json({ error: "Titel ist erforderlich." });
@@ -136,6 +145,8 @@ export default async function handler(req, res) {
           eventEndDate: parseEndDate(eventDate, eventEndDate),
           comingSoon: isComingSoon,
           collectInterest: isComingSoon && Boolean(collectInterest),
+          ...interestListClosedAt,
+          interestCountBonus: Math.max(0, Math.min(999, Number.parseInt(interestCountBonus, 10) || 0)),
           noRegistrationRequired: isNoRegistrationRequired,
           registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
           pricePerPerson: pricePerPerson ? Number(pricePerPerson) : null,

@@ -1,6 +1,6 @@
 import { prisma, withRemainingSeats, cleanupExpiredEvents } from "../_lib/db.js";
 import { buildSitemapXml } from "../_lib/sitemap.js";
-import { processSeatReleases } from "../_lib/waitlist.js";
+import { processSeatReleases, cleanupInterestLists } from "../_lib/waitlist.js";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -22,7 +22,8 @@ export default async function handler(req, res) {
     if (!secret || req.headers.authorization !== `Bearer ${secret}`) {
       return res.status(401).json({ error: "Nicht berechtigt." });
     }
-    return res.status(200).json(await processSeatReleases());
+    const cleanup = await cleanupInterestLists();
+    return res.status(200).json({ ...(await processSeatReleases()), ...cleanup });
   }
 
   // Der tägliche Cron ruft diese Route mit ?cleanup=1 auf, damit das Aufräumen
@@ -35,6 +36,7 @@ export default async function handler(req, res) {
       // Aufräumen soll das Laden der Veranstaltungen nicht blockieren.
     }
     try {
+      await cleanupInterestLists();
       await processSeatReleases();
     } catch (err) {
       console.error("Nachrücken im täglichen Lauf fehlgeschlagen:", err.message);
