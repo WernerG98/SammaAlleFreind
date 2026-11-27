@@ -11,6 +11,7 @@ const FIRST_OFFER_FLAG = "waitlist-first-offer-notified";
 // Einmalige Info an euch, dass das automatische Nachrücken zum ersten Mal gelaufen ist.
 // Der eindeutige Schlüssel sorgt dafür, dass es auch bei parallelen Läufen genau eine Mail bleibt.
 async function notifyFirstOfferOnce(interest, event, db, send) {
+  if (await db.siteSetting.findUnique({ where: { key: FIRST_OFFER_FLAG } })) return;
   try {
     await db.siteSetting.create({ data: { key: FIRST_OFFER_FLAG, value: new Date().toISOString() } });
   } catch {
