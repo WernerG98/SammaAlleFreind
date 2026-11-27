@@ -8,6 +8,7 @@ import CanonicalLink from "./components/CanonicalLink.jsx";
 
 const EventPage = lazy(() => import("./pages/EventPage.jsx"));
 const PaymentPage = lazy(() => import("./pages/PaymentPage.jsx"));
+const WaitlistResponsePage = lazy(() => import("./pages/WaitlistResponsePage.jsx"));
 const UnsubscribePage = lazy(() => import("./pages/UnsubscribePage.jsx"));
 const CancelConfirmPage = lazy(() => import("./pages/CancelConfirmPage.jsx"));
 const ImpressumPage = lazy(() => import("./pages/ImpressumPage.jsx"));
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/veranstaltung/:slug" element={<EventPage />} />
             <Route path="/anmeldung/:id/zahlung" element={<PaymentPage />} />
+            <Route path="/warteliste/antwort" element={<WaitlistResponsePage />} />
             <Route path="/newsletter/abmelden" element={<UnsubscribePage />} />
             <Route path="/anmeldung/stornieren" element={<CancelConfirmPage />} />
             <Route path="/impressum" element={<ImpressumPage />} />

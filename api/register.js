@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { getOfferByToken, respondToOffer, OFFER_VALID_MS } from "./_lib/waitlist.js";
 import { prisma, isRegistrationOpen, isAccessUnlocked } from "./_lib/db.js";
 import {
   sendEmail,
@@ -14,6 +15,24 @@ function isValidEmail(email) {
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Methode nicht erlaubt." });
+  }
+
+  // Antwort auf eine Nachrück-Mail (eigene Funktion geht nicht, Hobby-Limit 12 Funktionen).
+  if (req.body?.action === "waitlist-offer") {
+    const { token, response } = req.body;
+    if (response === "decline" || response === "remove") {
+      return res.status(200).json(await respondToOffer(token, response));
+    }
+    const offer = await getOfferByToken(token);
+    if (!offer) return res.status(200).json({ onWaitlist: false });
+    return res.status(200).json({
+      onWaitlist: true,
+      firstName: offer.firstName,
+      offerStatus: offer.offerStatus,
+      eventTitle: offer.event.title,
+      eventSlug: offer.event.slug,
+      validUntil: offer.offeredAt ? new Date(offer.offeredAt.getTime() + OFFER_VALID_MS).toISOString() : null,
+    });
   }
 
   const {
@@ -181,6 +200,13 @@ export default async function handler(req, res) {
       })
     )
   );
+
+  // Wer angemeldet ist, braucht keinen Wartelistenplatz mehr.
+  try {
+    await prisma.eventInterest.deleteMany({ where: { eventId, email: normalizedEmail } });
+  } catch (err) {
+    console.error("Warteliste nach Anmeldung nicht bereinigt:", err.message);
+  }
 
   if (isFree) {
     if (newsletterOptIn) {

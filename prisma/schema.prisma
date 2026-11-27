@@ -39,6 +39,7 @@ model Event {
   buses         Bus[]
   registrations Registration[]
   interests     EventInterest[]
+  seatReleases  SeatRelease[]
 }
 
 model Bus {
@@ -84,10 +85,32 @@ model EventInterest {
   email     String
   createdAt DateTime @default(now())
 
+  // Automatisches Nachrücken: null = noch nicht angeboten, "pending" = Mail verschickt,
+  // "declined" = "Nein danke", "expired" = 24 h keine Reaktion.
+  offerStatus String?
+  offeredAt   DateTime?
+  offerToken  String?   @unique
+
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   bus   Bus?  @relation(fields: [busId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, email])
+}
+
+// Ein frei gewordener Platz (eine Zeile pro storniertem/entferntem Platz). Nach 60 Minuten
+// wird er der Reihe nach der Warteliste angeboten, bis er wieder belegt ist.
+model SeatRelease {
+  id                String    @id @default(cuid())
+  eventId           String
+  busId             String
+  releasedAt        DateTime  @default(now())
+  offeredInterestId String?
+  closedAt          DateTime?
+  closedReason      String?
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([closedAt, releasedAt])
 }
 
 model NewsletterSubscriber {

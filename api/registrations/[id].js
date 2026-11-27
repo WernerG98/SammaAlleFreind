@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { recordSeatReleasesSafely } from "../_lib/waitlist.js";
 import { prisma } from "../_lib/db.js";
 import {
   sendEmail,
@@ -157,6 +158,7 @@ export default async function handler(req, res) {
     }
 
     await prisma.registration.delete({ where: { id: registration.id } });
+    await recordSeatReleasesSafely([{ eventId: registration.eventId, busId: registration.busId }]);
 
     await sendEmail({
       to: registration.email,

@@ -5,6 +5,24 @@ import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 import RichTextEditor, { isEmptyHtml } from "../../components/RichTextEditor.jsx";
 import { useToast } from "../../components/Toast.jsx";
 
+function formatDateTime(value) {
+  return new Date(value).toLocaleString("de-DE", {
+    timeZone: "Europe/Berlin",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function offerStatusLabel(interest) {
+  if (interest.offerStatus === "pending") return `📧 Platz angeboten am ${formatDateTime(interest.offeredAt)}`;
+  if (interest.offerStatus === "declined") return "Angebot abgelehnt";
+  if (interest.offerStatus === "expired") return "Keine Reaktion auf Angebot";
+  return "–";
+}
+
 function AssignBusControl({ busStats, assigning, onAssign }) {
   const [selected, setSelected] = useState("");
   // Admins dürfen in jeden Slot zuweisen: auch in noch nicht öffentlich buchbare und,
@@ -315,6 +333,8 @@ export default function RegistrationsPage() {
         return reg.newsletterOptIn ? 1 : 0;
       case "paid":
         return reg.paid ? 1 : 0;
+      case "createdAt":
+        return new Date(reg.createdAt).getTime();
       default:
         return "";
     }
@@ -620,6 +640,10 @@ export default function RegistrationsPage() {
                 </p>
                 <p className="text-xs text-gray-400 break-all">{int.email}</p>
                 <p className="text-xs text-gray-400 mt-1">Slot: {int.bus?.name || "Allgemein"}</p>
+                <p className="text-xs text-gray-400">Eingetragen: {formatDateTime(int.createdAt)}</p>
+                {!event?.collectInterest && int.offerStatus && (
+                  <p className="text-xs text-amber-300">{offerStatusLabel(int)}</p>
+                )}
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                   {busStats.length > 0 ? (
                     <AssignBusControl
@@ -655,6 +679,10 @@ export default function RegistrationsPage() {
                   <InterestSortHeader field="name">Name</InterestSortHeader>
                   <InterestSortHeader field="email">E-Mail</InterestSortHeader>
                   <th className="px-4 py-2 text-left font-semibold text-gray-500">Slot</th>
+                  <InterestSortHeader field="createdAt">Eingetragen</InterestSortHeader>
+                  {!event?.collectInterest && (
+                    <th className="px-4 py-2 text-left font-semibold text-gray-500">Nachrücken</th>
+                  )}
                   {busStats.length > 0 && (
                     <th className="px-4 py-2 text-left font-semibold text-gray-500">Bus zuweisen</th>
                   )}
@@ -669,6 +697,10 @@ export default function RegistrationsPage() {
                     </td>
                     <td className="px-4 py-2">{int.email}</td>
                     <td className="px-4 py-2 text-gray-400">{int.bus?.name || "Allgemein"}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-400">{formatDateTime(int.createdAt)}</td>
+                    {!event?.collectInterest && (
+                      <td className="px-4 py-2 text-xs text-gray-400">{offerStatusLabel(int)}</td>
+                    )}
                     {busStats.length > 0 && (
                       <td className="px-4 py-2">
                         <AssignBusControl
@@ -760,6 +792,7 @@ export default function RegistrationsPage() {
                 <option value="bus">Sortieren: Slot</option>
                 <option value="newsletter">Sortieren: Newsletter</option>
                 <option value="paid">Sortieren: Bezahlt</option>
+                <option value="createdAt">Sortieren: Angemeldet am</option>
               </select>
               <button
                 type="button"
@@ -803,6 +836,7 @@ export default function RegistrationsPage() {
                     ))}
                   </select>
                   <span className="text-xs text-gray-400">Newsletter: {reg.newsletterOptIn ? "Ja" : "Nein"}</span>
+                  <span className="w-full text-xs text-gray-400">Angemeldet: {formatDateTime(reg.createdAt)}</span>
                   <button
                     type="button"
                     disabled={pendingId === reg.id}
@@ -833,6 +867,7 @@ export default function RegistrationsPage() {
                   <SortHeader field="bus">Slot</SortHeader>
                   <SortHeader field="newsletter">Newsletter</SortHeader>
                   <SortHeader field="paid">Bezahlt</SortHeader>
+                  <SortHeader field="createdAt">Angemeldet</SortHeader>
                   {showComments && <th className="px-4 py-2 text-left font-semibold text-gray-500">Kommentar</th>}
                   <th className="px-4 py-2"></th>
                 </tr>
@@ -867,6 +902,7 @@ export default function RegistrationsPage() {
                         onChange={() => togglePaid(reg)}
                       />
                     </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-400">{formatDateTime(reg.createdAt)}</td>
                     {showComments && (
                       <td className="px-4 py-2 max-w-[220px] whitespace-pre-wrap text-gray-300">
                         {reg.comment || <span className="text-gray-600">–</span>}

@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { recordSeatReleasesSafely } from "../../_lib/waitlist.js";
 import { prisma } from "../../_lib/db.js";
 import { requireAdmin } from "../../_lib/auth.js";
 import {
@@ -155,6 +156,7 @@ export default async function handler(req, res) {
         return res.status(403).json({ error: "Dafür fehlen dir die Berechtigungen." });
       }
       await prisma.registration.delete({ where: { id } });
+      await recordSeatReleasesSafely([{ eventId: registration.eventId, busId: registration.busId }]);
       await sendEmail({
         to: registration.email,
         subject: `Deine Anmeldung für ${registration.event.title} wurde entfernt`,

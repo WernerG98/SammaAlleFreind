@@ -241,3 +241,31 @@ export function buildNewsletterHtml({ bodyHtml, unsubscribeUrl }) {
     </p>
   `;
 }
+
+function mailButton(href, label, background, color = "#ffffff") {
+  return `<a href="${href}" style="display:inline-block;padding:10px 18px;margin:4px 8px 4px 0;border-radius:8px;background:${background};color:${color};text-decoration:none;font-weight:600;">${label}</a>`;
+}
+
+export function buildWaitlistOfferHtml({ firstName, event, eventUrl, responseUrl, validUntil }) {
+  return `
+    <h2>Ein Platz ist frei geworden!</h2>
+    <p>Hallo ${firstName},</p>
+    <p>
+      bei <strong>${event.title}</strong> ist gerade ein Platz frei geworden, und du bist als Nächstes
+      auf der Warteliste.
+    </p>
+    <p>
+      Der Platz ist nicht für dich reserviert: Wer sich zuerst anmeldet, bekommt ihn. Schnell sein lohnt sich also.
+    </p>
+    <p>${mailButton(eventUrl, "Jetzt anmelden", "#14b8a6")}</p>
+    <p>
+      ${mailButton(`${responseUrl}&aktion=nein`, "Nein danke", "#e5e7eb", "#111827")}
+      ${mailButton(`${responseUrl}&aktion=streichen`, "Von der Warteliste streichen", "#fee2e2", "#991b1b")}
+    </p>
+    <p style="font-size: 13px; color: #555;">
+      Wenn du bis ${validUntil} nicht reagierst, geben wir den Hinweis an die nächste Person weiter.
+      Auf der Warteliste bleibst du trotzdem.
+    </p>
+    ${externalOrganizerNote(event)}
+  `;
+}

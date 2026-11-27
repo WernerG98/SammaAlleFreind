@@ -1,4 +1,5 @@
 import { prisma } from "../../_lib/db.js";
+import { recordSeatReleasesSafely } from "../../_lib/waitlist.js";
 import { requireAdmin } from "../../_lib/auth.js";
 import { sendEmail, buildRegistrationRemovedHtml } from "../../_lib/email.js";
 
@@ -44,6 +45,7 @@ export default async function handler(req, res) {
     }
 
     await prisma.registration.deleteMany({ where });
+    await recordSeatReleasesSafely(registrations.map((r) => ({ eventId: r.eventId, busId: r.busId })));
 
     for (const registration of registrations) {
       try {
