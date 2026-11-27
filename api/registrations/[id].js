@@ -38,6 +38,7 @@ export default async function handler(req, res) {
       bus: { name: registration.bus.name },
       groupMembers,
       event: {
+        slug: registration.event.slug,
         title: registration.event.title,
         pricePerPerson: registration.event.pricePerPerson,
         paypalLink: registration.event.paypalLink,

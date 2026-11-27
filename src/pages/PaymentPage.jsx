@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { InstallAppCard } from "../components/InstallApp.jsx";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api.js";
 import Skeleton from "../components/Skeleton.jsx";
 import Confetti from "../components/Confetti.jsx";
@@ -81,7 +81,7 @@ export default function PaymentPage() {
   const hasAnyPaymentMethod = hasPayPal || hasBankTransfer;
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-12">
+    <div className="max-w-lg mx-auto px-1 pt-2 pb-8 sm:px-4 sm:pb-12">
       {showConfetti && <Confetti />}
       <h1 className="text-2xl font-bold text-gray-100">🎉 Fast geschafft!</h1>
       <p className="mt-2 text-gray-300">
@@ -186,7 +186,24 @@ export default function PaymentPage() {
         </div>
       )}
 
-      <InstallAppCard className="mt-8" />
+      {event.slug && (
+        <div className="mt-8 rounded-xl border border-gray-700 bg-gray-800/40 p-4 text-sm text-gray-300">
+          <p>
+            <span aria-hidden="true">✏️ </span>
+            <strong className="text-gray-100">Deine Anmeldung kannst du jederzeit bearbeiten:</strong> Auf der
+            Veranstaltungsseite unter „Bereits angemeldet?“ deine E-Mail-Adresse eingeben, dann kannst du den Slot
+            ändern, stornieren oder diesen Zahlungslink nochmal aufrufen.
+          </p>
+          <Link
+            to={`/veranstaltung/${event.slug}`}
+            className="mt-2 inline-block font-medium text-teal-400 hover:text-teal-300"
+          >
+            Zur Veranstaltung →
+          </Link>
+        </div>
+      )}
+
+      <InstallAppCard className="mt-6" />
 
       {cancelRequested ? (
         <p className="mt-6 text-sm text-gray-300">
@@ -237,6 +254,13 @@ export default function PaymentPage() {
       )}
 
       {error && <p className="text-sm text-red-400 mt-2">{error}</p>}
+
+      <Link
+        to="/"
+        className="mt-10 inline-flex items-center rounded-lg border border-gray-700 px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-800 active:scale-[0.98] transition-all"
+      >
+        ← Zurück zur Startseite
+      </Link>
     </div>
   );
 }
