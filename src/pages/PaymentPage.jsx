@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { InstallAppCard } from "../components/InstallApp.jsx";
 import { useParams } from "react-router-dom";
 import { api } from "../lib/api.js";
 import Skeleton from "../components/Skeleton.jsx";
@@ -184,6 +185,8 @@ export default function PaymentPage() {
           </p>
         </div>
       )}
+
+      <InstallAppCard className="mt-8" />
 
       {cancelRequested ? (
         <p className="mt-6 text-sm text-gray-300">

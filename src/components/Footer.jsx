@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { InstallAppLink } from "./InstallApp.jsx";
 
 const linkClass = "inline-block px-2 py-2 hover:text-gray-300";
 
@@ -21,6 +22,7 @@ export default function Footer({ reserveSpaceForFloatingButtons = false }) {
         <Link to="/admin/login" className={linkClass}>
           Admin-Login
         </Link>
+        <InstallAppLink className={linkClass} />
       </div>
       <div>
         <a
