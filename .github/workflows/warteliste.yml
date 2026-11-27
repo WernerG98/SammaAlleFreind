@@ -1,0 +1,19 @@
+name: Warteliste nachruecken
+
+# Stoesst alle 10 Minuten das automatische Nachruecken an (Vercel Hobby erlaubt nur einen
+# taeglichen Cron). GitHub fuehrt geplante Laeufe manchmal ein paar Minuten spaeter aus.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  nachruecken:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Faellige Wartelisten-Angebote verschicken
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS --max-time 60 -H "Authorization: Bearer ${CRON_SECRET}" "https://sammaallefreind.de/api/events?waitlist=1"
